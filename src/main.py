@@ -32,7 +32,9 @@ if __name__ == "__main__":
     search = Search(search_id=search_id, parameters=parameters)
     search.create_all_jobs()
 
-    print(search.get_jobs())
+    # workflow.queue_search(search)
+
     jobs = search.get_jobs()
     for job in jobs:
+        print(job.get_job_id())
         job.visualize_geometry()
