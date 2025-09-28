@@ -1,0 +1,26 @@
+[model]
+# linux
+# freecad_path="/usr/lib/freecad/lib"
+# macos
+freecad_path="/Applications/FreeCAD.app/Contents/Resources/lib"
+# windows
+# freecad_path="C:\\Program Files\\FreeCAD\\bin"
+
+# DESIGN SPACE PARAMETERS
+# name: user-friendly name for the parameter
+# cell: cell corresponding to the cell in the FREECAD spreadsheet
+# min: minimum value for the parameter
+# max: maximum value for the parameter
+# grid_points: number of grid points to use (minimum 2)
+[[model.parameters]]
+name="Length"
+cell="B1"
+min=50
+max=200
+grid_points=3
+[[model.parameters]]
+name="Width"
+cell="B2"
+min=30
+max=60
+grid_points=4
