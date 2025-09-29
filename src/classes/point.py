@@ -1,4 +1,4 @@
-from util.variable import Variable
+from classes.variable import Variable
 
 
 class Point:

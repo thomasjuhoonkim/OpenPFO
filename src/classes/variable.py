@@ -1,5 +1,5 @@
 class Variable:
-    def __init__(self, name, cell, value):
+    def __init__(self, name: str, cell: str, value: float):
         self._name = name
         self._cell = cell
         self._value = value

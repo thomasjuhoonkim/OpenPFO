@@ -9,10 +9,10 @@ import logging
 from logger.logger import LOGGER_NAME
 
 # utils
-from util.job import Job
-from util.parameter import Parameter
-from util.point import Point
-from util.variable import Variable
+from classes.job import Job
+from classes.parameter import Parameter
+from classes.point import Point
+from classes.variable import Variable
 
 # ==============================================================================
 
@@ -22,11 +22,11 @@ logger = logging.getLogger(LOGGER_NAME)
 
 class Search:
     _matrix: list[list[float]] = []
-    _combinations: list[list[float]] = []
+    _grid_points: list[list[float]] = []
     _jobs: list[Job] = []
+    _count = 0
 
     def __init__(self, search_id: str, parameters: list[Parameter]):
-        self._count = 0
         self._search_id = search_id
         self._parameters = parameters
 
@@ -38,7 +38,21 @@ class Search:
     def _add_job(self, job: Job):
         self._jobs.append(job)
 
-    def _discretize(self):
+    def _create_single_job(self, point: Point):
+        # 1. generate job id
+        # 2. generate geometry for grid point
+        # 3. create OpenFOAM case for grid point
+        # 4. encode job with case and geometry
+        # 5. return job
+
+        job_id = self._generate_job_id()
+        job = Job(job_id=job_id, point=point)
+        job.generate_geometry()
+        job.create_case()
+
+        return job
+
+    def discretize_parameters(self):
         for parameter in self._parameters:
             name = parameter.get_name()
             diff = abs(parameter.get_max() - parameter.get_min())
@@ -56,35 +70,18 @@ class Search:
             self._matrix.append(steps)
         logger.info(f"Successfully discretized domain for {self._search_id}")
 
-    def _create_combinations(self):
-        self._combinations = list(itertools.product(*self._matrix))
+    def create_grid_points(self):
+        self._grid_points = list(itertools.product(*self._matrix))
         logger.info(
             f"Successfully created grid point combinations for {self._search_id}"
         )
 
-    def _create_single_job(self, point: Point):
-        # 1. generate job id
-        # 2. generate geometry for grid point
-        # 3. create OpenFOAM case for grid point
-        # 4. encode job with case and geometry
-        # 5. return job
-
-        job_id = self._generate_job_id()
-        job = Job(job_id=job_id, point=point)
-        job.generate_geometry()
-
-        return job
-
     def create_all_jobs(self):
-        # 1. discretize domain into grid
-        # 2. create grid points from parameter combinations
-        # 3. create job for each grid point
-        self._discretize()
-        self._create_combinations()
+        # create a job for each grid point
 
-        for combination in self._combinations:
+        for grid_point in self._grid_points:
             variables = []
-            for i, value in enumerate(combination):
+            for i, value in enumerate(grid_point):
                 name = self._parameters[i].get_name()
                 cell = self._parameters[i].get_cell()
                 variable = Variable(name=name, cell=cell, value=value)
@@ -94,11 +91,6 @@ class Search:
             job = self._create_single_job(point)
 
             self._add_job(job)
-
-        # for i in range(len(combinations)):
-        # filepath = f"output/geometries/{i}.stl"
-        # mesh = pv.read(filepath)
-        # mesh.plot()
 
     def get_search_id(self):
         return self._search_id
