@@ -6,6 +6,9 @@ freecad_path="/Applications/FreeCAD.app/Contents/Resources/lib"
 # windows
 # freecad_path="C:\\Program Files\\FreeCAD\\bin"
 
+# scale factor (1 mm -> 0.001 m)
+scale_factor = 0.001
+
 # DESIGN SPACE PARAMETERS
 # name: user-friendly name for the parameter
 # cell: cell corresponding to the cell in the FREECAD spreadsheet
