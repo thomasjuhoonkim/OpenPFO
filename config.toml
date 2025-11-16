@@ -3,6 +3,8 @@ hpc=false
 processors=8
 
 [model]
+# type: "freecad" | "openvsp"
+type="freecad"
 # linux
 # freecad_path="/usr/lib/freecad/lib"
 # macos

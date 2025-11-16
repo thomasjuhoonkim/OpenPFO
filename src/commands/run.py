@@ -2,11 +2,6 @@
 from commands.check_model import check_model
 from commands.check_output import check_output
 
-# constants
-from constants.cli import MODELER_ARGUMENT, OPTIMIZER_ARGUMENT
-from constants.optimizer import EOptimizer
-from constants.modeler import EModeler
-
 # classes
 from classes.problem import OpenPFOProblem
 
@@ -28,25 +23,22 @@ from pymoo.algorithms.moo.nsga2 import NSGA2
 logger = get_logger()
 
 
-def run(
-    optimizer: EOptimizer = OPTIMIZER_ARGUMENT,
-    modeler: EModeler = MODELER_ARGUMENT,
-):
+def run():
     # pre-run checks
     check_output()
-    check_model(modeler=modeler)
+    check_model()
 
     # configure initial parameters
     parameters = get_initial_parameters()
     objectives = get_objectives()
 
     # runtime dependencies
-    runtime_optimizer = get_optimizer(optimizer=optimizer)
-    runtime_modeler = get_modeler(modeler=modeler)
+    optimizer = get_optimizer()
+    modeler = get_modeler()
 
     # problem
     problem = OpenPFOProblem(
-        parameters=parameters, objectives=objectives, modeler=runtime_modeler
+        parameters=parameters, objectives=objectives, modeler=modeler
     )
     algorithm: NSGA2 = create_algorithm(problem)
 

@@ -46,7 +46,8 @@ Below are the high-level overview of the commands available in OpenPFO, use `[co
 - `pfo checkConfig`: Check the validity of the configuration file in `config.toml`.
 - `pfo checkModel`: Check the interfacing between the model file and the model API.
 - `pfo checkCase`: Check the validity of the optimization case including the optimization algorithm and the objective function.
-- `pfo checkMeshes`: Check the validity of the mesh template by generating random points in the design space and running `checkMesh`.
+- `pfo checkMeshes`: Check the validity of the mesh template by generating random points in the design space.
+- `pfo checkRun`: Check the validity of the full run including `modify_case`, `extract_assets`, and `extract_objectives` by generating random points in the design space.
 
 - `pfo run`: Run the optimization case.
 

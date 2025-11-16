@@ -1,7 +1,7 @@
-def extract_assets(case_directory: str, output_assets_directory: str):
+def extract_assets(foam_filepath: str, output_assets_directory: str):
     """
-    The extract assets function is used to add side effects to your optimization
-    workflow such as image extractation and data analysis. The side effects
+    The extract_assets function is used to add side effects to your optimization
+    workflow such as image extractation and data analysis. The extract_assets
     function runs AFTER the job and the objective extraction is ran for each
     grid point in the design space.
 

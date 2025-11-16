@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from enum import Enum
+from enum import StrEnum
 
 # classes
 from classes.point import Point
@@ -15,6 +15,6 @@ class AbstractModeler(ABC):
         pass
 
 
-class EModeler(Enum):
+class EModeler(StrEnum):
     FREECAD = "freecad"
     OPENVSP = "openvsp"
