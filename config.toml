@@ -1,3 +1,7 @@
+[compute]
+hpc=false
+processors=8
+
 [model]
 # linux
 # freecad_path="/usr/lib/freecad/lib"
@@ -14,16 +18,20 @@ scale_factor = 0.001
 # cell: cell corresponding to the cell in the FREECAD spreadsheet
 # min: minimum value for the parameter
 # max: maximum value for the parameter
-# grid_points: number of grid points to use (minimum 2)
 [[model.parameters]]
 name="Length"
 cell="B1"
-min=50
-max=200
-grid_points=3
+min=750
+max=1000
 [[model.parameters]]
 name="Width"
 cell="B2"
-min=30
-max=60
-grid_points=4
+min=300
+max=600
+
+[optimizer]
+population=20
+
+[[optimizer.objective]]
+name="Cd"
+type="minimize"

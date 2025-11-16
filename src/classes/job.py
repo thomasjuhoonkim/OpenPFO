@@ -1,97 +1,135 @@
 # system
 import os
-import sys
-import tomllib
+import shutil
+import subprocess
 
 # visualization
 import pyvista as pv
 
-# logging
-import logging
-from logger.logger import LOGGER_NAME
+# constants
+from constants.modeler import AbstractModeler
+from constants.path import (
+    INPUT_CASE_TEMPLATE,
+    OUTPUT_ASSETS_DIRECTORY,
+    OUTPUT_CASES_DIRECTORY,
+)
 
-# utils
+# classes
 from classes.point import Point
 
-# OpenFOAM
+# PyFOAM
 from PyFoam.RunDictionary.SolutionDirectory import SolutionDirectory
+from PyFoam.Execution.BasicRunner import BasicRunner
+
+# input
+from create_commands import create_commands
+from modify_case import modify_case
+from extract_assets import extract_assets
+from extract_objectives import extract_objectives
+
+# util
+from util.get_cleanup_commands import get_cleanup_commands
+from util.get_logger import get_logger
 
 # ==============================================================================
 
-# config
-with open("config.toml", "rb") as f:
-    config = tomllib.load(f)
-
 # logging
-logger = logging.getLogger(LOGGER_NAME)
-
-# FreeCAD module
-FREECAD_PATH = config["model"]["freecad_path"]
-sys.path.append(FREECAD_PATH)
-import FreeCAD  # type: ignore  # noqa: E402
-import Mesh  # type: ignore  # noqa: E402
+logger = get_logger()
 
 
 class Job:
-    _geometry_filepath = ""
-    _case_filepath = ""
-
-    def __init__(self, job_id: str, point: Point):
+    def __init__(self, job_id: str, point: Point, modeler: AbstractModeler):
         self._job_id = job_id
         self._point = point
+        self._modeler = modeler
+
+        self._output_geometry_filepath = ""
+        self._output_case_directory = ""
+        self._output_assets_directory = ""
+        self._objective_values = None
 
     def get_job_id(self):
         return self._job_id
 
-    def generate_geometry(self):
-        document = FreeCAD.open("input/model.FCStd")
+    def get_objective_values(self):
+        return self._objective_values
 
-        part = document.getObject("Body")
-
-        spreadsheet = document.getObject("Spreadsheet")
-        for variable in self._point.get_variables():
-            cell = variable.get_cell()
-            value = str(variable.get_value())
-            spreadsheet.set(cell, value)
-
-        # scaling - required for mm to m conversion (FreeCAD: STL in mm, OpenFOAM, STL in m)
-        SCALE_FACTOR = config["model"]["scale_factor"]
-        original_shape = part.Shape
-        scaled_shape = original_shape.copy().scaled(
-            SCALE_FACTOR, original_shape.CenterOfGravity
+    def prepare_geometry(self):
+        self._output_geometry_filepath = self._modeler.generate_geometry(
+            job_id=self._job_id, point=self._point
         )
-        scaled_object = document.addObject("Part::Feature", self._job_id)
-        scaled_object.Shape = scaled_shape
-
-        document.recompute()
-
-        GEOMETRIES_DIRECTORY = "output/geometries"
-        os.makedirs(GEOMETRIES_DIRECTORY, exist_ok=True)
-        OUTPUT_GEOMETRY_PATH = f"{GEOMETRIES_DIRECTORY}/{self._job_id}.stl"
-        Mesh.export([scaled_object], OUTPUT_GEOMETRY_PATH)
-
-        # probably don't need STEP files if we're going with snappHexMesh
-        # part.Shape.exportStep(f"geometries/{i}.step")
-
-        logger.info(
-            f"Generated {self._job_id}.stl, volume: {scaled_shape.Volume}, area: {scaled_shape.Area}, design space: {self._point.get_point_representation()}"
-        )
-
-        self._geometry_filepath = OUTPUT_GEOMETRY_PATH
 
     def visualize_geometry(self):
-        mesh = pv.read(self._geometry_filepath)
+        mesh = pv.read(self._output_geometry_filepath)
         mesh.plot()
 
-    def create_case(self):
-        CASES_DIRECTORY = "output/cases"
-        os.makedirs(CASES_DIRECTORY, exist_ok=True)
+    def prepare_case(self):
+        # copy case
+        output_case_directory = f"{OUTPUT_CASES_DIRECTORY}/{self._job_id}"
+        base_case = SolutionDirectory(INPUT_CASE_TEMPLATE)
+        copy_case = base_case.cloneCase(output_case_directory)
+        logger.info(f"Generated case {copy_case.name} in ./{output_case_directory}")
 
-        TEMPLATE_CASE_PATH = "input/template"
-        OUTPUT_CASE_PATH = f"{CASES_DIRECTORY}/{self._job_id}"
-        base_case = SolutionDirectory(TEMPLATE_CASE_PATH)
-        copy_case = base_case.cloneCase(OUTPUT_CASE_PATH)
+        # copy geometry into case trisurface directory
+        trisurface_directory = f"{output_case_directory}/constant/triSurface"
+        shutil.copy(self._output_geometry_filepath, trisurface_directory)
+        os.rename(
+            src=f"{trisurface_directory}/{self._job_id}.ast",
+            dst=f"{trisurface_directory}/jobGeometry.stl",
+        )
+        logger.info(
+            f"Copied geometry {self._output_geometry_filepath} into triSurface directory with name jobGeometry.stl"
+        )
 
-        logger.info(f"Generated case {copy_case.name} in {OUTPUT_CASE_PATH}")
+        self._output_case_directory = copy_case.name
 
-        self._case_filepath = OUTPUT_CASE_PATH
+    def prepare_assets(self):
+        # create job assets directory
+        output_assets_directory = f"{OUTPUT_ASSETS_DIRECTORY}/{self._job_id}"
+        os.mkdir(output_assets_directory)
+        self._output_assets_directory = output_assets_directory
+
+    def dispatch(self):
+        logger.info(
+            f"======================= JOB {self._job_id} START ======================="
+        )
+
+        logger.info("Running modify_case to customize OpenFOAM case")
+        modify_case(case_directory=self._output_case_directory, modeler=self._modeler)
+
+        logger.info("Running OpenFOAM commands")
+        user_commands = create_commands(case_directory=self._output_case_directory)
+        for command in user_commands:
+            runner = BasicRunner(argv=command.split(" "))
+            runner.start()
+            if not runner.runOK():
+                logger.error(f"{command} failed")
+
+        logger.info("Running extract_objectives for objective values extraction")
+        self._objective_values = extract_objectives(
+            case_directory=self._output_case_directory
+        )
+
+        logger.info("Running extract_assets for asset extraction")
+        extract_assets(
+            case_directory=self._output_case_directory,
+            output_assets_directory=self._output_assets_directory,
+        )
+
+        logger.info("Starting cleanup")
+        cleanup_commands = get_cleanup_commands(
+            case_directory=self._output_case_directory
+        )
+        for command in cleanup_commands:
+            try:
+                result = subprocess.run(
+                    command.split(" "), capture_output=True, text=True, check=True
+                )
+                logger.info(f"Output for command {command}: {result.stdout}")
+            except subprocess.CalledProcessError as error:
+                logger.error(f"{command} failed")
+                logger.error(f"\n{error.stderr}")
+
+        logger.info(
+            f"======================= JOB {self._job_id} END ========================="
+        )

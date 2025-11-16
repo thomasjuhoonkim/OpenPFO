@@ -1,0 +1,12 @@
+{
+  "files.associations": {
+    "*html": "html",
+    "*Dict": "OpenFOAM",
+    "*Properties": "OpenFOAM",
+    "fvSchemes": "OpenFOAM",
+    "fvSolution": "OpenFOAM",
+    "**/constant/g": "OpenFOAM",
+    "**/0/*": "OpenFOAM",
+    "forcecoeffs": "OpenFOAM"
+  }
+}

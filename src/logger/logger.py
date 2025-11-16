@@ -3,8 +3,14 @@ import logging
 import coloredlogs
 
 LOGGER_NAME = "OpenPFO_Logger"
+FILENAME = "OpenPFO.log"
+FILEMODE = "w"
+LEVEL = logging.DEBUG
+# LEVEL = logging.INFO
+FORMAT = "%(asctime)s %(levelname)s %(name)s %(message)s"
 
-# logging
-coloredlogs.install(level=logging.DEBUG)
-# coloredlogs.install(level=logging.INFO)
-logger = logging.getLogger(LOGGER_NAME)
+# file logs
+logging.basicConfig(filename=FILENAME, filemode=FILEMODE, level=LEVEL, format=FORMAT)
+
+# color logs
+coloredlogs.install(level=logging.DEBUG, fmt=FORMAT)
