@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "OpenPFO"
+version = "0.1.0"
+description = "Opensource Parametric Flow Optimizer"
+authors = [
+  { name = "Thomas Kim", email = "thomas.kim@uwaterloo.ca" },
+  { name = "Emma-Lee Keeping", email = "ekeeping@uwaterloo.ca" },
+  { name = "Kate Armstrong", email = "k24armstrong@uwaterloo.ca" }
+]
+readme = "README.md"
+requires-python = "==3.11.*"
+dynamic = ["dependencies"]
+
+[project.scripts]
+pfo = "cli:app"
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["requirements.txt"] }
+
+[tool.setuptools.packages.find]
+where = ["src"]

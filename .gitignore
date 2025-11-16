@@ -1,5 +1,7 @@
 # OpenPFO
+input/
 output/
+PyFoam*
 
 # MacOS
 .DS_Store

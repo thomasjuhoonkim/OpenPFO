@@ -1,102 +1,85 @@
-# system
-import sys
+# numpy
+import numpy as np
 
-# geometry
-import itertools
+# queue
+import collections
 
-# logging
-import logging
-from logger.logger import LOGGER_NAME
+# typing
+from typing import Deque
 
-# utils
+# constants
+from constants.modeler import AbstractModeler
+
+# classes
 from classes.job import Job
-from classes.parameter import Parameter
 from classes.point import Point
-from classes.variable import Variable
+
+# util
+from util.get_logger import get_logger
 
 # ==============================================================================
 
-# logging
-logger = logging.getLogger(LOGGER_NAME)
+logger = get_logger()
 
 
 class Search:
-    _matrix: list[list[float]] = []
-    _grid_points: list[list[float]] = []
-    _jobs: list[Job] = []
-    _count = 0
-
-    def __init__(self, search_id: str, parameters: list[Parameter]):
+    def __init__(
+        self,
+        search_id: str,
+        grid_points: list[Point],
+        modeler: AbstractModeler,
+    ):
         self._search_id = search_id
-        self._parameters = parameters
+        self._grid_points = grid_points
+        self._modeler = modeler
+
+        self._jobs: list[Job] = []
+        self._job_queue: Deque[Job] = collections.deque()
+        self._job_count = 0
+        self._all_objectives_values: list[list[np.float64]] = []
 
     def _generate_job_id(self):
-        id = self._count
-        self._count += 1
+        id = self._job_count
+        self._job_count += 1
         return f"{self._search_id}-job-{id}"
 
-    def _add_job(self, job: Job):
-        self._jobs.append(job)
-
     def _create_single_job(self, point: Point):
-        # 1. generate job id
-        # 2. generate geometry for grid point
-        # 3. create OpenFOAM case for grid point
-        # 4. encode job with case and geometry
-        # 5. return job
+        """
+        Generate job for grid point
+        """
 
         job_id = self._generate_job_id()
-        job = Job(job_id=job_id, point=point)
-        job.generate_geometry()
-        job.create_case()
+        job = Job(job_id=job_id, point=point, modeler=self._modeler)
+        job.prepare_geometry()
+        job.prepare_case()
+        job.prepare_assets()
 
         return job
 
-    def discretize_parameters(self):
-        for parameter in self._parameters:
-            name = parameter.get_name()
-            diff = abs(parameter.get_max() - parameter.get_min())
-            grid_separations = parameter.get_grid_points() - 1
-
-            # this should arguably be moved into a OpenPFO setup checking script
-            if grid_separations < 1:
-                logger.error(f"Parameter '{name}' must have more than 2 grid points")
-                sys.exit(1)
-
-            delta = diff / grid_separations
-            steps = [
-                parameter.get_min() + delta * n for n in range(grid_separations + 1)
-            ]
-            self._matrix.append(steps)
-        logger.info(f"Successfully discretized domain for {self._search_id}")
-
-    def create_grid_points(self):
-        self._grid_points = list(itertools.product(*self._matrix))
-        logger.info(
-            f"Successfully created grid point combinations for {self._search_id}"
-        )
-
     def create_all_jobs(self):
-        # create a job for each grid point
+        """
+        Generate jobs for all grid points
+        """
 
         for grid_point in self._grid_points:
-            variables = []
-            for i, value in enumerate(grid_point):
-                name = self._parameters[i].get_name()
-                cell = self._parameters[i].get_cell()
-                variable = Variable(name=name, cell=cell, value=value)
-                variables.append(variable)
+            job = self._create_single_job(point=grid_point)
 
-            point = Point(variables)
-            job = self._create_single_job(point)
-
-            self._add_job(job)
+            self._jobs.append(job)
+            self._job_queue.append(job)
 
     def get_search_id(self):
         return self._search_id
 
-    def get_parameters(self):
-        return self._parameters
-
     def get_jobs(self):
         return self._jobs
+
+    def get_all_objective_values(self):
+        return self._all_objectives_values
+
+    def run(self):
+        while len(self._job_queue) > 0:
+            job = self._job_queue.popleft()
+            job.dispatch()
+
+            objective_values = job.get_objective_values()
+            self._all_objectives_values.append(objective_values)
