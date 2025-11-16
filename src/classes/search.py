@@ -17,6 +17,9 @@ from classes.point import Point
 # util
 from util.get_logger import get_logger
 
+# inputs
+from create_run import create_run
+
 # ==============================================================================
 
 logger = get_logger()
@@ -79,7 +82,7 @@ class Search:
     def run(self):
         while len(self._job_queue) > 0:
             job = self._job_queue.popleft()
-            job.dispatch()
+            job.dispatch(create_commands=create_run)
 
             objective_values = job.get_objective_values()
             self._all_objectives_values.append(objective_values)

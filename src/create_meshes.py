@@ -6,9 +6,9 @@ config = get_config()
 PROCESSORS = config["compute"]["processors"]
 
 
-def create_commands(case_directory):
+def create_meshes(case_directory: str):
     """
-    Returns list of OpenFOAM commands to run.
+    Returns list of OpenFOAM commands to run for `pfo checkMeshes`
 
     All commands must be separated with a single space. `case_directory` is provided.
 
@@ -25,9 +25,6 @@ def create_commands(case_directory):
         f"mpirun -np {PROCESSORS} redistributePar -parallel -decompose -overwrite -case {case_directory}",
         f"mpirun -np {PROCESSORS} snappyHexMesh -parallel -overwrite -case {case_directory}",
         f"mpirun -np {PROCESSORS} redistributePar -parallel -reconstruct -overwrite -constant -case {case_directory}",
-        f"mpirun -np {PROCESSORS} redistributePar -parallel -decompose -overwrite -case {case_directory}",
-        f"mpirun -np {PROCESSORS} simpleFoam -parallel -case {case_directory}",
-        f"mpirun -np {PROCESSORS} redistributePar -parallel -reconstruct -latestTime -case {case_directory}",
     ]
 
     """ ======================= YOUR CODE ABOVE HERE ======================= """

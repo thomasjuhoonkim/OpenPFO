@@ -1,16 +1,22 @@
+# typer
 import typer
 
+# commands - reset
 from commands.reset_input_case_template import reset_input_case_template
 from commands.reset_output import reset_output
 
+# commands - check
 from commands.check_output import check_output
 from commands.check_meshes import check_meshes
 from commands.check_model import check_model
 from commands.check_setup import check_setup
+from commands.check_run import check_run
 
-from commands.test import test
-
+# commands - run
 from commands.run import run
+
+# commands test
+from commands.test import test
 
 app = typer.Typer(name="pfo", help="Opensource Parametric Flow Optimizer")
 
@@ -29,6 +35,7 @@ app.command(name="checkOutput")(check_output)
 app.command(name="checkSetup")(check_setup)
 app.command(name="checkMeshes")(check_meshes)
 app.command(name="checkModel")(check_model)
+app.command(name="checkRun")(check_run)
 
 # run
 app.command(name="run")(run)

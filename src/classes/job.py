@@ -3,6 +3,9 @@ import os
 import shutil
 import subprocess
 
+# typing
+from typing import Callable
+
 # visualization
 import pyvista as pv
 
@@ -22,7 +25,6 @@ from PyFoam.RunDictionary.SolutionDirectory import SolutionDirectory
 from PyFoam.Execution.BasicRunner import BasicRunner
 
 # input
-from create_commands import create_commands
 from modify_case import modify_case
 from extract_assets import extract_assets
 from extract_objectives import extract_objectives
@@ -89,7 +91,13 @@ class Job:
         os.mkdir(output_assets_directory)
         self._output_assets_directory = output_assets_directory
 
-    def dispatch(self):
+    def dispatch(
+        self,
+        create_commands: Callable[[str], list[str]],
+        should_cleanup=True,
+        should_extract_assets=True,
+        should_extract_objectives=True,
+    ):
         logger.info(
             f"======================= JOB {self._job_id} START ======================="
         )
@@ -105,30 +113,33 @@ class Job:
             if not runner.runOK():
                 logger.error(f"{command} failed")
 
-        logger.info("Running extract_objectives for objective values extraction")
-        self._objective_values = extract_objectives(
-            case_directory=self._output_case_directory
-        )
+        if should_extract_objectives:
+            logger.info("Running extract_objectives for objective values extraction")
+            self._objective_values = extract_objectives(
+                case_directory=self._output_case_directory
+            )
 
-        logger.info("Running extract_assets for asset extraction")
-        extract_assets(
-            case_directory=self._output_case_directory,
-            output_assets_directory=self._output_assets_directory,
-        )
+        if should_extract_assets:
+            logger.info("Running extract_assets for asset extraction")
+            extract_assets(
+                foam_filepath=f"{self._output_case_directory}/{self._job_id}.foam",
+                output_assets_directory=self._output_assets_directory,
+            )
 
-        logger.info("Starting cleanup")
-        cleanup_commands = get_cleanup_commands(
-            case_directory=self._output_case_directory
-        )
-        for command in cleanup_commands:
-            try:
-                result = subprocess.run(
-                    command.split(" "), capture_output=True, text=True, check=True
-                )
-                logger.info(f"Output for command {command}: {result.stdout}")
-            except subprocess.CalledProcessError as error:
-                logger.error(f"{command} failed")
-                logger.error(f"\n{error.stderr}")
+        if should_cleanup:
+            logger.info("Starting cleanup")
+            cleanup_commands = get_cleanup_commands(
+                case_directory=self._output_case_directory
+            )
+            for command in cleanup_commands:
+                try:
+                    result = subprocess.run(
+                        command.split(" "), capture_output=True, text=True, check=True
+                    )
+                    logger.info(f"Output for command {command}: {result.stdout}")
+                except subprocess.CalledProcessError as error:
+                    logger.error(f"{command} failed")
+                    logger.error(f"\n{error.stderr}")
 
         logger.info(
             f"======================= JOB {self._job_id} END ========================="
