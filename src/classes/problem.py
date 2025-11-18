@@ -1,7 +1,3 @@
-# system
-import logging
-import tomllib
-
 # numpy
 import numpy as np
 
@@ -15,20 +11,13 @@ from classes.variable import Variable
 from classes.objective import Objective
 from classes.parameter import Parameter
 
-# constants
-from constants.modeler import AbstractModeler
-
 # util
 from util.get_initial_parameters import get_initial_parameters
-from util.get_config import get_config
 from util.get_logger import get_logger
 
 # ==============================================================================
 
-config = get_config()
 logger = get_logger()
-
-CONFIG_PARAMETERS = config["model"]["parameters"]
 
 
 class OpenPFOProblem(Problem):
@@ -36,9 +25,7 @@ class OpenPFOProblem(Problem):
         self,
         parameters: list[Parameter],
         objectives: list[Objective],
-        modeler: AbstractModeler,
     ):
-        self._modeler = modeler
         self._search_count = 0
 
         lower_bounds = np.array(object=[], dtype=np.float64)
@@ -69,7 +56,7 @@ class OpenPFOProblem(Problem):
             for i, coordinate in enumerate(coordinates):
                 variable = Variable(
                     name=parameters[i].get_name(),
-                    cell=parameters[i].get_cell(),
+                    id=parameters[i].get_id(),
                     value=coordinate,
                 )
                 variables.append(variable)
@@ -84,10 +71,8 @@ class OpenPFOProblem(Problem):
         grid_points = self._get_grid_points(x)
         search_id = self._generate_search_id()
 
-        search = Search(
-            search_id=search_id, grid_points=grid_points, modeler=self._modeler
-        )
-        search.create_all_jobs()
+        search = Search(search_id=search_id, grid_points=grid_points)
+        search.create_jobs()
         search.run()
 
         objective_values = search.get_all_objective_values()

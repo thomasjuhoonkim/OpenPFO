@@ -34,10 +34,14 @@ Below are the high-level overview of the commands available in OpenPFO, use `[co
 - `pfo version`: The current version of OpenPFO
 
 - `pfo resetConfig`: Resets the configuration file in `config.toml` back to original settings. (WARNING: Your progress will be lost)
+- `pfo createGeometry`: Resets the create_geometry function in `src/create_geometry.py` back to original settings. (WARNING: Your progress will be lost)
 - `pfo resetModifyCase`: Resets the modify_case function in `src/modify_case.py` back to original settings. (WARNING: Your progress will be lost)
+- `pfo resetCreateMesh`: Resets the create_mesh function in `src/create_mesh.py` back to original settings. (WARNING: Your progress will be lost)
+- `pfo resetExecuteSolver`: Resets the execute_solver function in `src/execute_solver.py` back to original settings. (WARNING: Your progress will be lost)
 - `pfo resetExtractObjectives`: Resets the extract_objectives function in `src/extract_objectives.py` back to original settings. (WARNING: Your progress will be lost)
-- `pfo resetExtractAssets`: Resets the extract_assets function in `input/side_effects.py` back to original settings. (WARNING: Your progress will be lost)
-- `pfo resetInputCaseTemplate`: Resets the case template directory in `input/case_template` back to original settings. (WARNING: Your progress will be lost)
+- `pfo resetExtractAssets`: Resets the extract_assets function in `src/extract_assets.py` back to original settings. (WARNING: Your progress will be lost)
+- `pfo resetExecuteCleanup`: Resets the execute_cleanup function in `src/execute_cleanup.py` back to original settings. (WARNING: Your progress will be lost)
+- `pfo resetCaseTemplate`: Resets the case template directory in `input/case_template` back to original settings. (WARNING: Your progress will be lost)
 - `pfo resetInput`: Resets the input directory in `input/` back to original settings. (WARNING: Your progress will be lost)
 - `pfo resetOutput`: Resets the output directory in `output/` back to original settings. (WARNING: Your progress will be lost)
 - `pfo resetAll`: Resets the entire optimization case including the configuration, case template, objective function, and output directory. (WARNING: Your progress will be lost)

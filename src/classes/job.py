@@ -1,16 +1,19 @@
 # system
 import os
-import shutil
-import subprocess
-
-# typing
-from typing import Callable
 
 # visualization
 import pyvista as pv
 
 # constants
-from constants.modeler import AbstractModeler
+from classes.functions import (
+    CreateGeometryParameters,
+    CreateMeshParameters,
+    ExecuteCleanupParameters,
+    ExecuteSolverParameters,
+    ExtractAssetsParameters,
+    ExtractObjectivesParameters,
+    ModifyCaseParameters,
+)
 from constants.path import (
     INPUT_CASE_TEMPLATE,
     OUTPUT_ASSETS_DIRECTORY,
@@ -22,15 +25,17 @@ from classes.point import Point
 
 # PyFOAM
 from PyFoam.RunDictionary.SolutionDirectory import SolutionDirectory
-from PyFoam.Execution.BasicRunner import BasicRunner
 
 # input
+from create_geometry import create_geometry
+from create_mesh import create_mesh
+from execute_cleanup import execute_cleanup
+from execute_solver import execute_solver
 from modify_case import modify_case
 from extract_assets import extract_assets
 from extract_objectives import extract_objectives
 
 # util
-from util.get_cleanup_commands import get_cleanup_commands
 from util.get_logger import get_logger
 
 # ==============================================================================
@@ -40,106 +45,128 @@ logger = get_logger()
 
 
 class Job:
-    def __init__(self, job_id: str, point: Point, modeler: AbstractModeler):
+    def __init__(self, job_id: str, point: Point):
         self._job_id = job_id
         self._point = point
-        self._modeler = modeler
 
         self._output_geometry_filepath = ""
         self._output_case_directory = ""
         self._output_assets_directory = ""
         self._objective_values = None
 
-    def get_job_id(self):
-        return self._job_id
-
     def get_objective_values(self):
         return self._objective_values
 
-    def prepare_geometry(self):
-        self._output_geometry_filepath = self._modeler.generate_geometry(
-            job_id=self._job_id, point=self._point
-        )
-
     def visualize_geometry(self):
         mesh = pv.read(self._output_geometry_filepath)
-        mesh.plot()
+        mesh.plot(window_size=[1920, 1080])
 
-    def prepare_case(self):
-        # copy case
-        output_case_directory = f"{OUTPUT_CASES_DIRECTORY}/{self._job_id}"
-        base_case = SolutionDirectory(INPUT_CASE_TEMPLATE)
-        copy_case = base_case.cloneCase(output_case_directory)
-        logger.info(f"Generated case {copy_case.name} in ./{output_case_directory}")
+    def prepare_job(
+        self, should_create_assets_directory=True, should_create_case_directory=True
+    ):
+        if should_create_assets_directory:
+            # create job assets directory
+            output_assets_directory = f"{OUTPUT_ASSETS_DIRECTORY}/{self._job_id}"
+            os.mkdir(output_assets_directory)
+            self._output_assets_directory = output_assets_directory
+            logger.info(f"Created assets directory {output_assets_directory}")
 
-        # copy geometry into case trisurface directory
-        trisurface_directory = f"{output_case_directory}/constant/triSurface"
-        shutil.copy(self._output_geometry_filepath, trisurface_directory)
-        os.rename(
-            src=f"{trisurface_directory}/{self._job_id}.ast",
-            dst=f"{trisurface_directory}/jobGeometry.stl",
-        )
-        logger.info(
-            f"Copied geometry {self._output_geometry_filepath} into triSurface directory with name jobGeometry.stl"
-        )
-
-        self._output_case_directory = copy_case.name
-
-    def prepare_assets(self):
-        # create job assets directory
-        output_assets_directory = f"{OUTPUT_ASSETS_DIRECTORY}/{self._job_id}"
-        os.mkdir(output_assets_directory)
-        self._output_assets_directory = output_assets_directory
+        if should_create_case_directory:
+            # copy case
+            output_case_directory = f"{OUTPUT_CASES_DIRECTORY}/{self._job_id}"
+            base_case = SolutionDirectory(INPUT_CASE_TEMPLATE)
+            copy_case = base_case.cloneCase(output_case_directory)
+            self._output_case_directory = copy_case.name
+            logger.info(f"Generated case directory {copy_case.name}")
 
     def dispatch(
         self,
-        create_commands: Callable[[str], list[str]],
-        should_cleanup=True,
-        should_extract_assets=True,
+        should_create_geometry=True,
+        should_modify_case=True,
+        should_create_mesh=True,
+        should_execute_solver=True,
         should_extract_objectives=True,
+        should_extract_assets=True,
+        should_execute_cleanup=True,
     ):
         logger.info(
             f"======================= JOB {self._job_id} START ======================="
         )
 
-        logger.info("Running modify_case to customize OpenFOAM case")
-        modify_case(case_directory=self._output_case_directory, modeler=self._modeler)
+        if should_create_geometry:
+            logger.info(
+                f"Running create_geometry to generate a geometry for grid point {self._point.get_point_representation()}"
+            )
+            create_geometry_parameters = CreateGeometryParameters(
+                grid_point=self._point,
+                output_assets_directory=self._output_assets_directory,
+                job_id=self._job_id,
+                logger=logger,
+            )
+            create_geometry_return = create_geometry(
+                create_geometry_parameters=create_geometry_parameters
+            )
+            self._output_geometry_filepath = (
+                create_geometry_return.output_geometry_filepath
+            )
 
-        logger.info("Running OpenFOAM commands")
-        user_commands = create_commands(case_directory=self._output_case_directory)
-        for command in user_commands:
-            runner = BasicRunner(argv=command.split(" "))
-            runner.start()
-            if not runner.runOK():
-                logger.error(f"{command} failed")
+        if should_modify_case:
+            logger.info("Running modify_case to customize OpenFOAM case")
+            modify_case_parameters = ModifyCaseParameters(
+                output_case_directory=self._output_case_directory,
+                job_id=self._job_id,
+                output_geometry_filepath=self._output_geometry_filepath,
+                logger=logger,
+            )
+            modify_case(modify_case_parameters=modify_case_parameters)
+
+        if should_create_mesh:
+            logger.info("Running create_mesh to generate a mesh for geometry")
+            create_mesh_parameters = CreateMeshParameters(
+                output_case_directory=self._output_case_directory,
+                job_id=self._job_id,
+                output_geometry_filepath=self._output_geometry_filepath,
+                logger=logger,
+            )
+            create_mesh(create_mesh_parameters=create_mesh_parameters)
+
+        if should_execute_solver:
+            logger.info("Running execute_solver to obtain simulation results")
+            execute_solver_parameters = ExecuteSolverParameters(
+                output_case_directory=self._output_case_directory, job_id=self._job_id
+            )
+            execute_solver(execute_solver_parameters)
 
         if should_extract_objectives:
             logger.info("Running extract_objectives for objective values extraction")
-            self._objective_values = extract_objectives(
-                case_directory=self._output_case_directory
+            extract_objectives_parameters = ExtractObjectivesParameters(
+                output_case_directory=self._output_case_directory, job_id=self._job_id
             )
+            extract_objectives_return = extract_objectives(
+                extract_objectives_parameters=extract_objectives_parameters
+            )
+            self._objective_values = extract_objectives_return.objectives
 
         if should_extract_assets:
             logger.info("Running extract_assets for asset extraction")
-            extract_assets(
-                foam_filepath=f"{self._output_case_directory}/{self._job_id}.foam",
+            extract_assets_parameters = ExtractAssetsParameters(
+                output_case_directory=self._output_case_directory,
+                output_case_foam_filepath=f"{self._output_case_directory}/{self._job_id}.foam",
                 output_assets_directory=self._output_assets_directory,
+                output_geometry_filepath=self._output_geometry_filepath,
+                job_id=self._job_id,
+                logger=logger,
             )
+            extract_assets(extract_assets_parameters=extract_assets_parameters)
 
-        if should_cleanup:
-            logger.info("Starting cleanup")
-            cleanup_commands = get_cleanup_commands(
-                case_directory=self._output_case_directory
+        if should_execute_cleanup:
+            logger.info("Running execute_cleanup for job cleanup")
+            execute_cleanup_parameters = ExecuteCleanupParameters(
+                output_case_directory=self._output_case_directory,
+                job_id=self._job_id,
+                logger=logger,
             )
-            for command in cleanup_commands:
-                try:
-                    result = subprocess.run(
-                        command.split(" "), capture_output=True, text=True, check=True
-                    )
-                    logger.info(f"Output for command {command}: {result.stdout}")
-                except subprocess.CalledProcessError as error:
-                    logger.error(f"{command} failed")
-                    logger.error(f"\n{error.stderr}")
+            execute_cleanup(execute_cleanup_parameters=execute_cleanup_parameters)
 
         logger.info(
             f"======================= JOB {self._job_id} END ========================="

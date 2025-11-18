@@ -4,9 +4,9 @@ import sys
 
 # constants
 from constants.path import (
+    OUTPUT_ASSETS_DIRECTORY,
     OUTPUT_CASES_DIRECTORY,
     OUTPUT_DIRECTORY,
-    OUTPUT_GEOMETRIES_DIRECTORY,
 )
 from util.get_logger import get_logger
 
@@ -23,7 +23,7 @@ def check_output():
         )
         sys.exit(1)
 
-    directories = [OUTPUT_CASES_DIRECTORY, OUTPUT_GEOMETRIES_DIRECTORY]
+    directories = [OUTPUT_CASES_DIRECTORY, OUTPUT_ASSETS_DIRECTORY]
     for directory in directories:
         # check if output directories exist
         if not os.path.isdir(directory):

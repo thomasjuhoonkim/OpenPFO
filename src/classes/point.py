@@ -11,6 +11,6 @@ class Point:
     def get_point_representation(self):
         values = []
         for variable in self._variables:
-            values.append(str(variable.get_value()))
+            values.append(f"{variable.get_name()}: {variable.get_value()}")
 
         return f"({', '.join(values)})"

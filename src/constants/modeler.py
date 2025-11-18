@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from enum import StrEnum
 
 # classes
 from classes.point import Point
@@ -13,8 +12,3 @@ class AbstractModeler(ABC):
     @abstractmethod
     def generate_geometry(self, job_id: str, point: Point):
         pass
-
-
-class EModeler(StrEnum):
-    FREECAD = "freecad"
-    OPENVSP = "openvsp"

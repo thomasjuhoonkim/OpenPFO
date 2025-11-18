@@ -1,9 +1,12 @@
 import fluidfoam
 
+# classes
+from classes.functions import ExtractObjectivesParameters, ExtractObjectivesReturn
+
 
 def extract_objectives(
-    case_directory: str,
-) -> list[float]:
+    extract_objectives_parameters: ExtractObjectivesParameters,
+) -> ExtractObjectivesReturn:
     """
     The extract_objectives function is used to rank simulation results in a
     multi-objective optimization case.
@@ -14,19 +17,21 @@ def extract_objectives(
     Optionally, you can add side effects to your optimization such as image
     extractation and data analysis using inputs/extract_assets.py
 
-    NOTE: This function MUST return a list of objectives to MINIMIZE for. Use the provided `objectives` list.
+    NOTE: This function MUST return a list of objectives to MINIMIZE for.
     """
-
-    objectives = []
 
     """ ======================= YOUR CODE BELOW HERE ======================= """
 
     force = fluidfoam.readforce(
-        case_directory, namepatch="forceCoeffs1", time_name="0", name="coefficient"
+        path=extract_objectives_parameters.output_case_directory,
+        namepatch="forceCoeffs1",
+        time_name="0",
+        name="coefficient",
     )
     Cd = force[-1][1]  # latest time & second index (Cd)
     objectives = [Cd]
+    EXTRACT_OBJECTIVES_RETURN = ExtractObjectivesReturn(objectives=objectives)
 
     """ ======================= YOUR CODE ABOVE HERE ======================= """
 
-    return objectives
+    return EXTRACT_OBJECTIVES_RETURN

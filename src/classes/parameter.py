@@ -1,15 +1,15 @@
 class Parameter:
-    def __init__(self, name: str, cell: str, min: float, max: float):
+    def __init__(self, name: str, id: str, min: float, max: float):
         self._name = name
-        self._cell = cell
+        self._id = id
         self._min = min
         self._max = max
 
     def get_name(self):
         return self._name
 
-    def get_cell(self):
-        return self._cell
+    def get_id(self):
+        return self._id
 
     def get_min(self):
         return self._min

@@ -17,7 +17,7 @@ from util.get_logger import get_logger
 logger = get_logger()
 
 
-def reset_input_case_template():
+def reset_case_template():
     # check if input directory exists
     if not os.path.isdir(INPUT_DIRECTORY):
         logger.warning(f"{INPUT_DIRECTORY} directory does not exist, creating one...")
