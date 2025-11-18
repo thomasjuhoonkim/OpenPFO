@@ -38,7 +38,7 @@ def create_geometry(
 
     # ==========================================================================
 
-    # destructure parameters
+    # # destructure parameters
     # point = create_geometry_parameters.grid_point
     # job_id = create_geometry_parameters.job_id
     # output_assets_directory = create_geometry_parameters.output_assets_directory

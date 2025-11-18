@@ -2,7 +2,7 @@
 import logging
 import coloredlogs
 
-LOGGER_NAME = "OpenPFO_Logger"
+LOGGER_NAME = "OpenPFO"
 FILENAME = "OpenPFO.log"
 FILEMODE = "w"
 LEVEL = logging.INFO

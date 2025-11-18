@@ -59,7 +59,7 @@ class Job:
 
     def visualize_geometry(self):
         mesh = pv.read(self._output_geometry_filepath)
-        mesh.plot()
+        mesh.plot(window_size=[1920, 1080])
 
     def prepare_job(
         self, should_create_assets_directory=True, should_create_case_directory=True
