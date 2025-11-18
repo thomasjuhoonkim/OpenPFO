@@ -6,7 +6,6 @@ import shutil
 from constants.path import (
     OUTPUT_CASES_DIRECTORY,
     OUTPUT_DIRECTORY,
-    OUTPUT_GEOMETRIES_DIRECTORY,
     OUTPUT_ASSETS_DIRECTORY,
 )
 
@@ -27,7 +26,6 @@ def reset_output():
 
     subdirectories = [
         OUTPUT_CASES_DIRECTORY,
-        OUTPUT_GEOMETRIES_DIRECTORY,
         OUTPUT_ASSETS_DIRECTORY,
     ]
     for directory in subdirectories:

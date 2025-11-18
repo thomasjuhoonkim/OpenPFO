@@ -1,35 +1,38 @@
 [compute]
-hpc=false
+# hpc=false
 processors=8
 
 [model]
-# type: "freecad" | "openvsp"
-type="freecad"
-# linux
-# freecad_path="/usr/lib/freecad/lib"
-# macos
-freecad_path="/Applications/FreeCAD.app/Contents/Resources/lib"
-# windows
-# freecad_path="C:\\Program Files\\FreeCAD\\bin"
-
-# scale factor (1 mm -> 0.001 m)
-scale_factor = 0.001
-
 # DESIGN SPACE PARAMETERS
 # name: user-friendly name for the parameter
-# cell: cell corresponding to the cell in the FREECAD spreadsheet
+# id: identifier for the parameter, cell for FreeCAD, paramater ID for OpenVSP
 # min: minimum value for the parameter
 # max: maximum value for the parameter
-[[model.parameters]]
-name="Length"
-cell="B1"
-min=750
-max=1000
-[[model.parameters]]
-name="Width"
-cell="B2"
-min=300
-max=600
+# [[model.parameter]]
+# name="Length"
+# id="B1"
+# min=750
+# max=1000
+# [[model.parameter]]
+# name="Width"
+# id="B2"
+# min=300
+# max=600
+[[model.parameter]]
+name="Span"
+id="DGNZOEHYGLN:WingGeom:WingGeom:TotalSpan"
+min=15
+max=25
+[[model.parameter]]
+name="Chord"
+id="PQIVTDAWZMG:WingGeom:WingGeom:TotalChord"
+min=8
+max=10
+[[model.parameter]]
+name="Sweep"
+id="XGUXNKXLIKW:WingGeom:XSec_1:Sweep"
+min=-10
+max=10
 
 [optimizer]
 population=20

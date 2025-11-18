@@ -12,30 +12,31 @@ from classes.job import Job
 from util.get_random_points import get_random_points
 
 
-def check_meshes(
+def check_geometries(
     count: Annotated[
         int, typer.Option(help="The number of random points to generate")
     ] = 1,
-    assets: Annotated[
-        bool, typer.Option(help="Run asset extraction after each job")
+    visualize: Annotated[
+        bool, typer.Option(help="Whether to visualize the geometry using pyvista")
     ] = False,
-    cleanup: Annotated[bool, typer.Option(help="Run cleanup after each job")] = False,
 ):
     # pre-run checks
     check_output()
 
     grid_points = get_random_points(count=count)
     for i, point in enumerate(grid_points):
-        job_id = f"check-meshes-{i}"
+        job_id = f"check-geometries-{i}"
         job = Job(job_id=job_id, point=point)
 
-        job.prepare_job()
+        job.prepare_job(should_create_case_directory=False)
         job.dispatch(
             should_create_geometry=True,
-            should_modify_case=True,
-            should_create_mesh=True,
+            should_modify_case=False,
+            should_create_mesh=False,
             should_execute_solver=False,
             should_extract_objectives=False,
-            should_extract_assets=assets,
-            should_execute_cleanup=cleanup,
+            should_extract_assets=False,
+            should_execute_cleanup=False,
         )
+        if visualize:
+            job.visualize_geometry()

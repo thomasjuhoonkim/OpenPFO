@@ -21,7 +21,7 @@ def get_random_points(count: int):
             random_float = random.uniform(lower_bound, upper_bound)
 
             variable = Variable(
-                name=parameter.get_name(), cell=parameter.get_cell(), value=random_float
+                name=parameter.get_name(), id=parameter.get_id(), value=random_float
             )
             variables.append(variable)
 
