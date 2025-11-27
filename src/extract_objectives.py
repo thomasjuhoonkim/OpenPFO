@@ -22,15 +22,27 @@ def extract_objectives(
 
     """ ======================= YOUR CODE BELOW HERE ======================= """
 
-    force = fluidfoam.readforce(
-        path=extract_objectives_parameters.output_case_directory,
-        namepatch="forceCoeffs1",
-        time_name="0",
-        name="coefficient",
+    case_directory = extract_objectives_parameters.output_case_directory
+    logger = extract_objectives_parameters.logger
+
+    objectives = []
+    run_ok = True
+    try:
+        force = fluidfoam.readforce(
+            path=case_directory,
+            namepatch="forceCoeffs1",
+            time_name="0",
+            name="coefficient",
+        )
+        Cd = force[-1][1]  # latest time & second index (Cd)
+        objectives = [Cd]
+    except Exception:
+        run_ok = False
+        logger.exception("fluidfoam readforce failed")
+
+    EXTRACT_OBJECTIVES_RETURN = ExtractObjectivesReturn(
+        objectives=objectives, run_ok=run_ok
     )
-    Cd = force[-1][1]  # latest time & second index (Cd)
-    objectives = [Cd]
-    EXTRACT_OBJECTIVES_RETURN = ExtractObjectivesReturn(objectives=objectives)
 
     """ ======================= YOUR CODE ABOVE HERE ======================= """
 

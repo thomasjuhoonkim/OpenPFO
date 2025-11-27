@@ -60,10 +60,10 @@ class Search:
     def get_all_objective_values(self):
         return self._all_objectives_values
 
-    def run(self):
+    def run(self, should_execute_cleanup=True):
         while len(self._job_queue) > 0:
             job = self._job_queue.popleft()
-            job.dispatch()
+            job.dispatch(should_execute_cleanup=should_execute_cleanup)
 
             objective_values = job.get_objective_values()
             self._all_objectives_values.append(objective_values)

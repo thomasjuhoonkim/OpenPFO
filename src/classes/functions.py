@@ -11,6 +11,11 @@ class DefaultParameters:
         self.logger = logger
 
 
+class DefaultReturn:
+    def __init__(self, run_ok: bool):
+        self.run_ok = run_ok
+
+
 # ==============================================================================
 
 
@@ -32,8 +37,9 @@ class CreateGeometryParameters:
         self.output_assets_directory = output_assets_directory
 
 
-class CreateGeometryReturn:
-    def __init__(self, output_geometry_filepath: str):
+class CreateGeometryReturn(DefaultReturn):
+    def __init__(self, run_ok: bool, output_geometry_filepath: str):
+        super().__init__(run_ok=run_ok)
         self.output_geometry_filepath = output_geometry_filepath
 
 
@@ -54,6 +60,11 @@ class ModifyCaseParameters(DefaultParameters):
         self.output_geometry_filepath = output_geometry_filepath
 
 
+class ModifyCaseReturn(DefaultReturn):
+    def __init__(self, run_ok):
+        super().__init__(run_ok=run_ok)
+
+
 # ==============================================================================
 
 
@@ -71,6 +82,11 @@ class CreateMeshParameters(DefaultParameters):
         self.output_geometry_filepath = output_geometry_filepath
 
 
+class CreateMeshReturn(DefaultReturn):
+    def __init__(self, run_ok):
+        super().__init__(run_ok=run_ok)
+
+
 # ==============================================================================
 
 
@@ -79,6 +95,11 @@ class ExecuteSolverParameters(DefaultParameters):
         super().__init__(
             output_case_directory=output_case_directory, job_id=job_id, logger=logger
         )
+
+
+class ExecuteSolverReturn(DefaultReturn):
+    def __init__(self, run_ok):
+        super().__init__(run_ok=run_ok)
 
 
 # ==============================================================================
@@ -91,8 +112,9 @@ class ExtractObjectivesParameters(DefaultParameters):
         )
 
 
-class ExtractObjectivesReturn:
-    def __init__(self, objectives: list[float]):
+class ExtractObjectivesReturn(DefaultReturn):
+    def __init__(self, run_ok: bool, objectives: list[float]):
+        super().__init__(run_ok=run_ok)
         self.objectives = objectives
 
 
@@ -117,9 +139,19 @@ class ExtractAssetsParameters(DefaultParameters):
         self.output_geometry_filepath = output_geometry_filepath
 
 
+class ExtractAssetsReturn(DefaultReturn):
+    def __init__(self, run_ok):
+        super().__init__(run_ok=run_ok)
+
+
 # ==============================================================================
 
 
 class ExecuteCleanupParameters(DefaultParameters):
     def __init__(self, output_case_directory: str, job_id: str, logger: Logger):
         super().__init__(output_case_directory, job_id, logger)
+
+
+class ExecuteCleanupReturn(DefaultReturn):
+    def __init__(self, run_ok):
+        super().__init__(run_ok=run_ok)

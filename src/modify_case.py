@@ -1,11 +1,11 @@
 # system
-import shutil
+import subprocess
 
 # classes
-from classes.functions import ModifyCaseParameters
+from classes.functions import ModifyCaseParameters, ModifyCaseReturn
 
 
-def modify_case(modify_case_parameters: ModifyCaseParameters) -> None:
+def modify_case(modify_case_parameters: ModifyCaseParameters) -> ModifyCaseReturn:
     """
     This function is used to modify each OpenFOAM case for each run. This is a
     critical step if you need to set value(s) to OpenFOAM functions for each
@@ -18,22 +18,28 @@ def modify_case(modify_case_parameters: ModifyCaseParameters) -> None:
 
     """ ======================= YOUR CODE BELOW HERE ======================= """
 
-    output_case_directory = modify_case_parameters.output_case_directory
-    output_geometry_filepath = modify_case_parameters.output_geometry_filepath
+    geometry_filepath = modify_case_parameters.output_geometry_filepath
+    case_directory = modify_case_parameters.output_case_directory
     logger = modify_case_parameters.logger
 
-    # copy geometry into case trisurface directory
-    trisurface_geometry_filepath = (
-        f"{output_case_directory}/constant/triSurface/jobGeometry.stl"
-    )
-    shutil.copy(
-        src=output_geometry_filepath,
-        dst=trisurface_geometry_filepath,
-    )
-    logger.info(
-        f"Copied geometry {output_geometry_filepath} into {trisurface_geometry_filepath}"
-    )
+    commands = [
+        f"cp {geometry_filepath} {case_directory}/original.stl",
+    ]
+
+    run_ok = True
+    for command in commands:
+        try:
+            subprocess.run(
+                command.split(" "), capture_output=True, text=True, check=True
+            )
+            logger.info(f"Successfully ran {command}")
+        except subprocess.CalledProcessError as error:
+            run_ok = False
+            logger.error(f"{command} failed")
+            logger.error(f"\n{error.stderr}")
+
+    MODIFY_CASE_RETURN = ModifyCaseReturn(run_ok=run_ok)
 
     """ ======================= YOUR CODE ABOVE HERE ======================= """
 
-    return None
+    return MODIFY_CASE_RETURN

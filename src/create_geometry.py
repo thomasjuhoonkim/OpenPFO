@@ -1,24 +1,6 @@
 # classes
 from classes.functions import CreateGeometryParameters, CreateGeometryReturn
-from classes.modeler import FreeCADModeler, OpenVSOModeler
-
-# OpenVSP
-OPENVSP_FILEPATH = "/Users/thomaskim/Downloads/OpenVSP-3.46.0-MacOS/vspscript"
-MODEL_FILEPATH = "input/model.vsp3"
-openvsp_modeler = OpenVSOModeler(
-    model_filepath=MODEL_FILEPATH, openvsp_filepath=OPENVSP_FILEPATH
-)
-openvsp_modeler.check_model()
-
-# FreeCAD
-# MODEL_FILEPATH = "input/model.FCStd"
-# FREECAD_FILEPATH = "/Applications/FreeCAD.app/Contents/Resources/lib"
-# # FREECAD_FILEPATH = "/usr/lib/freecad/lib"
-# # FREECAD_FILEPATH = "C:\\Program Files\\FreeCAD\\bin"
-# freecad_modeler = FreeCADModeler(
-#     model_filepath=MODEL_FILEPATH, freecad_filepath=FREECAD_FILEPATH
-# )
-# freecad_modeler.check_model()
+from classes.modeler import FreeCADModeler, OpenVSPModeler
 
 
 def create_geometry(
@@ -38,12 +20,21 @@ def create_geometry(
     point = create_geometry_parameters.grid_point
     output_assets_directory = create_geometry_parameters.output_assets_directory
 
+    # OpenVSP
+    OPENVSP_FILEPATH = "/Users/thomaskim/Downloads/OpenVSP-3.46.0-MacOS/vspscript"
+    MODEL_FILEPATH = "input/model.vsp3"
+
+    openvsp_modeler = OpenVSPModeler(
+        model_filepath=MODEL_FILEPATH, openvsp_filepath=OPENVSP_FILEPATH
+    )
+    openvsp_modeler.check_model()
+
     output_geometry_filepath = openvsp_modeler.generate_geometry(
         job_id=job_id, point=point, output_assets_directory=output_assets_directory
     )
 
     CREATE_GEOMETRY_RETURN = CreateGeometryReturn(
-        output_geometry_filepath=output_geometry_filepath
+        output_geometry_filepath=output_geometry_filepath, run_ok=True
     )
 
     # ==========================================================================
@@ -53,12 +44,19 @@ def create_geometry(
     # job_id = create_geometry_parameters.job_id
     # output_assets_directory = create_geometry_parameters.output_assets_directory
 
-    # SCALE_FACTOR = 0.001  # scale factor (1 mm -> 0.001 m)
+    # FreeCAD
+    # MODEL_FILEPATH = "input/model.FCStd"
+    # FREECAD_FILEPATH = "/Applications/FreeCAD.app/Contents/Resources/lib"
+    # # FREECAD_FILEPATH = "/usr/lib/freecad/lib"
+    # # FREECAD_FILEPATH = "C:\\Program Files\\FreeCAD\\bin"
+    # freecad_modeler = FreeCADModeler(
+    #     model_filepath=MODEL_FILEPATH, freecad_filepath=FREECAD_FILEPATH
+    # )
+    # freecad_modeler.check_model()
 
     # output_geometry_filepath = freecad_modeler.generate_geometry(
     #     job_id=job_id,
     #     point=point,
-    #     scale_factor=SCALE_FACTOR,
     #     output_assets_directory=output_assets_directory,
     # )
 

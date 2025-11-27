@@ -2,10 +2,12 @@
 import subprocess
 
 # classes
-from classes.functions import ExecuteCleanupParameters
+from classes.functions import ExecuteCleanupParameters, ExecuteCleanupReturn
 
 
-def execute_cleanup(execute_cleanup_parameters: ExecuteCleanupParameters) -> None:
+def execute_cleanup(
+    execute_cleanup_parameters: ExecuteCleanupParameters,
+) -> ExecuteCleanupReturn:
     """
     The execute_cleanup function used to clean up solver artifacts after each job.
 
@@ -23,9 +25,10 @@ def execute_cleanup(execute_cleanup_parameters: ExecuteCleanupParameters) -> Non
         # f'mpirun -np {PROCESSORS} drm --match "^polyMesh$" {case_directory}/constant',
         # f'mpirun -np {PROCESSORS} drm --match "[1-9]*" {case_directory}',
         # f'mpirun -np {PROCESSORS} drm --match "[0-9]*\.[0-9]*" {case_directory}',
-        f"pyFoamClearCase.py {case_directory}",
+        f"pyFoamClearCase.py {case_directory} --keep-last --keep-postprocessing",
     ]
 
+    run_ok = True
     for command in commands:
         try:
             subprocess.run(
@@ -33,9 +36,12 @@ def execute_cleanup(execute_cleanup_parameters: ExecuteCleanupParameters) -> Non
             )
             logger.info(f"Successfully cleaned up solver artifacts in {case_directory}")
         except subprocess.CalledProcessError as error:
+            run_ok = False
             logger.error(f"{command} failed")
             logger.error(f"\n{error.stderr}")
 
+    EXECUTE_CLEANUP_RETURN = ExecuteCleanupReturn(run_ok=run_ok)
+
     """ ======================= YOUR CODE ABOVE HERE ======================= """
 
-    return None
+    return EXECUTE_CLEANUP_RETURN

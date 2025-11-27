@@ -25,8 +25,10 @@ class OpenPFOProblem(Problem):
         self,
         parameters: list[Parameter],
         objectives: list[Objective],
+        should_execute_cleanup=True,
     ):
         self._search_count = 0
+        self._should_execute_cleanup = should_execute_cleanup
 
         lower_bounds = np.array(object=[], dtype=np.float64)
         upper_bounds = np.array(object=[], dtype=np.float64)
@@ -73,7 +75,7 @@ class OpenPFOProblem(Problem):
 
         search = Search(search_id=search_id, grid_points=grid_points)
         search.create_jobs()
-        search.run()
+        search.run(should_execute_cleanup=self._should_execute_cleanup)
 
         objective_values = search.get_all_objective_values()
         out["F"] = objective_values
