@@ -20,19 +20,29 @@ processors=8
 # max=600
 [[model.parameter]]
 name="Span"
-id="DGNZOEHYGLN:WingGeom:WingGeom:TotalSpan"
-min=15
-max=25
+id="VEBTFZANEQD:WingGeom:WingGeom:TotalSpan"
+min=0.75
+max=0.95
 [[model.parameter]]
 name="Chord"
-id="PQIVTDAWZMG:WingGeom:WingGeom:TotalChord"
-min=8
-max=10
+id="MNGAFAQTAPA:WingGeom:WingGeom:TotalChord"
+min=0.45
+max=0.65
 [[model.parameter]]
 name="Sweep"
-id="XGUXNKXLIKW:WingGeom:XSec_1:Sweep"
+id="DFMNISRTXAJ:WingGeom:XSec_1:Sweep"
+min=20
+max=30
+[[model.parameter]]
+name="Dihedral"
+id="NJDEOYDFTRR:WingGeom:XSec_1:Dihedral"
 min=-10
 max=10
+# [[model.paramater]]
+# name="Twist"
+# id=
+# min=-9
+# max=0
 
 [optimizer]
 population=20

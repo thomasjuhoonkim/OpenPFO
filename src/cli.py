@@ -11,6 +11,7 @@ from commands.check_meshes import check_meshes
 from commands.check_geometries import check_geometries
 from commands.check_setup import check_setup
 from commands.check_run import check_run
+from commands.check_assets import check_assets
 
 # commands - run
 from commands.run import run
@@ -36,6 +37,7 @@ app.command(name="checkSetup")(check_setup)
 app.command(name="checkGeometries")(check_geometries)
 app.command(name="checkMeshes")(check_meshes)
 app.command(name="checkRun")(check_run)
+app.command(name="checkAssets")(check_assets)
 
 # run
 app.command(name="run")(run)

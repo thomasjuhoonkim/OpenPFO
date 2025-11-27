@@ -49,10 +49,11 @@ class Job:
         self._job_id = job_id
         self._point = point
 
+        self._run_ok = True
         self._output_geometry_filepath = ""
-        self._output_case_directory = ""
-        self._output_assets_directory = ""
-        self._objective_values = None
+        self._output_case_directory = f"{OUTPUT_CASES_DIRECTORY}/{job_id}"
+        self._output_assets_directory = f"{OUTPUT_ASSETS_DIRECTORY}/{job_id}"
+        self._objective_values = [float("inf") for _ in point.get_variables()]
 
     def get_objective_values(self):
         return self._objective_values
@@ -66,17 +67,13 @@ class Job:
     ):
         if should_create_assets_directory:
             # create job assets directory
-            output_assets_directory = f"{OUTPUT_ASSETS_DIRECTORY}/{self._job_id}"
-            os.mkdir(output_assets_directory)
-            self._output_assets_directory = output_assets_directory
-            logger.info(f"Created assets directory {output_assets_directory}")
+            os.mkdir(self._output_assets_directory)
+            logger.info(f"Created assets directory {self._output_assets_directory}")
 
         if should_create_case_directory:
             # copy case
-            output_case_directory = f"{OUTPUT_CASES_DIRECTORY}/{self._job_id}"
             base_case = SolutionDirectory(INPUT_CASE_TEMPLATE)
-            copy_case = base_case.cloneCase(output_case_directory)
-            self._output_case_directory = copy_case.name
+            copy_case = base_case.cloneCase(self._output_case_directory)
             logger.info(f"Generated case directory {copy_case.name}")
 
     def dispatch(
@@ -93,7 +90,7 @@ class Job:
             f"======================= JOB {self._job_id} START ======================="
         )
 
-        if should_create_geometry:
+        if self._run_ok and should_create_geometry:
             logger.info(
                 f"Running create_geometry to generate a geometry for grid point {self._point.get_point_representation()}"
             )
@@ -109,8 +106,10 @@ class Job:
             self._output_geometry_filepath = (
                 create_geometry_return.output_geometry_filepath
             )
+        else:
+            logger.warning("Skipping create_geometry")
 
-        if should_modify_case:
+        if self._run_ok and should_modify_case:
             logger.info("Running modify_case to customize OpenFOAM case")
             modify_case_parameters = ModifyCaseParameters(
                 output_case_directory=self._output_case_directory,
@@ -118,9 +117,14 @@ class Job:
                 output_geometry_filepath=self._output_geometry_filepath,
                 logger=logger,
             )
-            modify_case(modify_case_parameters=modify_case_parameters)
+            modify_case_return = modify_case(
+                modify_case_parameters=modify_case_parameters
+            )
+            self._run_ok = modify_case_return.run_ok
+        else:
+            logger.warning("Skipping modify_case")
 
-        if should_create_mesh:
+        if self._run_ok and should_create_mesh:
             logger.info("Running create_mesh to generate a mesh for geometry")
             create_mesh_parameters = CreateMeshParameters(
                 output_case_directory=self._output_case_directory,
@@ -128,26 +132,41 @@ class Job:
                 output_geometry_filepath=self._output_geometry_filepath,
                 logger=logger,
             )
-            create_mesh(create_mesh_parameters=create_mesh_parameters)
+            create_mesh_return = create_mesh(
+                create_mesh_parameters=create_mesh_parameters
+            )
+            self._run_ok = create_mesh_return.run_ok
+        else:
+            logger.warning("Skipping create_mesh")
 
-        if should_execute_solver:
+        if self._run_ok and should_execute_solver:
             logger.info("Running execute_solver to obtain simulation results")
             execute_solver_parameters = ExecuteSolverParameters(
-                output_case_directory=self._output_case_directory, job_id=self._job_id
+                output_case_directory=self._output_case_directory,
+                job_id=self._job_id,
+                logger=logger,
             )
-            execute_solver(execute_solver_parameters)
+            execute_solver_return = execute_solver(execute_solver_parameters)
+            self._run_ok = execute_solver_return.run_ok
+        else:
+            logger.warning("Skipping execute_solver")
 
-        if should_extract_objectives:
+        if self._run_ok and should_extract_objectives:
             logger.info("Running extract_objectives for objective values extraction")
             extract_objectives_parameters = ExtractObjectivesParameters(
-                output_case_directory=self._output_case_directory, job_id=self._job_id
+                output_case_directory=self._output_case_directory,
+                job_id=self._job_id,
+                logger=logger,
             )
             extract_objectives_return = extract_objectives(
                 extract_objectives_parameters=extract_objectives_parameters
             )
             self._objective_values = extract_objectives_return.objectives
+            self._run_ok = extract_objectives_return.run_ok
+        else:
+            logger.warning("Skipping extract_objectives")
 
-        if should_extract_assets:
+        if self._run_ok and should_extract_assets:
             logger.info("Running extract_assets for asset extraction")
             extract_assets_parameters = ExtractAssetsParameters(
                 output_case_directory=self._output_case_directory,
@@ -157,16 +176,26 @@ class Job:
                 job_id=self._job_id,
                 logger=logger,
             )
-            extract_assets(extract_assets_parameters=extract_assets_parameters)
+            extract_assets_return = extract_assets(
+                extract_assets_parameters=extract_assets_parameters
+            )
+            self._run_ok = extract_assets_return.run_ok
+        else:
+            logger.warning("Skipping extract_assets")
 
-        if should_execute_cleanup:
+        if self._run_ok and should_execute_cleanup:
             logger.info("Running execute_cleanup for job cleanup")
             execute_cleanup_parameters = ExecuteCleanupParameters(
                 output_case_directory=self._output_case_directory,
                 job_id=self._job_id,
                 logger=logger,
             )
-            execute_cleanup(execute_cleanup_parameters=execute_cleanup_parameters)
+            execute_cleanup_return = execute_cleanup(
+                execute_cleanup_parameters=execute_cleanup_parameters
+            )
+            self._run_ok = execute_cleanup_return.run_ok
+        else:
+            logger.warning("Skipping execute_cleanup")
 
         logger.info(
             f"======================= JOB {self._job_id} END ========================="

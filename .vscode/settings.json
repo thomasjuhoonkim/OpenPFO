@@ -7,6 +7,7 @@
     "fvSolution": "OpenFOAM",
     "**/constant/g": "OpenFOAM",
     "**/0/*": "OpenFOAM",
-    "forcecoeffs": "OpenFOAM"
+    "forcecoeffs": "OpenFOAM",
+    "forces": "OpenFOAM"
   }
 }

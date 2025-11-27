@@ -17,7 +17,7 @@ def check_run(
         int, typer.Option(help="The number of random points to generate")
     ] = 1,
     objectives: Annotated[
-        bool, typer.Option(help="Run asset extraction after each job")
+        bool, typer.Option(help="Extract objectives after each job")
     ] = True,
     assets: Annotated[
         bool, typer.Option(help="Run asset extraction after each job")

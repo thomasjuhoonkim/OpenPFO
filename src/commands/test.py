@@ -1,18 +1,13 @@
 import os
 import shutil
 
-import pyvista as pv
-
 
 def test():
-    geometries = os.listdir("output/geometries")
-    geometries.sort()
-    os.mkdir("temp")
+    cases = os.listdir("output/assets")
+    cases.remove(".DS_Store")
+    os.makedirs("temp", exist_ok=True)
 
-    for geometry in geometries:
-        original = f"output/geometries/{geometry}"
-        filename = geometry.split(".")
-        dest = shutil.copy(original, f"temp/{filename[0]}.stl")
+    for i, case in enumerate(cases):
+        original = f"output/assets/{case}/mesh.png"
+        dest = shutil.copy(original, f"temp/{i}.png")
         print(dest)
-        mesh = pv.read(dest)
-        mesh.plot()

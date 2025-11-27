@@ -54,7 +54,6 @@ class FreeCADModeler(AbstractModeler):
         self,
         job_id: str,
         point: Point,
-        scale_factor: float,
         output_assets_directory: str,
     ):
         import FreeCAD  # type: ignore  # noqa: E402
@@ -72,36 +71,26 @@ class FreeCADModeler(AbstractModeler):
             value = str(variable.get_value())
             spreadsheet.set(cell, value)
 
-        export_object = document.addObject("Part::Feature", job_id)
-
-        # scaling - required for mm to m conversion (FreeCAD: STL in mm, OpenFOAM, STL in m)
-        original_shape = part.Shape
-        scaled_shape = original_shape.copy().scaled(
-            scale_factor, FreeCAD.Vector(0, 0, 0)
-        )
-        export_object.Shape = scaled_shape
-        logger.info(f"Scaled geometry {job_id} by {scale_factor}")
-
         # Recompute Model
         document.recompute()
 
         # Export to AST
         output_ast = f"{output_assets_directory}/{job_id}.ast"
         output_stl = f"{output_assets_directory}/{job_id}.stl"
-        Mesh.export([export_object], output_ast)
+        Mesh.export([part], output_ast)
 
         # rename AST to STL
         os.rename(src=output_ast, dst=output_stl)
         output_geometry_filepath = output_stl
 
         logger.info(
-            f"Generated {job_id}.stl, volume: {scaled_shape.Volume}, area: {scaled_shape.Area}, design variables: {point.get_point_representation()}"
+            f"Generated {job_id}.stl, volume: {part.Shape.Volume}, area: {part.Shape.Area}, design variables: {point.get_point_representation()}"
         )
 
         return output_geometry_filepath
 
 
-class OpenVSOModeler(AbstractModeler):
+class OpenVSPModeler(AbstractModeler):
     def __init__(self, model_filepath: str, openvsp_filepath: str):
         self._model_filepath = model_filepath
         self._openvsp_filepath = openvsp_filepath
