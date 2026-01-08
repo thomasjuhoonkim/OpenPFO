@@ -6,10 +6,10 @@ from pymoo.algorithms.moo.nsga2 import NSGA2
 def create_algorithm(problem: Any):
     algorithm = None
 
-    algorithm = NSGA2(pop_size=2)
+    algorithm = NSGA2(pop_size=10)
     algorithm.setup(
         problem=problem,
-        termination=("n_gen", 2),
+        termination=("n_gen", 10),
         seed=1,
         verbose=True,
         # save_history=True,

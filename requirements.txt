@@ -5,3 +5,5 @@ typer==0.20.0
 fluidfoam==0.2.9
 pymoo==0.6.1.5
 numpy==2.3.4
+simple-slurm==0.3.6
+pyDOE3==1.6.1

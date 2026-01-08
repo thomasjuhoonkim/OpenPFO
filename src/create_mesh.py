@@ -35,10 +35,8 @@ def create_mesh(
         # f"mpirun -np {PROCESSORS} snappyHexMesh -parallel -overwrite -case {case_directory}",
         # f"mpirun -np {PROCESSORS} redistributePar -parallel -reconstruct -overwrite -constant -case {case_directory}",
         # =====================================================================================================================================
-        # f"surfaceTransformPoints -case {case_directory} -scale 0.1 {case_directory}/original.stl {case_directory}/scaled.stl",
-        # f"surfaceTransformPoints -case {case_directory} -rotate-angle '((1 0 0) -90)' {case_directory}/scaled.stl {case_directory}/rotated.stl",
-        # f"surfaceTransformPoints -case {case_directory} -rotate-angle '((0 1 0) 5)' {case_directory}/scaled.stl {case_directory}/aoa.stl",
-        f"surfaceGenerateBoundingBox -case {case_directory} {case_directory}/original.stl {case_directory}/combined.stl 50 50 25 25 10 10",
+        f"surfaceTransformPoints -case {case_directory} -rotate-angle '((0 1 0) 5)' {case_directory}/original.stl {case_directory}/aoa.stl",
+        f"surfaceGenerateBoundingBox -case {case_directory} {case_directory}/aoa.stl {case_directory}/combined.stl 50 50 25 25 10 10",
         f"surfaceFeatureEdges {case_directory}/combined.stl {case_directory}/combined.fms -angle 5 -case {case_directory}",
         f"cartesianMesh -case {case_directory}",
     ]

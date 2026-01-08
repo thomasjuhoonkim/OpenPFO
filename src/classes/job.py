@@ -54,6 +54,7 @@ class Job:
         self._output_case_directory = f"{OUTPUT_CASES_DIRECTORY}/{job_id}"
         self._output_assets_directory = f"{OUTPUT_ASSETS_DIRECTORY}/{job_id}"
         self._objective_values = [float("inf") for _ in point.get_variables()]
+        self._extra_variables = []
 
     def get_objective_values(self):
         return self._objective_values
@@ -106,6 +107,7 @@ class Job:
             self._output_geometry_filepath = (
                 create_geometry_return.output_geometry_filepath
             )
+            self._extra_variables = create_geometry_return.extra_variables
         else:
             logger.warning("Skipping create_geometry")
 
@@ -116,6 +118,8 @@ class Job:
                 job_id=self._job_id,
                 output_geometry_filepath=self._output_geometry_filepath,
                 logger=logger,
+                grid_point=self._point,
+                extra_variables=self._extra_variables,
             )
             modify_case_return = modify_case(
                 modify_case_parameters=modify_case_parameters

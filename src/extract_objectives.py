@@ -34,8 +34,10 @@ def extract_objectives(
             time_name="0",
             name="coefficient",
         )
-        Cd = force[-1][1]  # latest time & second index (Cd)
-        objectives = [Cd]
+        c_d = force[-1][1]  # latest time & second index (Cd)
+        c_l = force[-1][4]  # latest time & fourth index (Cl)
+        objectives = [c_d, c_l]
+
     except Exception:
         run_ok = False
         logger.exception("fluidfoam readforce failed")

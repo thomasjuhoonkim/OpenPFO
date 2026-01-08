@@ -7,6 +7,7 @@ import subprocess
 from classes.point import Point
 
 # constants
+# from classes.variable import Variable
 from constants.modeler import AbstractModeler
 
 # util
@@ -82,6 +83,10 @@ class FreeCADModeler(AbstractModeler):
         # rename AST to STL
         os.rename(src=output_ast, dst=output_stl)
         output_geometry_filepath = output_stl
+
+        # export to FCStd
+        output_fcstd = f"{output_assets_directory}/{job_id}.FCStd"
+        document.saveAs(output_fcstd)
 
         logger.info(
             f"Generated {job_id}.stl, volume: {part.Shape.Volume}, area: {part.Shape.Area}, design variables: {point.get_point_representation()}"
@@ -171,3 +176,69 @@ void main()
             logger.error(f"\n{error.stdout}")
 
         return output_geometry_filepath
+
+
+#     def extract_variable(
+#         self,
+#         variable_name: str,
+#         variable_id: str,
+#         job_id: str,
+#         output_assets_directory: str,
+#     ) -> list[Variable, bool]:
+#         # design variables file for openvsp model variable definitions
+#         design_variables_filepath_input = f"{output_assets_directory}/{job_id}.des"
+#         design_variables_filepath_output = (
+#             f"{output_assets_directory}/{job_id}-{variable_id}.des"
+#         )
+
+#         # vspscript file for vsp model variable extraction
+#         vspscript_filepath = (
+#             f"{output_assets_directory}/{job_id}-{variable_id}.vspscript"
+#         )
+#         vspscript_content = f"""
+# void main()
+# {{
+#     ClearVSPModel();
+#     ReadVSPFile("{self._model_filepath}");
+#     Update();
+#     ReadApplyDESFile("{design_variables_filepath_input}");
+#     Update();
+#     DeleteAllDesignVars();
+#     AddDesignVar("{variable_id}", 0);
+#     WriteDESFile("{design_variables_filepath_output}");
+#     VSPExit(0);
+# }}
+# """
+
+#         with open(vspscript_filepath, "w") as f:
+#             f.write(vspscript_content)
+
+#         # cli commands for openvsp
+#         command = [
+#             self._openvsp_filepath,
+#             "-script",
+#             vspscript_filepath,
+#         ]
+
+#         try:
+#             subprocess.run(command, capture_output=True, text=True, check=True)
+#             logger.info(f"Extracted {variable_id}")
+#         except subprocess.CalledProcessError as error:
+#             logger.error(f"{' '.join(command)} failed")
+#             logger.error(f"\n{error.stdout}")
+
+#         # extract variable value from design variable file
+#         variable_value = None
+#         with open(design_variables_filepath_output, "r") as f:
+#             lines = f.readlines()
+#             line = lines[1]
+#             part = line.split(" ")[1]
+#             variable_value = float(part)
+
+#         if not variable_value:
+#             return [None, False]
+
+#         return [
+#             Variable(name=variable_name, id=variable_id, value=variable_value),
+#             True,
+#         ]
