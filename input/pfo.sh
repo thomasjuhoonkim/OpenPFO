@@ -7,6 +7,8 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=1G
+#SBATCH --output=OpenPFO.log
+#SBATCH --open-mode=append
 
 module load python 3.11
 module load openfoam/v2312
