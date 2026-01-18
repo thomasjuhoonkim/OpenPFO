@@ -23,7 +23,7 @@ def create_geometry(
     output_assets_directory = create_geometry_parameters.output_assets_directory
 
     # OpenVSP
-    OPENVSP_FILEPATH = "/Users/thomaskim/Downloads/OpenVSP-3.46.0-MacOS/vspscript"
+    OPENVSP_FILEPATH = "/home/tkim/scratch/OpenVSP/build/vsp/vspscript"
     MODEL_FILEPATH = "input/model.vsp3"
 
     openvsp_modeler = OpenVSPModeler(
