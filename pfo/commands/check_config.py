@@ -23,7 +23,7 @@ def check_config():
     if not isinstance(config["compute"]["hpc"], bool):
         logger.error("hpc is not a boolean")
         sys.exit(1)
-    if not isinstance(config["compute"]["processors"], (int, float)):
+    if not isinstance(config["compute"]["processors"], int):
         logger.error("processors is not an integer")
         sys.exit(1)
 
@@ -56,7 +56,7 @@ def check_config():
     if "seed" not in config["optimizer"]:
         logger.error("seed is missing from [optimizer]")
         sys.exit(1)
-    if not isinstance(config["optimizer"]["seed"], float):
+    if not isinstance(config["optimizer"]["seed"], (int, float)):
         logger.error("seed is not a float")
         sys.exit(1)
     if "objectives" not in config["optimizer"]:
