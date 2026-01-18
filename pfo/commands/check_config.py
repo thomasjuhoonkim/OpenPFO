@@ -23,7 +23,7 @@ def check_config():
     if not isinstance(config["compute"]["hpc"], bool):
         logger.error("hpc is not a boolean")
         sys.exit(1)
-    if not isinstance(config["compute"]["processors"], int):
+    if not isinstance(config["compute"]["processors"], (int, float)):
         logger.error("processors is not an integer")
         sys.exit(1)
 
@@ -38,7 +38,12 @@ def check_config():
         logger.error("[[model.parameters]] is not a list")
         sys.exit(1)
     for parameter in config["model"]["parameters"]:
-        attribtutes = [("id", str), ("name", str), ("min", float), ("max", float)]
+        attribtutes = [
+            ("id", str),
+            ("name", str),
+            ("min", (int, float)),
+            ("max", (int, float)),
+        ]
         for attribute in attribtutes:
             field, type = attribute
             if not isinstance(parameter[field], type):
