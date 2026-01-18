@@ -1,16 +1,8 @@
 # classes
 from classes.functions import ExecuteSolverParameters
 
-# util
-from util.get_config import get_config
-
-# PyFoam
-from PyFoam.Execution.BasicRunner import BasicRunner
-
-
-config = get_config()
-
-PROCESSORS = config["compute"]["processors"]
+# simple-slurm
+from simple_slurm import Slurm
 
 
 def execute_solver(
@@ -27,18 +19,32 @@ def execute_solver(
 
     case_directory = execute_solver_parameters.output_case_directory
     logger = execute_solver_parameters.logger
-    commands = [
-        f"mpirun -np {PROCESSORS} redistributePar -parallel -decompose -overwrite -case {case_directory}",
-        f"mpirun -np {PROCESSORS} simpleFoam -parallel -case {case_directory}",
-        f"mpirun -np {PROCESSORS} redistributePar -parallel -reconstruct -latestTime -case {case_directory}",
-    ]
+    processors = execute_solver_parameters.processors
 
-    for command in commands:
-        runner = BasicRunner(argv=command.split(" "))
-        runner.start()
-        if not runner.runOK():
-            logger.error(f"{command} failed")
-            raise Exception(f"{command} failed")
+    slurm = Slurm(
+        job_name="simpleFoam",
+        account="def-jphickey",
+        time="00:10:00",
+        nodes=1,
+        ntasks_per_node=processors,
+        mem_per_cpu="4G",
+        output=f"{case_directory}/simpleFoam.log",
+    )
+    slurm.set_wait(True)
+
+    slurm.add_cmd("module load openfoam/v2312")
+    slurm.add_cmd(
+        f'mpirun -np "$SLURM_NTASKS_PER_NODE" redistributePar -parallel -decompose -overwrite -case {case_directory}'
+    )
+    slurm.add_cmd(
+        f'mpirun -np "$SLURM_NTASKS_PER_NODE" simpleFoam -parallel -case {case_directory}'
+    )
+    slurm.add_cmd(
+        f'mpirun -np "$SLURM_NTASKS_PER_NODE" redistributePar -parallel -reconstruct -latestTime -case {case_directory}'
+    )
+
+    slurm_job_id = slurm.sbatch()
+    logger.info(f"Successfully ran job {slurm_job_id} for simpleFoam.")
 
     """ ======================= YOUR CODE ABOVE HERE ======================= """
 

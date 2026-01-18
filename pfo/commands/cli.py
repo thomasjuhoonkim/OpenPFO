@@ -13,7 +13,7 @@ from commands.check_geometries import check_geometries
 from commands.check_cases import check_cases
 from commands.check_setup import check_setup
 from commands.check_run import check_run
-from commands.check_assets import check_assets
+from commands.check_extraction import check_extraction
 
 # commands - execution
 from commands.run import run
@@ -46,7 +46,7 @@ app.command(name="checkGeometries")(check_geometries)
 app.command(name="checkCases")(check_cases)
 app.command(name="checkMeshes")(check_meshes)
 app.command(name="checkRun")(check_run)
-app.command(name="checkAssets")(check_assets)
+app.command(name="checkExtract")(check_extraction)
 
 # execution
 app.command(name="run")(run)

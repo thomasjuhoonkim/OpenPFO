@@ -1,16 +1,8 @@
 # classes
 from classes.functions import ExecuteSolverParameters
 
-# util
-from util.get_config import get_config
-
 # PyFoam
 from PyFoam.Execution.BasicRunner import BasicRunner
-
-
-config = get_config()
-
-PROCESSORS = config["compute"]["processors"]
 
 
 def execute_solver(
@@ -27,10 +19,12 @@ def execute_solver(
 
     case_directory = execute_solver_parameters.output_case_directory
     logger = execute_solver_parameters.logger
+    processors = execute_solver_parameters.processors
+
     commands = [
-        f"mpirun -np {PROCESSORS} redistributePar -parallel -decompose -overwrite -case {case_directory}",
-        f"mpirun -np {PROCESSORS} simpleFoam -parallel -case {case_directory}",
-        f"mpirun -np {PROCESSORS} redistributePar -parallel -reconstruct -latestTime -case {case_directory}",
+        f"mpirun -np {processors} redistributePar -parallel -decompose -overwrite -case {case_directory}",
+        f"mpirun -np {processors} simpleFoam -parallel -case {case_directory}",
+        f"mpirun -np {processors} redistributePar -parallel -reconstruct -latestTime -case {case_directory}",
     ]
 
     for command in commands:

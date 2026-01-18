@@ -1,6 +1,6 @@
 [compute]
-hpc=true
-processors=128
+hpc=false
+processors=8
 
 [model]
 # DESIGN SPACE PARAMETERS

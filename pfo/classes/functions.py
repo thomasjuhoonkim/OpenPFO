@@ -89,6 +89,7 @@ class CreateMeshParameters(DefaultParameters):
             output_case_directory=output_case_directory, job_id=job_id, logger=logger
         )
         self.output_geometry_filepath = output_geometry_filepath
+        self.processors = config["compute"]["processors"]
 
 
 # ==============================================================================
@@ -99,6 +100,7 @@ class ExecuteSolverParameters(DefaultParameters):
         super().__init__(
             output_case_directory=output_case_directory, job_id=job_id, logger=logger
         )
+        self.processors = config["compute"]["processors"]
 
 
 # ==============================================================================
@@ -151,3 +153,4 @@ class ExtractAssetsParameters(DefaultParameters):
 class ExecuteCleanupParameters(DefaultParameters):
     def __init__(self, output_case_directory: str, job_id: str, logger: Logger):
         super().__init__(output_case_directory, job_id, logger)
+        self.processors = config["compute"]["processors"]

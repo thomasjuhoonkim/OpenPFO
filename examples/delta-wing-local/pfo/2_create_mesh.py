@@ -1,16 +1,8 @@
 # classes
 from classes.functions import CreateMeshParameters
 
-# util
-from util.get_config import get_config
-
 # PyFoam
 from PyFoam.Execution.BasicRunner import BasicRunner
-
-
-config = get_config()
-
-PROCESSORS = config["compute"]["processors"]
 
 
 def create_mesh(

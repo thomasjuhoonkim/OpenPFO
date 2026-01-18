@@ -106,7 +106,7 @@ class Job:
             mesh.plot(window_size=[1920, 1080])
         else:
             logger.warning(
-                "config.compute.hpc is set true, geometry visualization with PyVista unavailable."
+                "config.compute.hpc is set true, geometry visualization with PyVista is unavailable."
             )
 
     def prepare_job(
@@ -165,6 +165,7 @@ class Job:
                     create_geometry_return.output_geometry_filepath
                 )
                 self._extra_variables = create_geometry_return.extra_variables
+                logger.info("Successfully ran create_geometry")
             else:
                 logger.warning("Skipping create_geometry")
         except Exception:
@@ -188,6 +189,7 @@ class Job:
                     extra_variables=self._extra_variables,
                 )
                 modify_case.modify_case(modify_case_parameters=modify_case_parameters)
+                logger.info("Successfully ran modify_case")
             else:
                 logger.warning("Skipping modify_case")
         except Exception:
@@ -209,6 +211,7 @@ class Job:
                     logger=logger,
                 )
                 create_mesh.create_mesh(create_mesh_parameters=create_mesh_parameters)
+                logger.info("Successfully ran create_mesh")
             else:
                 logger.warning("Skipping create_mesh")
         except Exception:
@@ -229,6 +232,7 @@ class Job:
                     logger=logger,
                 )
                 execute_solver.execute_solver(execute_solver_parameters)
+                logger.info("Successfully ran execute_solver")
             else:
                 logger.warning("Skipping execute_solver")
         except Exception:
@@ -255,6 +259,7 @@ class Job:
                     extract_objectives_parameters=extract_objectives_parameters
                 )
                 self._objectives = extract_objectives_return.objectives
+                logger.info("Successfully ran extract_objectives")
             else:
                 logger.warning("Skipping extract_objectives")
         except Exception:
@@ -280,6 +285,7 @@ class Job:
                 extract_assets.extract_assets(
                     extract_assets_parameters=extract_assets_parameters
                 )
+                logger.info("Successfully ran extract_assets")
             else:
                 logger.warning("Skipping extract_assets")
         except Exception:
@@ -300,6 +306,7 @@ class Job:
                 execute_cleanup.execute_cleanup(
                     execute_cleanup_parameters=execute_cleanup_parameters
                 )
+                logger.info("Successfully ran execute_cleanup")
             else:
                 logger.warning("Skipping execute_cleanup")
         except Exception:
