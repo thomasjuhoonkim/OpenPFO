@@ -6,14 +6,15 @@ from util.get_config import get_config
 
 config = get_config()
 
-CONFIG_OBJECTIVES = config["optimizer"]["objective"]
+CONFIG_OBJECTIVES = config["optimizer"]["objectives"]
 
 
-def get_objectives() -> list[Objective]:
+def get_initial_objectives() -> list[Objective]:
     objectives = []
 
     for config_objective in CONFIG_OBJECTIVES:
         objective = Objective(
+            id=config_objective["id"],
             name=config_objective["name"],
             type=config_objective["type"],
         )

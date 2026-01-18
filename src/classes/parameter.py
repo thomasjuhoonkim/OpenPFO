@@ -16,3 +16,9 @@ class Parameter:
 
     def get_max(self):
         return self._max
+
+    def set_value(self, value: float):
+        self._value = value
+
+    def get_value(self):
+        return self._value

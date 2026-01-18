@@ -4,6 +4,7 @@ import typer
 
 # commands
 from commands.check_output import check_output
+from commands.check_config import check_config
 
 # classes
 from classes.job import Job
@@ -22,6 +23,7 @@ def check_geometries(
 ):
     # pre-run checks
     check_output()
+    check_config()
 
     grid_points = get_random_points(count=count)
     for i, point in enumerate(grid_points):

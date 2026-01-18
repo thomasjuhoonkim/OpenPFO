@@ -8,28 +8,28 @@ processors=8
 # id: identifier for the parameter, cell for FreeCAD, paramater ID for OpenVSP
 # min: minimum value for the parameter
 # max: maximum value for the parameter
-# [[model.parameter]]
+# [[model.parameters]]
 # name="Length"
 # id="B1"
 # min=750
 # max=1000
-# [[model.parameter]]
+# [[model.parameters]]
 # name="Width"
 # id="B2"
 # min=300
 # max=600
-[[model.parameter]]
+[[model.parameters]]
 name="Root Chord"
 id="GFXAORPLFWH:WingGeom:XSec_1:Root_Chord"
 min=0.8
 max=1.50
 
 [optimizer]
-population=20
-
-[[optimizer.objective]]
+[[optimizer.objectives]]
+id="cd"
 name="Cd"
 type="minimize"
-[[optimizer.objective]]
+[[optimizer.objectives]]
+id="cl"
 name="Cl"
 type="maximize"

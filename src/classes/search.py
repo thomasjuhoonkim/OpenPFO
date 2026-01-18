@@ -13,18 +13,16 @@ from classes.point import Point
 
 # util
 from util.get_logger import get_logger
+from util.get_progress import get_progress
 
 # ==============================================================================
 
 logger = get_logger()
+progress = get_progress()
 
 
 class Search:
-    def __init__(
-        self,
-        search_id: str,
-        grid_points: list[Point],
-    ):
+    def __init__(self, search_id: str, grid_points: list[Point]):
         self._search_id = search_id
         self._grid_points = grid_points
 
@@ -33,16 +31,14 @@ class Search:
         self._job_count = 0
         self._all_objectives_values: list[list[np.float64]] = []
 
+        progress.save_search(self)
+
     def _generate_job_id(self):
         id = self._job_count
         self._job_count += 1
         return f"{self._search_id}-job-{id}"
 
     def create_jobs(self):
-        """
-        Generate jobs for all grid points
-        """
-
         for grid_point in self._grid_points:
             job_id = self._generate_job_id()
             job = Job(job_id=job_id, point=grid_point)
@@ -51,7 +47,9 @@ class Search:
             self._jobs.append(job)
             self._job_queue.append(job)
 
-    def get_search_id(self):
+        progress.save_search(self)
+
+    def get_id(self):
         return self._search_id
 
     def get_jobs(self):
@@ -65,5 +63,6 @@ class Search:
             job = self._job_queue.popleft()
             job.dispatch(should_execute_cleanup=should_execute_cleanup)
 
-            objective_values = job.get_objective_values()
+            objectives = job.get_objectives()
+            objective_values = [objective.get_pymoo_value() for objective in objectives]
             self._all_objectives_values.append(objective_values)

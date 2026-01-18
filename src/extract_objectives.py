@@ -1,7 +1,11 @@
+# fluidfoam
 import fluidfoam
 
 # classes
 from classes.functions import ExtractObjectivesParameters, ExtractObjectivesReturn
+
+# util
+from util.get_objective_by_id import get_objective_by_id
 
 
 def extract_objectives(
@@ -23,9 +27,9 @@ def extract_objectives(
     """ ======================= YOUR CODE BELOW HERE ======================= """
 
     case_directory = extract_objectives_parameters.output_case_directory
+    objectives = extract_objectives_parameters.objectives
     logger = extract_objectives_parameters.logger
 
-    objectives = []
     run_ok = True
     try:
         force = fluidfoam.readforce(
@@ -34,9 +38,12 @@ def extract_objectives(
             time_name="0",
             name="coefficient",
         )
-        c_d = force[-1][1]  # latest time & second index (Cd)
-        c_l = force[-1][4]  # latest time & fourth index (Cl)
-        objectives = [c_d, c_l]
+
+        c_d = get_objective_by_id(objectives=objectives, id="cd")
+        c_d.set_value(force[-1][1])  # latest time & second index (Cd - maximize)
+
+        c_l = get_objective_by_id(objectives=objectives, id="cl")
+        c_l.set_value(force[-1][4])  # latest time & fourth index (Cl - minimize)
 
     except Exception:
         run_ok = False

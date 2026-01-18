@@ -12,7 +12,7 @@ def create_algorithm(problem: Any):
         termination=("n_gen", 10),
         seed=1,
         verbose=True,
-        # save_history=True,
+        save_history=True,
     )
 
     return algorithm

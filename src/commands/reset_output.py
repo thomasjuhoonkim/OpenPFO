@@ -22,7 +22,7 @@ def reset_output():
     # check if output directory exists
     if not os.path.isdir(OUTPUT_DIRECTORY):
         logger.warning(f"{OUTPUT_DIRECTORY} directory does not exist, creating one...")
-        os.makedir(OUTPUT_DIRECTORY)
+        os.makedirs(OUTPUT_DIRECTORY)
 
     subdirectories = [
         OUTPUT_CASES_DIRECTORY,

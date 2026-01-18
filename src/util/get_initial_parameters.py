@@ -4,7 +4,7 @@ from util.get_config import get_config
 
 config = get_config()
 
-CONFIG_PARAMETERS = config["model"]["parameter"]
+CONFIG_PARAMETERS = config["model"]["parameters"]
 
 
 def get_initial_parameters() -> list[Parameter]:

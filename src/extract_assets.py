@@ -26,7 +26,7 @@ def extract_assets(
     output_directory = extract_assets_parameters.output_assets_directory
     logger = extract_assets_parameters.logger
 
-    PVBATCH = "/Applications/ParaView-6.0.1.app/Contents/bin/pvbatch"
+    PVBATCH = "/Applications/ParaView-6.0.0.app/Contents/bin/pvbatch"
 
     commands = [
         f"{PVBATCH} input/paraview/slice.py {case_directory} {output_directory}",

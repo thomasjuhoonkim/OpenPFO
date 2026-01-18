@@ -4,14 +4,15 @@ from typing_extensions import Annotated
 
 # commands
 from commands.check_output import check_output
+from commands.check_config import check_config
 
 # classes
 from classes.problem import OpenPFOProblem
 
 # util
 from util.get_initial_parameters import get_initial_parameters
+from util.get_initial_objectives import get_initial_objectives
 from util.get_logger import get_logger
-from util.get_objectives import get_objectives
 
 # user
 from create_algorithm import create_algorithm
@@ -29,3 +30,4 @@ def doe(
 ):
     # pre-run checks
     check_output()
+    check_config()

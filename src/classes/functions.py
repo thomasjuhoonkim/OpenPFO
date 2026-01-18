@@ -1,6 +1,10 @@
+# logging
 from logging import Logger
+
+# classes
 from classes.point import Point
 from classes.variable import Variable
+from classes.objective import Objective
 
 # ==============================================================================
 
@@ -117,14 +121,21 @@ class ExecuteSolverReturn(DefaultReturn):
 
 
 class ExtractObjectivesParameters(DefaultParameters):
-    def __init__(self, output_case_directory: str, job_id: str, logger: Logger):
+    def __init__(
+        self,
+        output_case_directory: str,
+        job_id: str,
+        logger: Logger,
+        objectives: list[Objective],
+    ):
         super().__init__(
             output_case_directory=output_case_directory, job_id=job_id, logger=logger
         )
+        self.objectives = objectives
 
 
 class ExtractObjectivesReturn(DefaultReturn):
-    def __init__(self, run_ok: bool, objectives: list[float]):
+    def __init__(self, run_ok: bool, objectives: list[Objective]):
         super().__init__(run_ok=run_ok)
         self.objectives = objectives
 
