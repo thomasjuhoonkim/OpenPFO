@@ -61,7 +61,7 @@ def run(
 
     # solution
     solution_representations = [
-        f"Solution {i}\n\n{solution.get_solution_representation()}"
+        f"SOLUTION {i}\n{solution.get_solution_representation()}"
         for i, solution in enumerate(solutions)
     ]
     logger.info("Final result:")
