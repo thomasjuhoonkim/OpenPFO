@@ -8,45 +8,28 @@ processors=8
 # id: identifier for the parameter, cell for FreeCAD, paramater ID for OpenVSP
 # min: minimum value for the parameter
 # max: maximum value for the parameter
-# [[model.parameter]]
+# [[model.parameters]]
 # name="Length"
 # id="B1"
 # min=750
 # max=1000
-# [[model.parameter]]
+# [[model.parameters]]
 # name="Width"
 # id="B2"
 # min=300
 # max=600
-[[model.parameter]]
-name="Span"
-id="VEBTFZANEQD:WingGeom:WingGeom:TotalSpan"
-min=0.75
-max=0.95
-[[model.parameter]]
-name="Chord"
-id="MNGAFAQTAPA:WingGeom:WingGeom:TotalChord"
-min=0.45
-max=0.65
-[[model.parameter]]
-name="Sweep"
-id="DFMNISRTXAJ:WingGeom:XSec_1:Sweep"
-min=20
-max=30
-[[model.parameter]]
-name="Dihedral"
-id="NJDEOYDFTRR:WingGeom:XSec_1:Dihedral"
-min=-10
-max=10
-# [[model.paramater]]
-# name="Twist"
-# id=
-# min=-9
-# max=0
+[[model.parameters]]
+name="Root Chord"
+id="GFXAORPLFWH:WingGeom:XSec_1:Root_Chord"
+min=0.8
+max=1.50
 
 [optimizer]
-population=20
-
-[[optimizer.objective]]
+[[optimizer.objectives]]
+id="cd"
 name="Cd"
 type="minimize"
+[[optimizer.objectives]]
+id="cl"
+name="Cl"
+type="maximize"

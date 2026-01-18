@@ -12,7 +12,6 @@ from classes.objective import Objective
 from classes.parameter import Parameter
 
 # util
-from util.get_initial_parameters import get_initial_parameters
 from util.get_logger import get_logger
 
 # ==============================================================================
@@ -27,6 +26,8 @@ class OpenPFOProblem(Problem):
         objectives: list[Objective],
         should_execute_cleanup=True,
     ):
+        self._parameters = parameters
+        self._objectives = objectives
         self._search_count = 0
         self._should_execute_cleanup = should_execute_cleanup
 
@@ -50,7 +51,7 @@ class OpenPFOProblem(Problem):
         return f"search-{id}"
 
     def _get_grid_points(self, x: list[list[np.float64]]) -> list[Point]:
-        parameters = get_initial_parameters()
+        parameters = self._parameters
 
         grid_points = []
         for coordinates in x:

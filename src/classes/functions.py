@@ -1,5 +1,10 @@
+# logging
 from logging import Logger
+
+# classes
 from classes.point import Point
+from classes.variable import Variable
+from classes.objective import Objective
 
 # ==============================================================================
 
@@ -38,9 +43,15 @@ class CreateGeometryParameters:
 
 
 class CreateGeometryReturn(DefaultReturn):
-    def __init__(self, run_ok: bool, output_geometry_filepath: str):
+    def __init__(
+        self,
+        run_ok: bool,
+        output_geometry_filepath: str,
+        extra_variables: list[Variable] = [],
+    ):
         super().__init__(run_ok=run_ok)
         self.output_geometry_filepath = output_geometry_filepath
+        self.extra_variables = extra_variables
 
 
 # ==============================================================================
@@ -53,11 +64,15 @@ class ModifyCaseParameters(DefaultParameters):
         job_id: str,
         output_geometry_filepath: str,
         logger: Logger,
+        grid_point: Point,
+        extra_variables: list[Variable],
     ):
         super().__init__(
             output_case_directory=output_case_directory, job_id=job_id, logger=logger
         )
         self.output_geometry_filepath = output_geometry_filepath
+        self.grid_point = grid_point
+        self.extra_variables = extra_variables
 
 
 class ModifyCaseReturn(DefaultReturn):
@@ -106,14 +121,21 @@ class ExecuteSolverReturn(DefaultReturn):
 
 
 class ExtractObjectivesParameters(DefaultParameters):
-    def __init__(self, output_case_directory: str, job_id: str, logger: Logger):
+    def __init__(
+        self,
+        output_case_directory: str,
+        job_id: str,
+        logger: Logger,
+        objectives: list[Objective],
+    ):
         super().__init__(
             output_case_directory=output_case_directory, job_id=job_id, logger=logger
         )
+        self.objectives = objectives
 
 
 class ExtractObjectivesReturn(DefaultReturn):
-    def __init__(self, run_ok: bool, objectives: list[float]):
+    def __init__(self, run_ok: bool, objectives: list[Objective]):
         super().__init__(run_ok=run_ok)
         self.objectives = objectives
 

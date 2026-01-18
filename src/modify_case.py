@@ -4,6 +4,9 @@ import subprocess
 # classes
 from classes.functions import ModifyCaseParameters, ModifyCaseReturn
 
+# PyFoam
+from PyFoam.RunDictionary.ParsedParameterFile import ParsedParameterFile
+
 
 def modify_case(modify_case_parameters: ModifyCaseParameters) -> ModifyCaseReturn:
     """
@@ -21,6 +24,7 @@ def modify_case(modify_case_parameters: ModifyCaseParameters) -> ModifyCaseRetur
     geometry_filepath = modify_case_parameters.output_geometry_filepath
     case_directory = modify_case_parameters.output_case_directory
     logger = modify_case_parameters.logger
+    point = modify_case_parameters.grid_point
 
     commands = [
         f"cp {geometry_filepath} {case_directory}/original.stl",
@@ -37,6 +41,30 @@ def modify_case(modify_case_parameters: ModifyCaseParameters) -> ModifyCaseRetur
             run_ok = False
             logger.error(f"{command} failed")
             logger.error(f"\n{error.stderr}")
+
+    # postProcessing file modifications
+    root_chord_variable = point.get_variables()[0]
+    root_chord = root_chord_variable.get_value()
+    tip_chord = 0.10  # metres
+    taper_ratio = tip_chord / root_chord
+    l_ref = (
+        root_chord * (2 / 3) * ((1 + taper_ratio + taper_ratio**2) / (1 + taper_ratio))
+    )
+    a_ref = l_ref / 0.9
+    c_of_r = root_chord - l_ref + (0.25 * l_ref)
+
+    try:
+        control_dict_filepath = f"{case_directory}/system/controlDict"
+        control_dict_file = ParsedParameterFile(control_dict_filepath)
+
+        # modify values
+        control_dict_file["functions"]["forceCoeffs1"]["lRef"] = l_ref
+        control_dict_file["functions"]["forceCoeffs1"]["Aref"] = a_ref
+        control_dict_file["functions"]["forceCoeffs1"]["CofR"] = f"({c_of_r} 0 0)"
+
+        control_dict_file.writeFile()
+    except Exception:
+        logger.exception("failed to modify postProcessingDict files")
 
     MODIFY_CASE_RETURN = ModifyCaseReturn(run_ok=run_ok)
 

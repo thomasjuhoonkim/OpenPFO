@@ -1,6 +1,8 @@
 # classes
 from classes.functions import CreateGeometryParameters, CreateGeometryReturn
 from classes.modeler import FreeCADModeler, OpenVSPModeler
+from classes.point import Point
+from classes.variable import Variable
 
 
 def create_geometry(
@@ -16,6 +18,7 @@ def create_geometry(
     """ ======================= YOUR CODE BELOW HERE ======================= """
 
     # destructure parameters
+    run_ok = True
     job_id = create_geometry_parameters.job_id
     point = create_geometry_parameters.grid_point
     output_assets_directory = create_geometry_parameters.output_assets_directory
@@ -29,12 +32,26 @@ def create_geometry(
     )
     openvsp_modeler.check_model()
 
+    root_chord_variable = point.get_variables()[0]
+    root_chord = root_chord_variable.get_value()
+    tip_chord = 0.10  # metres
+    taper_ratio = tip_chord / root_chord
+    sweep = 2253.36 * taper_ratio**2 - 730.13 * taper_ratio + 79.72
+    sweep_variable = Variable(
+        name="Sweep", id="DFMNISRTXAJ:WingGeom:XSec_1:Sweep", value=sweep
+    )
+    updated_variables = [*point.get_variables(), sweep_variable]
+    updated_point = Point(updated_variables)
+
     output_geometry_filepath = openvsp_modeler.generate_geometry(
-        job_id=job_id, point=point, output_assets_directory=output_assets_directory
+        job_id=job_id,
+        point=updated_point,
+        output_assets_directory=output_assets_directory,
     )
 
     CREATE_GEOMETRY_RETURN = CreateGeometryReturn(
-        output_geometry_filepath=output_geometry_filepath, run_ok=True
+        output_geometry_filepath=output_geometry_filepath,
+        run_ok=run_ok,
     )
 
     # ==========================================================================

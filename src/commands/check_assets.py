@@ -1,10 +1,18 @@
+# system
 import os
+
+# typer
 import typer
 from typing_extensions import Annotated
 
+# classes
 from classes.job import Job
 from classes.point import Point
+
+# constants
 from constants.path import OUTPUT_CASES_DIRECTORY
+
+# util
 from util.get_logger import get_logger
 
 logger = get_logger()

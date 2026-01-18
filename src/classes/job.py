@@ -4,7 +4,18 @@ import os
 # visualization
 import pyvista as pv
 
+# datetime
+from datetime import datetime
+
 # constants
+from constants.job import JobStatus, JobStep
+from constants.path import (
+    INPUT_CASE_TEMPLATE,
+    OUTPUT_ASSETS_DIRECTORY,
+    OUTPUT_CASES_DIRECTORY,
+)
+
+# classes
 from classes.functions import (
     CreateGeometryParameters,
     CreateMeshParameters,
@@ -14,13 +25,6 @@ from classes.functions import (
     ExtractObjectivesParameters,
     ModifyCaseParameters,
 )
-from constants.path import (
-    INPUT_CASE_TEMPLATE,
-    OUTPUT_ASSETS_DIRECTORY,
-    OUTPUT_CASES_DIRECTORY,
-)
-
-# classes
 from classes.point import Point
 
 # PyFOAM
@@ -36,12 +40,14 @@ from extract_assets import extract_assets
 from extract_objectives import extract_objectives
 
 # util
+from util.get_initial_objectives import get_initial_objectives
 from util.get_logger import get_logger
+from util.get_progress import get_progress
 
 # ==============================================================================
 
-# logging
 logger = get_logger()
+progress = get_progress()
 
 
 class Job:
@@ -49,14 +55,48 @@ class Job:
         self._job_id = job_id
         self._point = point
 
+        self._status = JobStatus.INITIALIZED
+        self._step = JobStep.INIT
         self._run_ok = True
+        self._start_time = None
+        self._resolution_time = None
         self._output_geometry_filepath = ""
         self._output_case_directory = f"{OUTPUT_CASES_DIRECTORY}/{job_id}"
         self._output_assets_directory = f"{OUTPUT_ASSETS_DIRECTORY}/{job_id}"
-        self._objective_values = [float("inf") for _ in point.get_variables()]
+        self._objectives = []
+        self._extra_variables = []
 
-    def get_objective_values(self):
-        return self._objective_values
+        progress.save_job(self)
+
+    def get_id(self):
+        return self._job_id
+
+    def get_status(self):
+        return self._status.value
+
+    def get_run_ok(self):
+        return self._run_ok
+
+    def get_step(self):
+        return self._step.value
+
+    def get_start_time(self):
+        return self._start_time
+
+    def get_resolution_time(self):
+        return self._resolution_time
+
+    def get_case_directory(self):
+        return self._output_case_directory
+
+    def get_assets_directory(self):
+        return self._output_assets_directory
+
+    def get_point(self):
+        return self._point
+
+    def get_objectives(self):
+        return self._objectives
 
     def visualize_geometry(self):
         mesh = pv.read(self._output_geometry_filepath)
@@ -76,6 +116,10 @@ class Job:
             copy_case = base_case.cloneCase(self._output_case_directory)
             logger.info(f"Generated case directory {copy_case.name}")
 
+        self._status = JobStatus.READY
+        self._step = JobStep.PREPARE  # may not need
+        progress.save_job(self)
+
     def dispatch(
         self,
         should_create_geometry=True,
@@ -89,11 +133,16 @@ class Job:
         logger.info(
             f"======================= JOB {self._job_id} START ======================="
         )
+        self._start_time = datetime.now()
+        self._status = JobStatus.RUNNING
+        progress.save_job(self)
 
         if self._run_ok and should_create_geometry:
             logger.info(
                 f"Running create_geometry to generate a geometry for grid point {self._point.get_point_representation()}"
             )
+            self._step = JobStep.GEOMETRY
+            progress.save_job(self)
             create_geometry_parameters = CreateGeometryParameters(
                 grid_point=self._point,
                 output_assets_directory=self._output_assets_directory,
@@ -106,16 +155,23 @@ class Job:
             self._output_geometry_filepath = (
                 create_geometry_return.output_geometry_filepath
             )
+            self._extra_variables = create_geometry_return.extra_variables
         else:
             logger.warning("Skipping create_geometry")
 
+        progress.save_job(self)
+
         if self._run_ok and should_modify_case:
             logger.info("Running modify_case to customize OpenFOAM case")
+            self._step = JobStep.CASE
+            progress.save_job(self)
             modify_case_parameters = ModifyCaseParameters(
                 output_case_directory=self._output_case_directory,
                 job_id=self._job_id,
                 output_geometry_filepath=self._output_geometry_filepath,
                 logger=logger,
+                grid_point=self._point,
+                extra_variables=self._extra_variables,
             )
             modify_case_return = modify_case(
                 modify_case_parameters=modify_case_parameters
@@ -124,8 +180,12 @@ class Job:
         else:
             logger.warning("Skipping modify_case")
 
+        progress.save_job(self)
+
         if self._run_ok and should_create_mesh:
             logger.info("Running create_mesh to generate a mesh for geometry")
+            self._step = JobStep.MESH
+            progress.save_job(self)
             create_mesh_parameters = CreateMeshParameters(
                 output_case_directory=self._output_case_directory,
                 job_id=self._job_id,
@@ -139,8 +199,12 @@ class Job:
         else:
             logger.warning("Skipping create_mesh")
 
+        progress.save_job(self)
+
         if self._run_ok and should_execute_solver:
             logger.info("Running execute_solver to obtain simulation results")
+            self._step = JobStep.SOLVE
+            progress.save_job(self)
             execute_solver_parameters = ExecuteSolverParameters(
                 output_case_directory=self._output_case_directory,
                 job_id=self._job_id,
@@ -151,23 +215,32 @@ class Job:
         else:
             logger.warning("Skipping execute_solver")
 
+        progress.save_job(self)
+
         if self._run_ok and should_extract_objectives:
             logger.info("Running extract_objectives for objective values extraction")
+            self._step = JobStep.OBJECTIVES
+            progress.save_job(self)
             extract_objectives_parameters = ExtractObjectivesParameters(
                 output_case_directory=self._output_case_directory,
                 job_id=self._job_id,
                 logger=logger,
+                objectives=get_initial_objectives(),
             )
             extract_objectives_return = extract_objectives(
                 extract_objectives_parameters=extract_objectives_parameters
             )
-            self._objective_values = extract_objectives_return.objectives
+            self._objectives = extract_objectives_return.objectives
             self._run_ok = extract_objectives_return.run_ok
         else:
             logger.warning("Skipping extract_objectives")
 
+        progress.save_job(self)
+
         if self._run_ok and should_extract_assets:
             logger.info("Running extract_assets for asset extraction")
+            self._step = JobStep.ASSETS
+            progress.save_job(self)
             extract_assets_parameters = ExtractAssetsParameters(
                 output_case_directory=self._output_case_directory,
                 output_case_foam_filepath=f"{self._output_case_directory}/{self._job_id}.foam",
@@ -183,7 +256,9 @@ class Job:
         else:
             logger.warning("Skipping extract_assets")
 
-        if self._run_ok and should_execute_cleanup:
+        progress.save_job(self)
+
+        if should_execute_cleanup:  # don't care about run status here
             logger.info("Running execute_cleanup for job cleanup")
             execute_cleanup_parameters = ExecuteCleanupParameters(
                 output_case_directory=self._output_case_directory,
@@ -196,6 +271,13 @@ class Job:
             self._run_ok = execute_cleanup_return.run_ok
         else:
             logger.warning("Skipping execute_cleanup")
+
+        self._resolution_time = datetime.now()
+        if self._run_ok:
+            self._status = JobStatus.COMPLETE
+        else:
+            self._status = JobStatus.FAILED
+        progress.save_job(self)
 
         logger.info(
             f"======================= JOB {self._job_id} END ========================="

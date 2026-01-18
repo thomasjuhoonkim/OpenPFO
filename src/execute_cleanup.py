@@ -19,13 +19,7 @@ def execute_cleanup(
     case_directory = execute_cleanup_parameters.output_case_directory
     logger = execute_cleanup_parameters.logger
     commands = [
-        # f'mpirun -np {PROCESSORS} drm --match "^processor.*" {case_directory}',
-        # f'mpirun -np {PROCESSORS} drm --match "^dynamicCode$" {case_directory}',
-        # f'mpirun -np {PROCESSORS} drm --match "^VTK$" {case_directory}',
-        # f'mpirun -np {PROCESSORS} drm --match "^polyMesh$" {case_directory}/constant',
-        # f'mpirun -np {PROCESSORS} drm --match "[1-9]*" {case_directory}',
-        # f'mpirun -np {PROCESSORS} drm --match "[0-9]*\.[0-9]*" {case_directory}',
-        f"pyFoamClearCase.py {case_directory} --keep-last --keep-postprocessing",
+        f"pyFoamClearCase.py {case_directory} --keep-last --keep-postprocessing --processors-remove",
     ]
 
     run_ok = True
