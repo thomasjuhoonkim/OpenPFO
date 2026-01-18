@@ -22,8 +22,9 @@ from commands.doe import doe
 # commands - collect
 from commands.collect_assets import collect_assets
 
-# commands - test
+# commands - random
 from commands.test import test
+from commands.hello import hello
 
 app = typer.Typer(name="pfo", help="Opensource Parametric Flow Optimizer")
 
@@ -54,8 +55,9 @@ app.command(name="doe")(doe)
 # collect
 app.command(name="collectAssets")(collect_assets)
 
-# test
+# random
 app.command(name="test")(test)
+app.command(name="hello")(hello)
 
 # report
 

@@ -1,0 +1,15 @@
+package:
+  name: openvsp
+  version: 3.46.0
+
+source:
+  path: ../
+
+requirements:
+  build:
+    - python
+    - setuptools
+    - degen_geom
+
+  run:
+    - python
