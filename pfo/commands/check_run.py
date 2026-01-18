@@ -5,7 +5,6 @@ import typer
 # commands
 from commands.check_output import check_output
 from commands.check_config import check_config
-from commands.check_foam import check_foam
 
 # classes
 from classes.job import Job
@@ -29,7 +28,6 @@ def check_run(
     # pre-run checks
     check_output()
     check_config()
-    check_foam()
 
     grid_points = get_random_points(count=count)
     for i, point in enumerate(grid_points):

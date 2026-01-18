@@ -6,7 +6,6 @@ from commands.reset_case_template import reset_case_template
 from commands.reset_output import reset_output
 
 # commands - check
-from commands.check_foam import check_foam
 from commands.check_output import check_output
 from commands.check_config import check_config
 from commands.check_meshes import check_meshes
@@ -39,7 +38,6 @@ app.command(
 )(reset_output)
 
 # checks
-app.command(name="checkFoam")(check_foam)
 app.command(name="checkOutput")(check_output)
 app.command(name="checkConfig")(check_config)
 app.command(name="checkSetup")(check_setup)

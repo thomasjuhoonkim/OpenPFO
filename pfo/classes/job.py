@@ -30,19 +30,19 @@ from classes.point import Point
 # PyFOAM
 from PyFoam.RunDictionary.SolutionDirectory import SolutionDirectory
 
-# input
-from create_geometry import create_geometry
-from create_mesh import create_mesh
-from execute_cleanup import execute_cleanup
-from execute_solver import execute_solver
-from modify_case import modify_case
-from extract_assets import extract_assets
-from extract_objectives import extract_objectives
-
 # util
 from util.get_initial_objectives import get_initial_objectives
 from util.get_logger import get_logger
 from util.get_progress import get_progress
+
+# input
+create_geometry = __import__("0_create_geometry")
+modify_case = __import__("1_modify_case")
+create_mesh = __import__("2_create_mesh")
+execute_solver = __import__("3_execute_solver")
+extract_objectives = __import__("4_extract_objectives")
+extract_assets = __import__("5_extract_assets")
+execute_cleanup = __import__("6_execute_cleanup")
 
 logger = get_logger()
 progress = get_progress()
@@ -149,7 +149,7 @@ class Job:
                     job_id=self._job_id,
                     logger=logger,
                 )
-                create_geometry_return = create_geometry(
+                create_geometry_return = create_geometry.create_geometry(
                     create_geometry_parameters=create_geometry_parameters
                 )
                 self._output_geometry_filepath = (
@@ -178,7 +178,7 @@ class Job:
                     grid_point=self._point,
                     extra_variables=self._extra_variables,
                 )
-                modify_case(modify_case_parameters=modify_case_parameters)
+                modify_case.modify_case(modify_case_parameters=modify_case_parameters)
             else:
                 logger.warning("Skipping modify_case")
         except Exception:
@@ -199,7 +199,7 @@ class Job:
                     output_geometry_filepath=self._output_geometry_filepath,
                     logger=logger,
                 )
-                create_mesh(create_mesh_parameters=create_mesh_parameters)
+                create_mesh.create_mesh(create_mesh_parameters=create_mesh_parameters)
             else:
                 logger.warning("Skipping create_mesh")
         except Exception:
@@ -219,7 +219,7 @@ class Job:
                     job_id=self._job_id,
                     logger=logger,
                 )
-                execute_solver(execute_solver_parameters)
+                execute_solver.execute_solver(execute_solver_parameters)
             else:
                 logger.warning("Skipping execute_solver")
         except Exception:
@@ -242,7 +242,7 @@ class Job:
                     logger=logger,
                     objectives=get_initial_objectives(),
                 )
-                extract_objectives_return = extract_objectives(
+                extract_objectives_return = extract_objectives.extract_objectives(
                     extract_objectives_parameters=extract_objectives_parameters
                 )
                 self._objectives = extract_objectives_return.objectives
@@ -268,7 +268,9 @@ class Job:
                     job_id=self._job_id,
                     logger=logger,
                 )
-                extract_assets(extract_assets_parameters=extract_assets_parameters)
+                extract_assets.extract_assets(
+                    extract_assets_parameters=extract_assets_parameters
+                )
             else:
                 logger.warning("Skipping extract_assets")
         except Exception:
@@ -286,7 +288,9 @@ class Job:
                     job_id=self._job_id,
                     logger=logger,
                 )
-                execute_cleanup(execute_cleanup_parameters=execute_cleanup_parameters)
+                execute_cleanup.execute_cleanup(
+                    execute_cleanup_parameters=execute_cleanup_parameters
+                )
             else:
                 logger.warning("Skipping execute_cleanup")
         except Exception:

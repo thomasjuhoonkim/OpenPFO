@@ -5,7 +5,6 @@ from typing_extensions import Annotated
 # commands
 from commands.check_output import check_output
 from commands.check_config import check_config
-from commands.check_foam import check_foam
 
 # classes
 from classes.problem import OpenPFOProblem
@@ -16,9 +15,6 @@ from util.get_initial_objectives import get_initial_objectives
 from util.get_progress import get_progress
 from util.get_logger import get_logger
 
-# user
-from create_algorithm import create_algorithm
-
 # pymoo
 from pymoo.algorithms.moo.nsga2 import NSGA2
 
@@ -26,6 +22,9 @@ from pymoo.algorithms.moo.nsga2 import NSGA2
 from datetime import datetime
 
 from util.get_solutions import get_solutions
+
+# algorithm
+from A_create_algorithm import create_algorithm
 
 logger = get_logger()
 progress = get_progress()
@@ -37,7 +36,6 @@ def run(
     # pre-run checks
     check_output()
     check_config()
-    check_foam()
 
     # start time
     start_time = datetime.now()
