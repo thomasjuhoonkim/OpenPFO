@@ -14,8 +14,14 @@ def check_config():
     if "compute" not in config:
         logger.error("[compute] is missing")
         sys.exit(1)
+    if "hpc" not in config["compute"]:
+        logger.error("hpc is missing from [compute]")
+        sys.exit(1)
     if "processors" not in config["compute"]:
         logger.error("processors is missing from [compute]")
+        sys.exit(1)
+    if not isinstance(config["compute"]["hpc"], bool):
+        logger.error("hpc is not a boolean")
         sys.exit(1)
     if not isinstance(config["compute"]["processors"], int):
         logger.error("processors is not an integer")

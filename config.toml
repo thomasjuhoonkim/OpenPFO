@@ -1,4 +1,5 @@
 [compute]
+hpc=true
 processors=8
 
 [model]

@@ -1,9 +1,6 @@
 # system
 import os
 
-# visualization
-import pyvista as pv
-
 # datetime
 from datetime import datetime
 
@@ -31,6 +28,7 @@ from classes.point import Point
 from PyFoam.RunDictionary.SolutionDirectory import SolutionDirectory
 
 # util
+from util.get_config import get_config
 from util.get_initial_objectives import get_initial_objectives
 from util.get_logger import get_logger
 from util.get_progress import get_progress
@@ -44,8 +42,14 @@ extract_objectives = __import__("4_extract_objectives")
 extract_assets = __import__("5_extract_assets")
 execute_cleanup = __import__("6_execute_cleanup")
 
+config = get_config()
 logger = get_logger()
 progress = get_progress()
+
+# visualization
+IS_HPC = config["compute"]["hpc"]
+if not IS_HPC:
+    import pyvista as pv
 
 
 class Job:
@@ -97,8 +101,13 @@ class Job:
         return self._objectives
 
     def visualize_geometry(self):
-        mesh = pv.read(self._output_geometry_filepath)
-        mesh.plot(window_size=[1920, 1080])
+        if not IS_HPC:
+            mesh = pv.read(self._output_geometry_filepath)
+            mesh.plot(window_size=[1920, 1080])
+        else:
+            logger.warning(
+                "config.compute.hpc is set true, geometry visualization with PyVista unavailable."
+            )
 
     def prepare_job(
         self, should_create_assets_directory=True, should_create_case_directory=True

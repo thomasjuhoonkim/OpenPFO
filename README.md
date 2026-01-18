@@ -1,16 +1,54 @@
 # OpenPFO
 
-## Usage
+## Getting Started
 
-OpenPFO requires Python 3.11
+### Python
+
+OpenPFO requires Python 3.11.
+
+### Virtual Environment & Dependencies
+
+To start using OpenPFO, create a virtual environment
+
+```
+// Python
+python3 -m venv .venv
+
+// Virtualenv
+virtualenv .venv
+```
+
+Activate the virtual environment
+
+```
+source .venv/bin/activate
+```
+
+Install dependencies
+
+```
+// Local
+pip install -r requirements-local.txt
+
+// HPC
+pip install -r requirements-hpc.txt
+```
+
+Finally, when you are finished, run to close the virtual environment.
+
+```
+deactivate
+```
 
 ### Install
 
-To start using OpenPFO, install the software
+To start using OpenPFO, install the package in editable mode. This is important as OpenPFO is a framework, you design your own implementation.
 
 ```
 pip install -e .
 ```
+
+## Usage
 
 ### Inputs and Configuration
 
@@ -56,38 +94,6 @@ Below are the high-level overview of the commands available in OpenPFO, use `[co
 - `pfo run`: Run the optimization case.
 
 - `pfo openReport`: Open the report of the optimization results.
-
-## Getting Started (Development)
-
-### Python
-
-OpenPFO requires Python 3.11.
-
-### Virtual Environment & Dependencies
-
-To start using OpenPFO, create a virtual environment
-
-```
-python3 -m venv .venv
-```
-
-Activate the virtual environment
-
-```
-source .venv/bin/activate
-```
-
-Install dependencies
-
-```
-pip install -r requirements.txt
-```
-
-Finally, when you are finished, run to close the virtual environment.
-
-```
-deactivate
-```
 
 ## Acknowledgements
 

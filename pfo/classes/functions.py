@@ -71,6 +71,7 @@ class ModifyCaseParameters(DefaultParameters):
         self.output_geometry_filepath = output_geometry_filepath
         self.grid_point = grid_point
         self.extra_variables = extra_variables
+        self.processors = config["compute"]["processors"]
 
 
 # ==============================================================================
