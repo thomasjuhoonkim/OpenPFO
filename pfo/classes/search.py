@@ -15,8 +15,6 @@ from classes.point import Point
 from util.get_logger import get_logger
 from util.get_progress import get_progress
 
-# ==============================================================================
-
 logger = get_logger()
 progress = get_progress()
 

@@ -55,7 +55,7 @@ functions
         libs            (forces);
 
         writeControl    timeStep;
-        writeInterval   5;
+        writeInterval   1;
 
         log             yes;
 

@@ -5,6 +5,7 @@ from typing_extensions import Annotated
 # commands
 from commands.check_output import check_output
 from commands.check_config import check_config
+from commands.check_foam import check_foam
 
 # classes
 from classes.problem import OpenPFOProblem
@@ -20,8 +21,6 @@ from create_algorithm import create_algorithm
 # pymoo
 from pymoo.algorithms.moo.nsga2 import NSGA2
 
-# ==============================================================================
-
 logger = get_logger()
 
 
@@ -31,3 +30,4 @@ def doe(
     # pre-run checks
     check_output()
     check_config()
+    check_foam()

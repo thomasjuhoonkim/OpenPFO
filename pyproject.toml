@@ -16,7 +16,7 @@ requires-python = "==3.11.*"
 dynamic = ["dependencies"]
 
 [project.scripts]
-pfo = "cli:app"
+pfo = "commands.cli:app"
 
 [tool.setuptools.dynamic]
 dependencies = { file = ["requirements.txt"] }

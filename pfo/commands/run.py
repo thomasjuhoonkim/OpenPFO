@@ -5,6 +5,7 @@ from typing_extensions import Annotated
 # commands
 from commands.check_output import check_output
 from commands.check_config import check_config
+from commands.check_foam import check_foam
 
 # classes
 from classes.problem import OpenPFOProblem
@@ -26,8 +27,6 @@ from datetime import datetime
 
 from util.get_solutions import get_solutions
 
-# ==============================================================================
-
 logger = get_logger()
 progress = get_progress()
 
@@ -38,6 +37,7 @@ def run(
     # pre-run checks
     check_output()
     check_config()
+    check_foam()
 
     # start time
     start_time = datetime.now()
