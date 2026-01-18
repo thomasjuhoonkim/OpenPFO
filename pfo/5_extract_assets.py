@@ -45,7 +45,6 @@ def extract_assets(
         ntasks_per_node=1,
         cpus_per_task=16,
         mem_per_cpu="4G",
-        array=range(len(commands)),
         output="OpenPFO.log",
         open_mode="append",
     )

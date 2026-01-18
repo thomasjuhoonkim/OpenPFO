@@ -26,27 +26,17 @@ def execute_cleanup(
         time="00:05:00",
         nodes=1,
         ntasks_per_node=1,
-        cpus_per_task=1,
-        mem_per_cpu="100M",
-        array=range(processors),
+        cpus_per_task={processors},
+        mem_per_cpu="1G",
         output="OpenPFO.log",
         open_mode="append",
     )
     slurm1.set_wait(True)
 
-    slurm1.add_cmd(
-        f"""
-DIR_TO_DELETE="{case_directory}/processor${{SLURM_ARRAY_TASK_ID}}"
-
-# Check if the directory exists and delete it
-if [ -d "$DIR_TO_DELETE" ]; then
-    echo "Task $SLURM_ARRAY_TASK_ID: Deleting directory $DIR_TO_DELETE"
-    rm -rf "$DIR_TO_DELETE"
-else
-    echo "Task $SLURM_ARRAY_TASK_ID: Directory $DIR_TO_DELETE not found, skipping"
-fi
-"""
+    command = (
+        f"parallel rm -rf {case_directory}/processor{{}} ::: $(seq 0 {processors - 1})"
     )
+    slurm1.add_cmd(command)
 
     slurm_job_id = slurm1.sbatch()
     logger.info(f"Successfully ran job {slurm_job_id} for cleanup processors.")
@@ -56,7 +46,7 @@ fi
     slurm2 = Slurm(
         job_name="foamCleanCase",
         account="def-jphickey",
-        time="00:05:00",
+        time="00:01:00",
         nodes=1,
         ntasks_per_node=1,
         cpus_per_task=1,
