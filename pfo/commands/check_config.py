@@ -48,6 +48,12 @@ def check_config():
     if "optimizer" not in config:
         logger.error("[optimizer] is missing")
         sys.exit(1)
+    if "seed" not in config["optimizer"]:
+        logger.error("seed is missing from [optimizer]")
+        sys.exit(1)
+    if not isinstance(config["optimizer"]["seed"], float):
+        logger.error("seed is not a float")
+        sys.exit(1)
     if "objectives" not in config["optimizer"]:
         logger.error("[[optimizer.objectives]] is missing from [optimizer]")
         sys.exit(1)

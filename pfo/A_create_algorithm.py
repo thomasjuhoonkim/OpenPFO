@@ -4,6 +4,11 @@ from typing import Any
 # pymoo
 from pymoo.algorithms.moo.nsga2 import NSGA2
 
+# util
+from util.get_config import get_config
+
+config = get_config()
+
 
 def create_algorithm(problem: Any):
     algorithm = None
@@ -12,7 +17,7 @@ def create_algorithm(problem: Any):
     algorithm.setup(
         problem=problem,
         termination=("n_gen", 10),
-        seed=1,
+        seed=config["optimizer"]["seed"],
         verbose=True,
         save_history=True,
     )

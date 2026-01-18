@@ -39,6 +39,7 @@ def run(
 
     # start time
     start_time = datetime.now()
+    logger.info(f"Start time: {start_time}")
     progress.save_start_time(start_time=start_time)
 
     # configure initial parameters

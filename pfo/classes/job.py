@@ -26,6 +26,7 @@ from classes.point import Point
 
 # PyFOAM
 from PyFoam.RunDictionary.SolutionDirectory import SolutionDirectory
+from PyFoam.RunDictionary.ParsedParameterFile import ParsedParameterFile
 
 # util
 from util.get_config import get_config
@@ -122,6 +123,14 @@ class Job:
             base_case = SolutionDirectory(INPUT_CASE_TEMPLATE)
             copy_case = base_case.cloneCase(self._output_case_directory)
             logger.info(f"Generated case directory {copy_case.name}")
+
+            # decomposeParDict subdomains
+            decompose_par_dict_filepath = (
+                f"{self._output_case_directory}/system/decomposeParDict"
+            )
+            decompose_par_dict = ParsedParameterFile(decompose_par_dict_filepath)
+            decompose_par_dict["numberOfSubdomains"] = config["compute"]["processors"]
+            decompose_par_dict.writeFile()
 
         self._status = JobStatus.READY
         self._step = JobStep.PREPARE  # may not need

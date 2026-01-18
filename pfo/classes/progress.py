@@ -1,3 +1,6 @@
+# system
+import sys
+
 # json
 import json
 
@@ -36,7 +39,10 @@ class Progress:
             "executionTimeSeconds": 0,
             "startTime": "",
             "endTime": "",
+            "command": " ".join(sys.argv),
         }
+        self._start_time = datetime.now()
+        self._end_time = datetime.now()
 
     def _save(self):
         with open(OUTPUT_RESULTS_JSON, "w") as results_json:
@@ -152,7 +158,11 @@ class Progress:
 
         return None
 
-    def save_execution_time(self, execution_time: int):
+    def save_execution_time(self, execution_time: int = None):
+        if execution_time is None:
+            time_diff = self._end_time - self._start_time
+        execution_time = time_diff.total_seconds()
+
         self._results["executionTimeSeconds"] = execution_time
 
         self._save()
@@ -161,7 +171,11 @@ class Progress:
 
         return None
 
-    def save_start_time(self, start_time: datetime):
+    def save_start_time(self, start_time: datetime = None):
+        if start_time is None:
+            start_time = datetime.now()
+            self._start_time = start_time
+
         self._results["startTime"] = start_time.isoformat()
 
         self._save()
@@ -170,7 +184,11 @@ class Progress:
 
         return None
 
-    def save_end_time(self, end_time: datetime):
+    def save_end_time(self, end_time: datetime = None):
+        if end_time is None:
+            end_time = datetime.now()
+            self._end_time = end_time
+
         self._results["endTime"] = end_time.isoformat()
 
         self._save()

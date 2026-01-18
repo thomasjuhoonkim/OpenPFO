@@ -1,3 +1,6 @@
+# datetime
+from datetime import datetime
+
 # system
 import os
 
@@ -18,8 +21,10 @@ from commands.check_output import check_output
 
 # util
 from util.get_logger import get_logger
+from util.get_progress import get_progress
 
 logger = get_logger()
+progress = get_progress()
 
 
 def check_extraction(
@@ -29,13 +34,19 @@ def check_extraction(
     solve: Annotated[bool, typer.Option(help="Run the solver on each job")] = False,
     cleanup: Annotated[bool, typer.Option(help="Run cleanup after each job")] = True,
 ):
+    # pre-run checks
     check_config()
     if not existing:
         check_output()
 
+    # start time
+    start_time = datetime.now()
+    logger.info(f"Start time: {start_time}")
+    progress.save_start_time(start_time=start_time)
+
+    # jobs
     job_ids = os.listdir(OUTPUT_CASES_DIRECTORY)
     job_ids.sort()
-
     for job_id in job_ids:
         job = Job(job_id=job_id, point=Point(variables=[]))
 
@@ -48,3 +59,13 @@ def check_extraction(
             should_extract_assets=True,
             should_execute_cleanup=cleanup,
         )
+
+    # end time
+    end_time = datetime.now()
+    logger.info(f"End time: {end_time}")
+    progress.save_end_time(end_time=end_time)
+
+    # execution time
+    execution_time = end_time - start_time
+    logger.info(f"Execution time: {execution_time.total_seconds()} s")
+    progress.save_execution_time(execution_time.total_seconds())

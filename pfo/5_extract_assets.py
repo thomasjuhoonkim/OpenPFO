@@ -26,14 +26,15 @@ def extract_assets(
     output_directory = extract_assets_parameters.output_assets_directory
     logger = extract_assets_parameters.logger
 
+    SHARED = "pvbatch --force-offscreen-rendering --opengl-window-backend OSMesa"
     commands = [
-        f"pvbatch input/paraview/slice.py {case_directory} {output_directory}",
-        f"pvbatch input/paraview/geometry.py {case_directory} {output_directory}",
-        f"pvbatch input/paraview/mesh.py {case_directory} {output_directory}",
-        f"pvbatch input/paraview/streamline.py {case_directory} {output_directory}",
-        f"pvbatch input/paraview/streamline-half.py {case_directory} {output_directory}",
-        f"pvbatch input/paraview/slice-velocity.py {case_directory} {output_directory}",
-        f"pvbatch input/paraview/slice-pressure.py {case_directory} {output_directory}",
+        f"{SHARED} input/paraview/slice.py {case_directory} {output_directory}",
+        f"{SHARED} input/paraview/geometry.py {case_directory} {output_directory}",
+        f"{SHARED} input/paraview/mesh.py {case_directory} {output_directory}",
+        f"{SHARED} input/paraview/streamline.py {case_directory} {output_directory}",
+        f"{SHARED} input/paraview/streamline-half.py {case_directory} {output_directory}",
+        f"{SHARED} input/paraview/slice-velocity.py {case_directory} {output_directory}",
+        f"{SHARED} input/paraview/slice-pressure.py {case_directory} {output_directory}",
     ]
 
     slurm = Slurm(
