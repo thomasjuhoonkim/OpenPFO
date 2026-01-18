@@ -12,9 +12,6 @@ from constants.path import (
 # util
 from util.get_logger import get_logger
 
-# ==============================================================================
-
-# logging
 logger = get_logger()
 
 

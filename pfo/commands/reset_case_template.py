@@ -11,9 +11,6 @@ from PyFoam.RunDictionary.SolutionDirectory import SolutionDirectory
 # util
 from util.get_logger import get_logger
 
-# ==============================================================================
-
-# logging
 logger = get_logger()
 
 

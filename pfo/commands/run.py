@@ -15,9 +15,6 @@ from util.get_initial_objectives import get_initial_objectives
 from util.get_progress import get_progress
 from util.get_logger import get_logger
 
-# user
-from create_algorithm import create_algorithm
-
 # pymoo
 from pymoo.algorithms.moo.nsga2 import NSGA2
 
@@ -26,7 +23,8 @@ from datetime import datetime
 
 from util.get_solutions import get_solutions
 
-# ==============================================================================
+# algorithm
+from A_create_algorithm import create_algorithm
 
 logger = get_logger()
 progress = get_progress()

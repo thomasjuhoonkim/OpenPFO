@@ -14,8 +14,6 @@ from constants.modeler import AbstractModeler
 from util.get_config import get_config
 from util.get_logger import get_logger
 
-# ==============================================================================
-
 config = get_config()
 logger = get_logger()
 

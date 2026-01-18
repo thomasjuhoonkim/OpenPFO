@@ -1,5 +1,11 @@
+# fluidfoam
+import fluidfoam
+
 # classes
 from classes.functions import ExtractObjectivesParameters, ExtractObjectivesReturn
+
+# util
+from util.get_objective_by_id import get_objective_by_id
 
 
 def extract_objectives(
@@ -20,12 +26,24 @@ def extract_objectives(
 
     """ ======================= YOUR CODE BELOW HERE ======================= """
 
-    # Extract your objectives using a post-processing library of your choice.
-    #
-    # case_directory = extract_objectives_parameters.output_case_directory
-    # objectives = some_processes_to_extract_objectives_from_simulation_output(case_directory)
-    #
-    # EXTRACT_OBJECTIVES_RETURN = ExtractObjectivesReturn(objectives=objectives)
+    case_directory = extract_objectives_parameters.output_case_directory
+    objectives = extract_objectives_parameters.objectives
+    logger = extract_objectives_parameters.logger
+
+    force = fluidfoam.readforce(
+        path=case_directory,
+        namepatch="forceCoeffs1",
+        time_name="0",
+        name="coefficient",
+    )
+
+    c_d = get_objective_by_id(objectives=objectives, id="cd")
+    c_d.set_value(force[-1][1])  # latest time & second index (Cd - maximize)
+
+    c_l = get_objective_by_id(objectives=objectives, id="cl")
+    c_l.set_value(force[-1][4])  # latest time & fourth index (Cl - minimize)
+
+    logger.info("Successfully extracted objectives")
 
     EXTRACT_OBJECTIVES_RETURN = ExtractObjectivesReturn(objectives=objectives)
 

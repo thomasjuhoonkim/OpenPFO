@@ -1,6 +1,6 @@
 # classes
 from classes.functions import CreateGeometryParameters, CreateGeometryReturn
-from classes.modeler import FreeCADModeler, OpenVSPModeler
+from classes.modeler import OpenVSPModeler
 from classes.point import Point
 from classes.variable import Variable
 
@@ -18,7 +18,6 @@ def create_geometry(
     """ ======================= YOUR CODE BELOW HERE ======================= """
 
     # destructure parameters
-    run_ok = True
     job_id = create_geometry_parameters.job_id
     point = create_geometry_parameters.grid_point
     output_assets_directory = create_geometry_parameters.output_assets_directory
@@ -51,35 +50,7 @@ def create_geometry(
 
     CREATE_GEOMETRY_RETURN = CreateGeometryReturn(
         output_geometry_filepath=output_geometry_filepath,
-        run_ok=run_ok,
     )
-
-    # ==========================================================================
-
-    # # destructure parameters
-    # point = create_geometry_parameters.grid_point
-    # job_id = create_geometry_parameters.job_id
-    # output_assets_directory = create_geometry_parameters.output_assets_directory
-
-    # FreeCAD
-    # MODEL_FILEPATH = "input/model.FCStd"
-    # FREECAD_FILEPATH = "/Applications/FreeCAD.app/Contents/Resources/lib"
-    # # FREECAD_FILEPATH = "/usr/lib/freecad/lib"
-    # # FREECAD_FILEPATH = "C:\\Program Files\\FreeCAD\\bin"
-    # freecad_modeler = FreeCADModeler(
-    #     model_filepath=MODEL_FILEPATH, freecad_filepath=FREECAD_FILEPATH
-    # )
-    # freecad_modeler.check_model()
-
-    # output_geometry_filepath = freecad_modeler.generate_geometry(
-    #     job_id=job_id,
-    #     point=point,
-    #     output_assets_directory=output_assets_directory,
-    # )
-
-    # CREATE_GEOMETRY_RETURN = CreateGeometryReturn(
-    #     output_geometry_filepath=output_geometry_filepath
-    # )
 
     """ ======================= YOUR CODE ABOVE HERE ======================= """
 

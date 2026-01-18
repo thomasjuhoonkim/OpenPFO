@@ -1,13 +1,13 @@
-# system
-import subprocess
-
 # classes
-from classes.functions import ExtractAssetsParameters, ExtractAssetsReturn
+from classes.functions import ExtractAssetsParameters
+
+# util
+from util.run_parallel_commands import run_parallel_commands
 
 
 def extract_assets(
     extract_assets_parameters: ExtractAssetsParameters,
-) -> ExtractAssetsReturn:
+):
     """
     The extract_assets function is used to add side effects to your optimization
     workflow such as image extractation and data analysis. The extract_assets
@@ -24,7 +24,7 @@ def extract_assets(
 
     case_directory = extract_assets_parameters.output_case_foam_filepath
     output_directory = extract_assets_parameters.output_assets_directory
-    logger = extract_assets_parameters.logger
+    processors = extract_assets_parameters.processors
 
     PVBATCH = "/Applications/ParaView-6.0.0.app/Contents/bin/pvbatch"
 
@@ -38,20 +38,8 @@ def extract_assets(
         f"{PVBATCH} input/paraview/slice-pressure.py {case_directory} {output_directory}",
     ]
 
-    run_ok = True
-    for command in commands:
-        try:
-            subprocess.run(
-                command.split(" "), capture_output=True, text=True, check=True
-            )
-            logger.info(f"Successfully ran {command} for {case_directory}")
-        except subprocess.CalledProcessError as error:
-            run_ok = False
-            logger.error(f"{command} failed")
-            logger.error(f"\n{error.stderr}")
-
-    EXTRACT_ASSETS_RETURN = ExtractAssetsReturn(run_ok=run_ok)
+    run_parallel_commands(commands=commands, max_workers=processors)
 
     """ ======================= YOUR CODE ABOVE HERE ======================= """
 
-    return EXTRACT_ASSETS_RETURN
+    return None

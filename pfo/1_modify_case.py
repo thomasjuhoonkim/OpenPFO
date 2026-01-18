@@ -2,13 +2,13 @@
 import subprocess
 
 # classes
-from classes.functions import ModifyCaseParameters, ModifyCaseReturn
+from classes.functions import ModifyCaseParameters
 
 # PyFoam
 from PyFoam.RunDictionary.ParsedParameterFile import ParsedParameterFile
 
 
-def modify_case(modify_case_parameters: ModifyCaseParameters) -> ModifyCaseReturn:
+def modify_case(modify_case_parameters: ModifyCaseParameters):
     """
     This function is used to modify each OpenFOAM case for each run. This is a
     critical step if you need to set value(s) to OpenFOAM functions for each
@@ -16,7 +16,7 @@ def modify_case(modify_case_parameters: ModifyCaseParameters) -> ModifyCaseRetur
 
     You have access to the case path and the geometry modeling client.
 
-    This function does NOT return anything.
+    NOTE: This function does not return a value.
     """
 
     """ ======================= YOUR CODE BELOW HERE ======================= """
@@ -30,17 +30,9 @@ def modify_case(modify_case_parameters: ModifyCaseParameters) -> ModifyCaseRetur
         f"cp {geometry_filepath} {case_directory}/original.stl",
     ]
 
-    run_ok = True
     for command in commands:
-        try:
-            subprocess.run(
-                command.split(" "), capture_output=True, text=True, check=True
-            )
-            logger.info(f"Successfully ran {command}")
-        except subprocess.CalledProcessError as error:
-            run_ok = False
-            logger.error(f"{command} failed")
-            logger.error(f"\n{error.stderr}")
+        subprocess.run(command.split(" "), capture_output=True, text=True, check=True)
+        logger.info(f"Successfully ran {command}")
 
     # postProcessing file modifications
     root_chord_variable = point.get_variables()[0]
@@ -53,21 +45,18 @@ def modify_case(modify_case_parameters: ModifyCaseParameters) -> ModifyCaseRetur
     a_ref = l_ref / 0.9
     c_of_r = root_chord - l_ref + (0.25 * l_ref)
 
-    try:
-        control_dict_filepath = f"{case_directory}/system/controlDict"
-        control_dict_file = ParsedParameterFile(control_dict_filepath)
+    # case
+    control_dict_filepath = f"{case_directory}/system/controlDict"
+    control_dict_file = ParsedParameterFile(control_dict_filepath)
 
-        # modify values
-        control_dict_file["functions"]["forceCoeffs1"]["lRef"] = l_ref
-        control_dict_file["functions"]["forceCoeffs1"]["Aref"] = a_ref
-        control_dict_file["functions"]["forceCoeffs1"]["CofR"] = f"({c_of_r} 0 0)"
+    # modify values
+    control_dict_file["functions"]["forceCoeffs1"]["lRef"] = l_ref
+    control_dict_file["functions"]["forceCoeffs1"]["Aref"] = a_ref
+    control_dict_file["functions"]["forceCoeffs1"]["CofR"] = f"({c_of_r} 0 0)"
 
-        control_dict_file.writeFile()
-    except Exception:
-        logger.exception("failed to modify postProcessingDict files")
-
-    MODIFY_CASE_RETURN = ModifyCaseReturn(run_ok=run_ok)
+    # write
+    control_dict_file.writeFile()
 
     """ ======================= YOUR CODE ABOVE HERE ======================= """
 
-    return MODIFY_CASE_RETURN
+    return None
