@@ -13,7 +13,7 @@ def test():
     output_assets_directory = "output"
 
     # OpenVSP
-    OPENVSP_FILEPATH = "lib/OpenVSP/vspscript"
+    OPENVSP_FILEPATH = "/home/tkim/scratch/OpenVSP/build/vsp"
     # OPENVSP_FILEPATH = "/Users/thomaskim/Downloads/OpenVSP-3.46.0-MacOS/vspscript"
     MODEL_FILEPATH = "input/model.vsp3"
 
