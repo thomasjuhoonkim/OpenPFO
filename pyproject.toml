@@ -22,4 +22,4 @@ pfo = "cli:app"
 dependencies = { file = ["requirements.txt"] }
 
 [tool.setuptools.packages.find]
-where = ["src"]
+where = ["pfo"]
