@@ -1,9 +1,0 @@
-name: vsppytools
-channels:
-  - conda-forge
-  - defaults
-dependencies:
-  - python=3.12
-  - numpy!=1.19.4
-  - matplotlib
-  - pathlib

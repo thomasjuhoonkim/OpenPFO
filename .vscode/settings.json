@@ -9,8 +9,5 @@
     "**/0/*": "OpenFOAM",
     "forcecoeffs": "OpenFOAM",
     "forces": "OpenFOAM"
-  },
-  "files.exclude": {
-    "**/lib": true
   }
 }
