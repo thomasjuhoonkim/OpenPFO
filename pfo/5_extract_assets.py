@@ -45,7 +45,8 @@ def extract_assets(
         cpus_per_task=1,
         mem_per_cpu="1G",
         array=range(len(commands)),
-        output=f"{case_directory}/extractAssets.out",
+        output="OpenPFO.log",
+        open_mode="append",
     )
     slurm.set_wait(True)
 

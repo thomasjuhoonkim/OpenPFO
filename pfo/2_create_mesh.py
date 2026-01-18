@@ -24,16 +24,16 @@ def create_mesh(
     slurm = Slurm(
         job_name="cartesianMesh",
         account="def-jphickey",
-        time="00:10:00",
+        time="00:05:00",
         nodes=1,
         ntasks_per_node=1,
         cpus_per_task=processors,
         mem="32G",
-        output=f"{case_directory}/cartesianMesh.log",
+        output="OpenPFO.log",
+        open_mode="append",
     )
     slurm.set_wait(True)
 
-    slurm.add_cmd("module load openfoam/v2312")
     slurm.add_cmd(
         f"surfaceTransformPoints -case {case_directory} -rotate-angle '((0 1 0) 5)' {case_directory}/original.stl {case_directory}/aoa.stl"
     )

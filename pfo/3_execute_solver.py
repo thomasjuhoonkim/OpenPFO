@@ -28,19 +28,19 @@ def execute_solver(
         nodes=1,
         ntasks_per_node=processors,
         mem_per_cpu="4G",
-        output=f"{case_directory}/simpleFoam.log",
+        output="OpenPFO.log",
+        open_mode="append",
     )
     slurm.set_wait(True)
 
-    slurm.add_cmd("module load openfoam/v2312")
     slurm.add_cmd(
-        f'mpirun -np "$SLURM_NTASKS_PER_NODE" redistributePar -parallel -decompose -overwrite -case {case_directory}'
+        f"mpirun -np {processors} redistributePar -parallel -decompose -overwrite -case {case_directory}"
     )
     slurm.add_cmd(
-        f'mpirun -np "$SLURM_NTASKS_PER_NODE" simpleFoam -parallel -case {case_directory}'
+        f"mpirun -np {processors} simpleFoam -parallel -case {case_directory}"
     )
     slurm.add_cmd(
-        f'mpirun -np "$SLURM_NTASKS_PER_NODE" redistributePar -parallel -reconstruct -latestTime -case {case_directory}'
+        f"mpirun -np {processors} redistributePar -parallel -reconstruct -latestTime -case {case_directory}"
     )
 
     slurm_job_id = slurm.sbatch()

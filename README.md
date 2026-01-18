@@ -84,6 +84,10 @@ OpenPFO uses OpenFOAM for CFD solving and optionally meshing. The case template 
 
 To be filled...
 
+### SLURM
+
+If you are using `simple-slurm`, make sure your SQUEUE_FORMAT environment variable is valid. If you are unsure about its validity, `simple-slurm` will raise an error. You can also set the variable to `"%i","%j","%t","%M","%L","%D","%C","%m","%b","%R"`, `simple-slurm`'s default value.
+
 ## Acknowledgements
 
 ### Funding

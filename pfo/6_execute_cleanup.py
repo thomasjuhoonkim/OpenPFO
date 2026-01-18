@@ -29,8 +29,8 @@ def execute_cleanup(
         cpus_per_task=1,
         mem_per_cpu="100M",
         array=range(processors),
-        output="/dev/null",
-        error="/dev/null",
+        output="OpenPFO.log",
+        open_mode="append",
     )
     slurm1.set_wait(True)
 
@@ -61,7 +61,8 @@ fi
         ntasks_per_node=1,
         cpus_per_task=1,
         mem_per_cpu="100M",
-        output=f"{case_directory}/foamCleanCase.out",
+        output="OpenPFO.log",
+        open_mode="append",
     )
     slurm2.set_wait(True)
 

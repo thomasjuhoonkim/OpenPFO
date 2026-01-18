@@ -42,7 +42,7 @@ class Progress:
         with open(OUTPUT_RESULTS_JSON, "w") as results_json:
             json.dump(self._results, results_json, indent=2)
 
-        logger.info(f"Results saved successfully in {OUTPUT_RESULTS_JSON}")
+        logger.debug(f"Results saved successfully in {OUTPUT_RESULTS_JSON}")
 
         return None
 
@@ -82,7 +82,7 @@ class Progress:
 
         self._save()
 
-        logger.info(f"Job saved successfully in {OUTPUT_RESULTS_JSON}")
+        logger.debug(f"Job saved successfully in {OUTPUT_RESULTS_JSON}")
 
         return None
 
@@ -108,7 +108,7 @@ class Progress:
 
         self._save()
 
-        logger.info(f"Search saved successfully in {OUTPUT_RESULTS_JSON}")
+        logger.debug(f"Search saved successfully in {OUTPUT_RESULTS_JSON}")
 
         return None
 
@@ -148,7 +148,7 @@ class Progress:
 
         self._save()
 
-        logger.info(f"Solution saved successfully in {OUTPUT_RESULTS_JSON}")
+        logger.debug(f"Solution saved successfully in {OUTPUT_RESULTS_JSON}")
 
         return None
 
@@ -157,7 +157,7 @@ class Progress:
 
         self._save()
 
-        logger.info(f"Execution time saved successfully in {OUTPUT_RESULTS_JSON}")
+        logger.debug(f"Execution time saved successfully in {OUTPUT_RESULTS_JSON}")
 
         return None
 
@@ -166,7 +166,7 @@ class Progress:
 
         self._save()
 
-        logger.info(f"Start time saved successfully in {OUTPUT_RESULTS_JSON}")
+        logger.debug(f"Start time saved successfully in {OUTPUT_RESULTS_JSON}")
 
         return None
 
@@ -175,6 +175,6 @@ class Progress:
 
         self._save()
 
-        logger.info(f"End time saved successfully in {OUTPUT_RESULTS_JSON}")
+        logger.debug(f"End time saved successfully in {OUTPUT_RESULTS_JSON}")
 
         return None
