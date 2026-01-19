@@ -6,7 +6,7 @@ Quick setup scripts are provided in `scripts/`.
 
 ```
 // Local
-source scripts/init.sh
+source scripts/init-local.sh
 
 // HPC
 source scripts/init-hpc.sh
@@ -44,7 +44,7 @@ Install python dependencies
 
 ```
 // Local
-pip install -r requirements.txt
+pip install -r requirements-local.txt
 
 // HPC
 pip install -r requirements-hpc.txt

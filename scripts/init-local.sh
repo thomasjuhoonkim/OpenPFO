@@ -9,15 +9,19 @@ else
 fi
 
 # create virtual environment
+echo "Creating virtual environment"
 python3 -m venv .venv
 
 # activate virtual environment
+echo "Activating virtual environment"
 source .venv/bin/activate
 
 # install python dependencies
-pip install -r requirements.txt
+echo "Installing Python dependencies"
+pip install -r requirements-local.txt
 
 # install OpenPFO in editable mode
+echo "Installing OpenPFO in editable mode"
 pip install -e .
 
 echo 'OpenPFO is initialized!'

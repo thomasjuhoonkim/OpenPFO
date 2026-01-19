@@ -9,18 +9,23 @@ else
 fi
 
 # create virtual environment
+echo "Creating virtual environment"
 virtualenv .venv
 
 # activate virtual environment
+echo "Activating virtual environment"
 source .venv/bin/activate
 
 # install python dependencies
+echo "Installing Python dependencies"
 pip install -r requirements-hpc.txt
 
 # install OpenPFO in editable mode
+echo "Installing OpenPFO in editable mode"
 pip install -e .
 
 # ensure SQUEUE_FORMAT is configred for simple-slurm
+echo "Configuring SQUEUE_FORMAT for simple-slurm"
 export SQUEUE_FORMAT='%i","%j","%t","%M","%L","%D","%C","%m","%b","%R'
 echo "SQUEUE_FORMAT=$SQUEUE_FORMAT"
 
