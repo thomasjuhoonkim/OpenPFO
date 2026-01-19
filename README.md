@@ -2,6 +2,18 @@
 
 ## Getting Started
 
+Quick setup scripts are provided in `scripts/`.
+
+```
+// Local
+source scripts/init.sh
+
+// HPC
+source scripts/init-hpc.sh
+```
+
+However, if you prefer to set up the environment yourself, step-by-step instructions are provided below.
+
 ### Python
 
 OpenPFO requires Python 3.11.
@@ -32,7 +44,7 @@ Install python dependencies
 
 ```
 // Local
-pip install -r requirements-local.txt
+pip install -r requirements.txt
 
 // HPC
 pip install -r requirements-hpc.txt
@@ -76,9 +88,7 @@ OpenPFO requires configuration in several locations.
 
 #### Case Template
 
-OpenPFO uses OpenFOAM for CFD solving and optionally meshing. The case template is a single template that all points in the design space inherit. This means your template mesh and solver settings must be compatible with all[^1] points in the design space.
-
-[^1]: This is not a strict requirement. OpenPFO will run reasonably well as long as your template mesh and solver settings are compatible with _most_ points in the design space.
+OpenPFO uses OpenFOAM for CFD solving and optionally meshing. The case template is a single template that all points in the design space inherit. This means your template mesh and solver settings must be compatible with all points in the design space [^1].
 
 ### Commands
 
@@ -108,3 +118,5 @@ This project was made possible through the Faculty of Engineering at the Univers
 ### Disclaimer
 
 OpenPFO is part of the University of Waterloo's engineering capstone project courses. Future maintenence of this repository is subject to contributor availability. Contributors are welcome, please reach out to project owners regarding contributing.
+
+[^1]: This is not a strict requirement. OpenPFO will run reasonably well as long as your template mesh and solver settings are compatible with _most_ points in the design space. Localized errors in the design space are simply avoided by the optimization algorithm through infinite objective values and user-defined constraint violations.

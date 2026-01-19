@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# check if python is installed and is version 3.11
+# Check if python is installed and is version 3.11
 PYTHON_VERSION=$(python3 -c "import sys; print(str(sys.version_info.major) + '.' + str(sys.version_info.minor))")
 if [ "$PYTHON_VERSION" = "3.11" ]; then
     echo "You are using Python 3.11."
@@ -9,19 +9,15 @@ else
 fi
 
 # create virtual environment
-virtualenv .venv
+python3 -m venv .venv
 
 # activate virtual environment
 source .venv/bin/activate
 
 # install python dependencies
-pip install -r requirements-hpc.txt
+pip install -r requirements.txt
 
 # install OpenPFO in editable mode
 pip install -e .
 
-# ensure SQUEUE_FORMAT is configred for simple-slurm
-export SQUEUE_FORMAT='%i","%j","%t","%M","%L","%D","%C","%m","%b","%R'
-echo "SQUEUE_FORMAT=$SQUEUE_FORMAT"
-
-echo 'OpenPFO is initialized for HPC!'
+echo 'OpenPFO is initialized!'
