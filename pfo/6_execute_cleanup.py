@@ -19,9 +19,9 @@ def execute_cleanup(
     processors = execute_cleanup_parameters.processors
 
     slurm1 = Slurm(
-        job_name="cleanupProcessors",
+        job_name="cleanProcessors",
         account="def-jphickey",
-        time="00:05:00",
+        time="00:01:00",
         nodes=1,
         ntasks_per_node=1,
         cpus_per_task={processors},
@@ -44,7 +44,7 @@ def execute_cleanup(
     slurm2 = Slurm(
         job_name="cleanCase",
         account="def-jphickey",
-        time="00:05:00",
+        time="00:01:00",
         nodes=1,
         ntasks_per_node=1,
         cpus_per_task=1,
@@ -55,9 +55,10 @@ def execute_cleanup(
     slurm2.set_wait(True)
 
     slurm2.add_cmd(f"pyFoamClearCase.py {case_directory} --keep-postprocessing")
+    slurm2.add_cmd(f"rm -rf {case_directory}/constant/polyMesh")
 
     slurm2.sbatch()
-    logger.info("Successfully ran pyFoamClearCase.py")
+    logger.info("Successfully ran cleancCase")
 
     EXECUTE_CLEANUP_RETURN = ExecuteCleanupReturn()
 

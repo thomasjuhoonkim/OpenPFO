@@ -25,34 +25,34 @@ def extract_assets(
     processors = extract_assets_parameters.processors
     logger = extract_assets_parameters.logger
 
-    slurm1 = Slurm(
-        job_name="paraview",
-        account="def-jphickey",
-        time="00:05:00",
-        nodes=1,
-        ntasks_per_node=1,
-        cpus_per_task=16,
-        mem_per_cpu="4G",
-        output="OpenPFO.log",
-        open_mode="append",
-    )
-    slurm1.set_wait(True)
+    # slurm1 = Slurm(
+    #     job_name="paraview",
+    #     account="def-jphickey",
+    #     time="00:05:00",
+    #     nodes=1,
+    #     ntasks_per_node=1,
+    #     cpus_per_task=16,
+    #     mem_per_cpu="4G",
+    #     output="OpenPFO.log",
+    #     open_mode="append",
+    # )
+    # slurm1.set_wait(True)
 
-    SHARED = "pvbatch --force-offscreen-rendering --opengl-window-backend OSMesa"
-    commands = [
-        f"{SHARED} input/paraview/slice.py {case_directory} {output_directory}",
-        f"{SHARED} input/paraview/geometry.py {case_directory} {output_directory}",
-        f"{SHARED} input/paraview/mesh.py {case_directory} {output_directory}",
-        f"{SHARED} input/paraview/streamline.py {case_directory} {output_directory}",
-        f"{SHARED} input/paraview/streamline-half.py {case_directory} {output_directory}",
-        f"{SHARED} input/paraview/slice-velocity.py {case_directory} {output_directory}",
-        f"{SHARED} input/paraview/slice-pressure.py {case_directory} {output_directory}",
-    ]
-    for command in commands:
-        slurm1.add_cmd(command)
+    # SHARED = "pvbatch --force-offscreen-rendering --opengl-window-backend OSMesa"
+    # commands = [
+    #     f"{SHARED} input/paraview/slice.py {case_directory} {output_directory}",
+    #     f"{SHARED} input/paraview/geometry.py {case_directory} {output_directory}",
+    #     f"{SHARED} input/paraview/mesh.py {case_directory} {output_directory}",
+    #     f"{SHARED} input/paraview/streamline.py {case_directory} {output_directory}",
+    #     f"{SHARED} input/paraview/streamline-half.py {case_directory} {output_directory}",
+    #     f"{SHARED} input/paraview/slice-velocity.py {case_directory} {output_directory}",
+    #     f"{SHARED} input/paraview/slice-pressure.py {case_directory} {output_directory}",
+    # ]
+    # for command in commands:
+    #     slurm1.add_cmd(command)
 
-    slurm1.sbatch()
-    logger.info("Successfully ran paraview.")
+    # slurm1.sbatch()
+    # logger.info("Successfully ran paraview.")
 
     # ==========================================================================
 
@@ -69,7 +69,9 @@ def extract_assets(
     slurm2.set_wait(True)
 
     slurm2.add_cmd(
-        f"mpirun -np {processors} foamToVTK -parallel -binary -case {case_directory}",
+        f"mpirun -np {processors} foamToVTK -parallel -case {case_directory}",
+    )
+    slurm2.add_cmd(
         f"mv VTK {output_directory}",
     )
 

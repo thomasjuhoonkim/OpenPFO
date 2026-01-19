@@ -60,12 +60,11 @@ class Progress:
         job_result["status"] = job.get_status()
         job_result["runOk"] = job.get_run_ok()
         job_result["steps"] = get_serialized_steps(steps=job.get_steps())
-        job_result["startTime"] = (
-            job.get_start_time().isoformat() if job.get_start_time() is not None else ""
-        )
-        job_result["endTime"] = (
-            job.get_end_time().isoformat() if job.get_end_time() is not None else ""
-        )
+        job_result["startTime"] = job.get_start_time().isoformat()
+        job_result["endTime"] = job.get_end_time().isoformat()
+        job_result["executionTime"] = (
+            job.get_end_time() - job.get_start_time()
+        ).total_seconds()
         job_result["caseDirectory"] = job.get_case_directory()
         job_result["assetsDirectory"] = job.get_assets_directory()
         job_result["point"] = get_serialized_point(point=job.get_point())

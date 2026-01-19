@@ -65,8 +65,8 @@ class Job:
         self._status = JobStatus.INITIALIZED
         self._steps: list[Step] = []
         self._run_ok = True
-        self._start_time = None
-        self._end_time = None
+        self._start_time = datetime.min
+        self._end_time = datetime.min
         self._output_geometry_filepath = ""
         self._output_case_directory = f"{OUTPUT_CASES_DIRECTORY}/{job_id}"
         self._output_assets_directory = f"{OUTPUT_ASSETS_DIRECTORY}/{job_id}"

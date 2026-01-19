@@ -29,7 +29,7 @@ def create_mesh(
         nodes=1,
         ntasks_per_node=1,
         cpus_per_task=processors,
-        mem="32G",
+        mem="16G",
         output="OpenPFO.log",
         open_mode="append",
     )
