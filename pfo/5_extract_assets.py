@@ -20,7 +20,8 @@ def extract_assets(
 
     """ ======================= YOUR CODE BELOW HERE ======================= """
 
-    case_directory = extract_assets_parameters.output_case_foam_filepath
+    case_foam_filepath = extract_assets_parameters.output_case_foam_filepath
+    case_directory = extract_assets_parameters.output_case_directory
     output_directory = extract_assets_parameters.output_assets_directory
     processors = extract_assets_parameters.processors
     logger = extract_assets_parameters.logger
@@ -40,13 +41,13 @@ def extract_assets(
 
     SHARED = "pvbatch --force-offscreen-rendering --opengl-window-backend OSMesa"
     commands = [
-        f"{SHARED} input/paraview/slice.py {case_directory} {output_directory}",
-        f"{SHARED} input/paraview/geometry.py {case_directory} {output_directory}",
-        f"{SHARED} input/paraview/mesh.py {case_directory} {output_directory}",
-        f"{SHARED} input/paraview/streamline.py {case_directory} {output_directory}",
-        f"{SHARED} input/paraview/streamline-half.py {case_directory} {output_directory}",
-        f"{SHARED} input/paraview/slice-velocity.py {case_directory} {output_directory}",
-        f"{SHARED} input/paraview/slice-pressure.py {case_directory} {output_directory}",
+        f"{SHARED} input/paraview/slice.py {case_foam_filepath} {output_directory}",
+        f"{SHARED} input/paraview/geometry.py {case_foam_filepath} {output_directory}",
+        f"{SHARED} input/paraview/mesh.py {case_foam_filepath} {output_directory}",
+        f"{SHARED} input/paraview/streamline.py {case_foam_filepath} {output_directory}",
+        f"{SHARED} input/paraview/streamline-half.py {case_foam_filepath} {output_directory}",
+        f"{SHARED} input/paraview/slice-velocity.py {case_foam_filepath} {output_directory}",
+        f"{SHARED} input/paraview/slice-pressure.py {case_foam_filepath} {output_directory}",
     ]
     for command in commands:
         slurm1.add_cmd(command)
