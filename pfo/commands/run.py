@@ -32,6 +32,9 @@ progress = get_progress()
 
 def run(
     cleanup: Annotated[bool, typer.Option(help="Run cleanup after each job")] = True,
+    # resume: Annotated[
+    #     bool, typer.Option(help="Resume progress from an existing run")
+    # ] = False,
 ):
     # pre-run checks
     check_output()

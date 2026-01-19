@@ -15,6 +15,9 @@ logger = get_logger()
 
 
 def doe(
+    assets: Annotated[
+        bool, typer.Option(help="Run asset extraction after each job")
+    ] = False,
     cleanup: Annotated[bool, typer.Option(help="Run cleanup after each job")] = True,
 ):
     # pre-run checks

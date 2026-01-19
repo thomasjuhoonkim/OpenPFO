@@ -73,7 +73,7 @@ def extract_assets(
         f"mpirun -np {processors} foamToVTK -parallel -latestTime -case {case_directory}",
     )
     slurm2.add_cmd(
-        f"mv VTK {output_directory}",
+        f"mv {case_directory}/VTK {output_directory}",
     )
 
     slurm2.sbatch()

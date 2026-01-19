@@ -1,0 +1,350 @@
+# system
+import sys
+
+# util
+from util.get_logger import get_logger
+
+logger = get_logger()
+
+
+def validate_parameter(parameter: dict):
+    attributes = [
+        ("id", str),
+        ("name", str),
+        ("min", (int, float)),
+        ("max", (int, float)),
+        ("value", (int, float)),
+    ]
+
+    for field, expected_type in attributes:
+        if field not in parameter:
+            logger.error(f'"{field}" is missing from parameter')
+            sys.exit(1)
+        if not isinstance(parameter[field], expected_type):
+            logger.error(f'"{field}" in parameter is not {expected_type}')
+            sys.exit(1)
+
+    logger.info("Parameter is valid")
+
+    return None
+
+
+def validate_objective(objective: dict):
+    attributes = [
+        ("id", str),
+        ("name", str),
+        ("type", str),
+        ("value", (int, float)),
+    ]
+
+    for field, expected_type in attributes:
+        if field not in objective:
+            logger.error(f'"{field}" is missing from objective')
+            sys.exit(1)
+        if not isinstance(objective[field], expected_type):
+            logger.error(f'"{field}" in objective is not {expected_type}')
+            sys.exit(1)
+
+    logger.info("Objective is valid")
+
+    return None
+
+
+def validate_variable(variable: dict):
+    attributes = [
+        ("id", str),
+        ("name", str),
+        ("value", (int, float)),
+    ]
+
+    for field, expected_type in attributes:
+        if field not in variable:
+            logger.error(f'"{field}" is missing from variable')
+            sys.exit(1)
+        if not isinstance(variable[field], expected_type):
+            logger.error(f'"{field}" in variable is not {expected_type}')
+            sys.exit(1)
+
+    return None
+
+
+def validate_step(step: dict):
+    attributes = [
+        ("id", str),
+        ("runOk", bool),
+        ("startTime", str),
+        ("endTime", str),
+        ("executionTime", (int, float)),
+    ]
+
+    for field, expected_type in attributes:
+        if field not in step:
+            logger.error(f'"{field}" is missing from step')
+            sys.exit(1)
+        if not isinstance(step[field], expected_type):
+            logger.error(f'"{field}" in step is not {expected_type}')
+            sys.exit(1)
+
+    return None
+
+
+def validate_job(job: dict):
+    attributes = [
+        ("id", str),
+        ("status", str),
+        ("runOk", bool),
+        ("steps", list),
+        ("startTime", str),
+        ("endTime", str),
+        ("executionTime", (int, float)),
+        ("caseDirectory", str),
+        ("assetsDirectory", str),
+        ("point", list),
+        ("objectives", list),
+    ]
+
+    for field, expected_type in attributes:
+        if field not in job:
+            logger.error(f'"{field}" is missing from job')
+            sys.exit(1)
+        if not isinstance(job[field], expected_type):
+            logger.error(f'"{field}" in job is not {expected_type}')
+            sys.exit(1)
+
+    for i, step in enumerate(job["steps"]):
+        validate_step(step)
+        logger.info(f"step {i} valid")
+
+    logger.info("Steps are valid")
+
+    for i, variable in enumerate(job["point"]):
+        validate_variable(variable)
+        logger.info(f"variable {i} valid")
+
+    logger.info("Variables are valid")
+
+    for i, objective in enumerate(job["objectives"]):
+        validate_objective(objective)
+        logger.info(f"objective {i} valid")
+
+    logger.info("Objectives are valid")
+
+    logger.info("Job is valid")
+
+    return None
+
+
+def validate_solution(solution: dict):
+    if not isinstance(solution, dict):
+        logger.error("solution is not a dict")
+        sys.exit(1)
+
+    attributes = [
+        ("parameters", list),
+        ("objectives", list),
+    ]
+
+    for field, expected_type in attributes:
+        if field not in solution:
+            logger.error(f'"{field}" is missing from solution')
+            sys.exit(1)
+        if not isinstance(solution[field], expected_type):
+            logger.error(f'"{field}" in solution is not {expected_type}')
+            sys.exit(1)
+
+    for i, parameter in enumerate(solution["parameters"]):
+        validate_parameter(parameter)
+        logger.info(f"parameter {i} valid")
+
+    logger.info("Parameters are valid")
+
+    for i, objective in enumerate(solution["objectives"]):
+        validate_objective(objective)
+        logger.info(f"objective {i} valid")
+
+    logger.info("Objectives are valid")
+
+    return None
+
+
+def validate_config(config: dict):
+    # compute
+    if "compute" not in config:
+        logger.error("[compute] is missing")
+        sys.exit(1)
+    if "hpc" not in config["compute"]:
+        logger.error("hpc is missing from [compute]")
+        sys.exit(1)
+    if "processors" not in config["compute"]:
+        logger.error("processors is missing from [compute]")
+        sys.exit(1)
+    if not isinstance(config["compute"]["hpc"], bool):
+        logger.error("hpc is not a boolean")
+        sys.exit(1)
+    if not isinstance(config["compute"]["processors"], int):
+        logger.error("processors is not an integer")
+        sys.exit(1)
+
+    if "model" not in config:
+        logger.error("[model] is missing")
+        sys.exit(1)
+    if "parameters" not in config["model"]:
+        logger.error("[[model.parameters]] is missing from [model]")
+        sys.exit(1)
+    if not isinstance(config["model"]["parameters"], list):
+        logger.error("[[model.parameters]] is not a list")
+        sys.exit(1)
+    for parameter in config["model"]["parameters"]:
+        attribtutes = [
+            ("id", str),
+            ("name", str),
+            ("min", (int, float)),
+            ("max", (int, float)),
+        ]
+        for attribute in attribtutes:
+            field, type = attribute
+            if not isinstance(parameter[field], type):
+                logger.error(f'"{field}" in [[model.parameters]] is not {type}')
+                sys.exit(1)
+
+    if "optimizer" not in config:
+        logger.error("[optimizer] is missing")
+        sys.exit(1)
+    if "seed" not in config["optimizer"]:
+        logger.error("seed is missing from [optimizer]")
+        sys.exit(1)
+    if not isinstance(config["optimizer"]["seed"], (int, float)):
+        logger.error("seed is not a float")
+        sys.exit(1)
+    if "objectives" not in config["optimizer"]:
+        logger.error("[[optimizer.objectives]] is missing from [optimizer]")
+        sys.exit(1)
+    if not isinstance(config["optimizer"]["objectives"], list):
+        logger.error("[[optimizer.objectives]] is not a list")
+        sys.exit(1)
+    for objective in config["optimizer"]["objectives"]:
+        attribtutes = [("id", str), ("name", str), ("type", str)]
+        for attribute in attribtutes:
+            field, type = attribute
+            if not isinstance(objective[field], type):
+                logger.error(f'"{field}" in [[optimizer.objectives]] is not {type}')
+                sys.exit(1)
+
+    logger.info("Config is valid")
+
+    return None
+
+
+def validate_workflow(workflow: dict):
+    if not isinstance(workflow, dict):
+        logger.error("workflow is not a dict")
+        sys.exit(1)
+
+    if "jobs" not in workflow:
+        logger.error("jobs is missing from workflow")
+        sys.exit(1)
+    if not isinstance(workflow["jobs"], list):
+        logger.error("jobs is not a list")
+        sys.exit(1)
+
+    for i, job in enumerate(workflow["jobs"]):
+        validate_job(job)
+        logger.info(f"job {i} valid")
+
+    logger.info("Jobs are valid")
+
+    if "searches" not in workflow:
+        logger.error("searches is missing from workflow")
+        sys.exit(1)
+    if not isinstance(workflow["searches"], list):
+        logger.error("searches is not a list")
+        sys.exit(1)
+
+    for i, search in enumerate(workflow["searches"]):
+        validate_search(search)
+        logger.info(f"search {i} valid")
+
+    logger.info("Searches are valid")
+
+    logger.info("Workflow is valid")
+
+    return None
+
+
+def validate_search(search: dict):
+    if not isinstance(search, dict):
+        logger.error("search is not a dict")
+        sys.exit(1)
+
+    attributes = [
+        ("id", str),
+        ("jobs", list),
+    ]
+
+    for field, expected_type in attributes:
+        if field not in search:
+            logger.error(f'"{field}" is missing from search')
+            sys.exit(1)
+        if not isinstance(search[field], expected_type):
+            logger.error(f'"{field}" in search is not {expected_type}')
+            sys.exit(1)
+
+    for i, job_id in enumerate(search["jobs"]):
+        if not isinstance(job_id, str):
+            logger.error("job_id in search.jobs is not a string")
+            sys.exit(1)
+        logger.info(f"job_id {i} valid")
+
+    logger.info("Job IDs are valid")
+
+    logger.info("Search is valid")
+
+    return None
+
+
+def validate_results(results: dict):
+    if not isinstance(results, dict):
+        logger.error("results is not a dict")
+        sys.exit(1)
+
+    if "config" not in results:
+        logger.error("config is missing from results")
+        sys.exit(1)
+    validate_config(results["config"])
+
+    if "workflow" not in results:
+        logger.error("workflow is missing from results")
+        sys.exit(1)
+    validate_workflow(results["workflow"])
+
+    if "solutions" not in results:
+        logger.error("solutions is missing from results")
+        sys.exit(1)
+    if not isinstance(results["solutions"], list):
+        logger.error("solutions is not a list")
+        sys.exit(1)
+
+    for i, solution in enumerate(results["solutions"]):
+        validate_solution(solution)
+        logger.info(f"solution {i} valid")
+
+    logger.info("Solutions are valid")
+
+    attributes = [
+        ("executionTimeSeconds", (int, float)),
+        ("startTime", str),
+        ("endTime", str),
+        ("command", str),
+    ]
+
+    for field, expected_type in attributes:
+        if field not in results:
+            logger.error(f'"{field}" is missing from results')
+            sys.exit(1)
+        if not isinstance(results[field], expected_type):
+            logger.error(f'"{field}" in results is not {expected_type}')
+            sys.exit(1)
+
+    logger.info("Results are valid")
+
+    return None

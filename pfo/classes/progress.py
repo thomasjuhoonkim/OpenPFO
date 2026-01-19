@@ -1,5 +1,6 @@
 # system
 import sys
+import os
 
 # json
 import json
@@ -9,6 +10,10 @@ from typing import TYPE_CHECKING
 
 # datetime
 from datetime import datetime
+
+# util
+from util.validate_results import validate_results
+from util.get_serialized_job import get_serialized_job
 
 
 # classes
@@ -21,9 +26,8 @@ if TYPE_CHECKING:
 from constants.path import OUTPUT_RESULTS_JSON
 
 # util
-from util.get_serialized_objectives import get_serialized_objectives
-from util.get_serialized_point import get_serialized_point
-from util.get_serialized_steps import get_serialized_steps
+from util.get_serialized_objective import get_serialized_objective
+from util.get_serialized_parameter import get_serialized_parameter
 from util.get_logger import get_logger
 from util.get_config import get_config
 
@@ -32,18 +36,34 @@ logger = get_logger()
 
 
 class Progress:
-    def __init__(self):
-        self._results = {
-            "config": config,
-            "workflow": {"jobs": [], "searches": []},
-            "solutions": {"parameters": [], "objectives": []},
-            "executionTimeSeconds": 0,
-            "startTime": "",
-            "endTime": "",
-            "command": " ".join(sys.argv),
-        }
-        self._start_time = datetime.now()
-        self._end_time = datetime.now()
+    def __init__(self, results_json_filepath=None):
+        if results_json_filepath:
+            if not os.path.isfile(OUTPUT_RESULTS_JSON):
+                logger.error(f"{OUTPUT_RESULTS_JSON} does not exist")
+                sys.exit(1)
+            logger.info(f"{OUTPUT_RESULTS_JSON} found!")
+
+            with open(results_json_filepath, "r") as json_file:
+                self._results = json.load(json_file)
+
+            validate_results(self._results)
+
+            self._start_time = self._results["startTime"]
+            self._end_time = self._results["endTime"]
+            self._existing_results = True
+        else:
+            self._results = {
+                "config": config,
+                "workflow": {"jobs": [], "searches": []},
+                "solutions": [],
+                "executionTimeSeconds": 0,
+                "startTime": "",
+                "endTime": "",
+                "command": " ".join(sys.argv),
+            }
+            self._start_time = datetime.now()
+            self._end_time = datetime.now()
+            self._existing_results = False
 
     def _save(self):
         with open(OUTPUT_RESULTS_JSON, "w") as results_json:
@@ -54,23 +74,7 @@ class Progress:
         return None
 
     def save_job(self, job: "Job"):
-        job_result = {}
-
-        job_result["id"] = job.get_id()
-        job_result["status"] = job.get_status()
-        job_result["runOk"] = job.get_run_ok()
-        job_result["steps"] = get_serialized_steps(steps=job.get_steps())
-        job_result["startTime"] = job.get_start_time().isoformat()
-        job_result["endTime"] = job.get_end_time().isoformat()
-        job_result["executionTime"] = (
-            job.get_end_time() - job.get_start_time()
-        ).total_seconds()
-        job_result["caseDirectory"] = job.get_case_directory()
-        job_result["assetsDirectory"] = job.get_assets_directory()
-        job_result["point"] = get_serialized_point(point=job.get_point())
-        job_result["objectives"] = get_serialized_objectives(
-            objectives=job.get_objectives()
-        )
+        job_result = get_serialized_job(job)
 
         job_index = next(
             (
@@ -126,25 +130,10 @@ class Progress:
             objectives = []
 
             for parameter in solution.get_parameters():
-                parameters.append(
-                    {
-                        "id": parameter.get_id(),
-                        "name": parameter.get_name(),
-                        "min": parameter.get_min(),
-                        "max": parameter.get_max(),
-                        "value": parameter.get_value(),
-                    }
-                )
+                parameters.append(get_serialized_parameter(parameter=parameter))
 
             for objective in solution.get_objectives():
-                objectives.append(
-                    {
-                        "id": objective.get_id(),
-                        "name": objective.get_name(),
-                        "type": objective.get_type(),
-                        "value": objective.get_value(),
-                    }
-                )
+                objectives.append(get_serialized_objective(objective=objective))
 
             solutions_result.append(
                 {"parameters": parameters, "objectives": objectives}
@@ -158,20 +147,10 @@ class Progress:
 
         return None
 
-    def save_execution_time(self, execution_time: int = None):
-        if execution_time is None:
-            time_diff = self._end_time - self._start_time
-            execution_time = time_diff.total_seconds()
-
-        self._results["executionTimeSeconds"] = execution_time
-
-        self._save()
-
-        logger.debug(f"Execution time saved successfully in {OUTPUT_RESULTS_JSON}")
-
-        return None
-
     def save_start_time(self, start_time: datetime = None):
+        if self._existing_results:
+            return None
+
         if start_time is None:
             start_time = datetime.now()
             self._start_time = start_time
@@ -194,5 +173,18 @@ class Progress:
         self._save()
 
         logger.debug(f"End time saved successfully in {OUTPUT_RESULTS_JSON}")
+
+        return None
+
+    def save_execution_time(self, execution_time: int = None):
+        if execution_time is None:
+            time_diff = self._end_time - self._start_time
+            execution_time = time_diff.total_seconds()
+
+        self._results["executionTimeSeconds"] = execution_time
+
+        self._save()
+
+        logger.debug(f"Execution time saved successfully in {OUTPUT_RESULTS_JSON}")
 
         return None
