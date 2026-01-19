@@ -1,5 +1,5 @@
 # classes
-from classes.functions import ExtractAssetsParameters
+from classes.functions import ExtractAssetsParameters, ExtractAssetsReturn
 
 # util
 from util.run_parallel_commands import run_parallel_commands
@@ -16,8 +16,6 @@ def extract_assets(
     All data from this function will be available to export after the full
     workflow has completed. You may store any data from this function in the
     provided assets output directory.
-
-    NOTE: This function does not return a value.
     """
 
     """ ======================= YOUR CODE BELOW HERE ======================= """
@@ -40,6 +38,8 @@ def extract_assets(
 
     run_parallel_commands(commands=commands, max_workers=processors)
 
+    EXTRACT_ASSETS_RETURN = ExtractAssetsReturn()
+
     """ ======================= YOUR CODE ABOVE HERE ======================= """
 
-    return None
+    return EXTRACT_ASSETS_RETURN

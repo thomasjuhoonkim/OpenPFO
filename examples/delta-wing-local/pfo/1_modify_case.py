@@ -2,7 +2,7 @@
 import subprocess
 
 # classes
-from classes.functions import ModifyCaseParameters
+from classes.functions import ModifyCaseParameters, ModifyCaseReturn
 
 # PyFoam
 from PyFoam.RunDictionary.ParsedParameterFile import ParsedParameterFile
@@ -15,8 +15,6 @@ def modify_case(modify_case_parameters: ModifyCaseParameters):
     design parameter.
 
     You have access to the case path and the geometry modeling client.
-
-    NOTE: This function does not return a value.
     """
 
     """ ======================= YOUR CODE BELOW HERE ======================= """
@@ -57,6 +55,8 @@ def modify_case(modify_case_parameters: ModifyCaseParameters):
     # write
     control_dict_file.writeFile()
 
+    MODIFY_CASE_RETURN = ModifyCaseReturn()
+
     """ ======================= YOUR CODE ABOVE HERE ======================= """
 
-    return None
+    return MODIFY_CASE_RETURN

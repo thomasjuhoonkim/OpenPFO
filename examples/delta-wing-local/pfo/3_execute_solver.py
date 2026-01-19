@@ -1,5 +1,5 @@
 # classes
-from classes.functions import ExecuteSolverParameters
+from classes.functions import ExecuteSolverParameters, ExecuteSolverReturn
 
 # PyFoam
 from PyFoam.Execution.BasicRunner import BasicRunner
@@ -11,8 +11,6 @@ def execute_solver(
     """
     The execute_solver function is used to create the geometry for each grid
     point in the design space.
-
-    NOTE: This function does not return a value.
     """
 
     """ ======================= YOUR CODE BELOW HERE ======================= """
@@ -34,6 +32,8 @@ def execute_solver(
             logger.error(f"{command} failed")
             raise Exception(f"{command} failed")
 
+    EXECUTE_SOLVER_RETURN = ExecuteSolverReturn()
+
     """ ======================= YOUR CODE ABOVE HERE ======================= """
 
-    return None
+    return EXECUTE_SOLVER_RETURN

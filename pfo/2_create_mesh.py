@@ -1,5 +1,8 @@
+# system
+import os
+
 # classes
-from classes.functions import CreateMeshParameters
+from classes.functions import CreateMeshParameters, CreateMeshReturn
 
 # simple-slurm
 from simple_slurm import Slurm
@@ -11,8 +14,6 @@ def create_mesh(
     """
     The create_mesh function is used to create the geometry for each grid
     point in the design space.
-
-    NOTE: This function does not return a value.
     """
 
     """ ======================= YOUR CODE BELOW HERE ======================= """
@@ -45,9 +46,17 @@ def create_mesh(
     )
     slurm.add_cmd(f"cartesianMesh -case {case_directory}")
 
-    slurm_job_id = slurm.sbatch()
-    logger.info(f"Successfully ran job {slurm_job_id} for cartesianMesh.")
+    slurm.sbatch()
+    logger.info("Successfully ran cartesianMesh.")
+
+    # VALIDATION ===============================================================
+
+    run_ok = True
+    if not os.path.isdir(f"{case_directory}/constant/polyMesh"):
+        run_ok = False
+
+    CREATE_MESH_RETURN = CreateMeshReturn(run_ok=run_ok)
 
     """ ======================= YOUR CODE ABOVE HERE ======================= """
 
-    return None
+    return CREATE_MESH_RETURN

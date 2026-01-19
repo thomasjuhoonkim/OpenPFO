@@ -1,5 +1,5 @@
 # classes
-from classes.functions import ExecuteCleanupParameters
+from classes.functions import ExecuteCleanupParameters, ExecuteCleanupReturn
 
 # simple-slurm
 from simple_slurm import Slurm
@@ -10,8 +10,6 @@ def execute_cleanup(
 ):
     """
     The execute_cleanup function used to clean up solver artifacts after each job.
-
-    NOTE: This function does not return a value.
     """
 
     """ ======================= YOUR CODE BELOW HERE ======================= """
@@ -38,8 +36,8 @@ def execute_cleanup(
     )
     slurm1.add_cmd(command)
 
-    slurm_job_id = slurm1.sbatch()
-    logger.info(f"Successfully ran job {slurm_job_id} for cleanup processors.")
+    slurm1.sbatch()
+    logger.info("Successfully ran cleanupProcessors.")
 
     # ==========================================================================
 
@@ -56,13 +54,13 @@ def execute_cleanup(
     )
     slurm2.set_wait(True)
 
-    slurm2.add_cmd(
-        f"pyFoamClearCase.py {case_directory} --keep-postprocessing --processors-remove"
-    )
+    slurm2.add_cmd(f"pyFoamClearCase.py {case_directory} --keep-postprocessing")
 
-    slurm_job_id = slurm2.sbatch()
-    logger.info(f"Successfully ran job {slurm_job_id} for foamCleanCase.")
+    slurm2.sbatch()
+    logger.info("Successfully ran pyFoamClearCase.py")
+
+    EXECUTE_CLEANUP_RETURN = ExecuteCleanupReturn()
 
     """ ======================= YOUR CODE ABOVE HERE ======================= """
 
-    return None
+    return EXECUTE_CLEANUP_RETURN

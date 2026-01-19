@@ -5,7 +5,8 @@ import os
 from datetime import datetime
 
 # constants
-from constants.job import JobStatus, JobStep
+from constants.job import JobStatus
+from constants.step import StepId
 from constants.path import (
     INPUT_CASE_TEMPLATE,
     OUTPUT_ASSETS_DIRECTORY,
@@ -22,7 +23,10 @@ from classes.functions import (
     ExtractObjectivesParameters,
     ModifyCaseParameters,
 )
+from classes.objective import Objective
+from classes.variable import Variable
 from classes.point import Point
+from classes.step import Step
 
 # PyFOAM
 from PyFoam.RunDictionary.SolutionDirectory import SolutionDirectory
@@ -59,15 +63,15 @@ class Job:
         self._point = point
 
         self._status = JobStatus.INITIALIZED
-        self._step = JobStep.INIT
+        self._steps: list[Step] = []
         self._run_ok = True
         self._start_time = None
-        self._resolution_time = None
+        self._end_time = None
         self._output_geometry_filepath = ""
         self._output_case_directory = f"{OUTPUT_CASES_DIRECTORY}/{job_id}"
         self._output_assets_directory = f"{OUTPUT_ASSETS_DIRECTORY}/{job_id}"
-        self._objectives = []
-        self._extra_variables = []
+        self._objectives: list[Objective] = []
+        self._extra_variables: list[Variable] = []
 
         progress.save_job(self)
 
@@ -80,14 +84,14 @@ class Job:
     def get_run_ok(self):
         return self._run_ok
 
-    def get_step(self):
-        return self._step.value
+    def get_steps(self):
+        return self._steps
 
     def get_start_time(self):
         return self._start_time
 
-    def get_resolution_time(self):
-        return self._resolution_time
+    def get_end_time(self):
+        return self._end_time
 
     def get_case_directory(self):
         return self._output_case_directory
@@ -133,7 +137,6 @@ class Job:
             decompose_par_dict.writeFile()
 
         self._status = JobStatus.READY
-        self._step = JobStep.PREPARE  # may not need
         progress.save_job(self)
 
     def dispatch(
@@ -154,13 +157,12 @@ class Job:
         progress.save_job(self)
 
         # CREATE GEOMETRY ======================================================
-        try:
-            if self._run_ok and should_create_geometry:
+        if self._run_ok and should_create_geometry:
+            start_time = datetime.now()
+            try:
                 logger.info(
                     f"Running create_geometry to generate a geometry for grid point {self._point.get_point_representation()}"
                 )
-                self._step = JobStep.GEOMETRY
-                progress.save_job(self)
                 create_geometry_parameters = CreateGeometryParameters(
                     grid_point=self._point,
                     output_assets_directory=self._output_assets_directory,
@@ -170,24 +172,34 @@ class Job:
                 create_geometry_return = create_geometry.create_geometry(
                     create_geometry_parameters=create_geometry_parameters
                 )
+                self._run_ok = create_geometry_return.run_ok
                 self._output_geometry_filepath = (
                     create_geometry_return.output_geometry_filepath
                 )
                 self._extra_variables = create_geometry_return.extra_variables
                 logger.info("Successfully ran create_geometry")
-            else:
-                logger.warning("Skipping create_geometry")
-        except Exception:
-            self._run_ok = False
-            logger.exception("An error occured in create_geometry")
-        finally:
-            progress.save_job(self)
+            except Exception:
+                self._run_ok = False
+                logger.exception("An error occured in create_geometry")
+            finally:
+                end_time = datetime.now()
+                self._steps.append(
+                    Step(
+                        id=StepId.CREATE_GEOMETRY,
+                        run_ok=self._run_ok,
+                        start_time=start_time,
+                        end_time=end_time,
+                    )
+                )
+                progress.save_job(self)
+        else:
+            logger.warning("Skipping create_geometry")
 
         # MODIFY CASE ==========================================================
-        try:
-            if self._run_ok and should_modify_case:
+        if self._run_ok and should_modify_case:
+            start_time = datetime.now()
+            try:
                 logger.info("Running modify_case to customize OpenFOAM case")
-                self._step = JobStep.CASE
                 progress.save_job(self)
                 modify_case_parameters = ModifyCaseParameters(
                     output_case_directory=self._output_case_directory,
@@ -197,21 +209,33 @@ class Job:
                     grid_point=self._point,
                     extra_variables=self._extra_variables,
                 )
-                modify_case.modify_case(modify_case_parameters=modify_case_parameters)
+                modify_case_return = modify_case.modify_case(
+                    modify_case_parameters=modify_case_parameters
+                )
+                self._run_ok = modify_case_return.run_ok
                 logger.info("Successfully ran modify_case")
-            else:
-                logger.warning("Skipping modify_case")
-        except Exception:
-            self._run_ok = False
-            logger.exception("An error occured in modify_case")
-        finally:
-            progress.save_job(self)
+            except Exception:
+                self._run_ok = False
+                logger.exception("An error occured in modify_case")
+            finally:
+                end_time = datetime.now()
+                self._steps.append(
+                    Step(
+                        id=StepId.MODIFY_CASE,
+                        run_ok=self._run_ok,
+                        start_time=start_time,
+                        end_time=end_time,
+                    )
+                )
+                progress.save_job(self)
+        else:
+            logger.warning("Skipping modify_case")
 
         # CREATE MESH ==========================================================
-        try:
-            if self._run_ok and should_create_mesh:
+        if self._run_ok and should_create_mesh:
+            start_time = datetime.now()
+            try:
                 logger.info("Running create_mesh to generate a mesh for geometry")
-                self._step = JobStep.MESH
                 progress.save_job(self)
                 create_mesh_parameters = CreateMeshParameters(
                     output_case_directory=self._output_case_directory,
@@ -219,44 +243,68 @@ class Job:
                     output_geometry_filepath=self._output_geometry_filepath,
                     logger=logger,
                 )
-                create_mesh.create_mesh(create_mesh_parameters=create_mesh_parameters)
+                create_mesh_return = create_mesh.create_mesh(
+                    create_mesh_parameters=create_mesh_parameters
+                )
+                self._run_ok = create_mesh_return.run_ok
                 logger.info("Successfully ran create_mesh")
-            else:
-                logger.warning("Skipping create_mesh")
-        except Exception:
-            self._run_ok = False
-            logger.exception("An error occured in create_mesh")
-        finally:
-            progress.save_job(self)
+            except Exception:
+                self._run_ok = False
+                logger.exception("An error occured in create_mesh")
+            finally:
+                end_time = datetime.now()
+                self._steps.append(
+                    Step(
+                        id=StepId.CREATE_MESH,
+                        run_ok=self._run_ok,
+                        start_time=start_time,
+                        end_time=end_time,
+                    )
+                )
+                progress.save_job(self)
+        else:
+            logger.warning("Skipping create_mesh")
 
         # EXECUTE SOLVER =======================================================
-        try:
-            if self._run_ok and should_execute_solver:
+        if self._run_ok and should_execute_solver:
+            start_time = datetime.now()
+            try:
                 logger.info("Running execute_solver to obtain simulation results")
-                self._step = JobStep.SOLVE
                 progress.save_job(self)
                 execute_solver_parameters = ExecuteSolverParameters(
                     output_case_directory=self._output_case_directory,
                     job_id=self._job_id,
                     logger=logger,
                 )
-                execute_solver.execute_solver(execute_solver_parameters)
+                execute_solver_return = execute_solver.execute_solver(
+                    execute_solver_parameters
+                )
+                self._run_ok = execute_solver_return.run_ok
                 logger.info("Successfully ran execute_solver")
-            else:
-                logger.warning("Skipping execute_solver")
-        except Exception:
-            self._run_ok = False
-            logger.exception("An error occured in execute_solver")
-        finally:
-            progress.save_job(self)
+            except Exception:
+                self._run_ok = False
+                logger.exception("An error occured in execute_solver")
+            finally:
+                end_time = datetime.now()
+                self._steps.append(
+                    Step(
+                        id=StepId.EXECUTE_SOLVER,
+                        run_ok=self._run_ok,
+                        start_time=start_time,
+                        end_time=end_time,
+                    )
+                )
+                progress.save_job(self)
+        else:
+            logger.warning("Skipping execute_solver")
 
         # EXTRACT OBJECTIVES ===================================================
-        try:
-            if self._run_ok and should_extract_objectives:
+        if self._run_ok and should_extract_objectives:
+            start_time = datetime.now()
+            try:
                 logger.info(
                     "Running extract_objectives for objective values extraction"
                 )
-                self._step = JobStep.OBJECTIVES
                 progress.save_job(self)
                 extract_objectives_parameters = ExtractObjectivesParameters(
                     output_case_directory=self._output_case_directory,
@@ -267,21 +315,31 @@ class Job:
                 extract_objectives_return = extract_objectives.extract_objectives(
                     extract_objectives_parameters=extract_objectives_parameters
                 )
+                self._run_ok = extract_objectives_return.run_ok
                 self._objectives = extract_objectives_return.objectives
                 logger.info("Successfully ran extract_objectives")
-            else:
-                logger.warning("Skipping extract_objectives")
-        except Exception:
-            self._run_ok = False
-            logger.exception("An error occured in extract_objectives")
-        finally:
-            progress.save_job(self)
+            except Exception:
+                self._run_ok = False
+                logger.exception("An error occured in extract_objectives")
+            finally:
+                end_time = datetime.now()
+                self._steps.append(
+                    Step(
+                        id=StepId.EXTRACT_OBJECTIVES,
+                        run_ok=self._run_ok,
+                        start_time=start_time,
+                        end_time=end_time,
+                    )
+                )
+                progress.save_job(self)
+        else:
+            logger.warning("Skipping extract_objectives")
 
         # EXTRACT ASSETS =======================================================
-        try:
-            if self._run_ok and should_extract_assets:
+        if self._run_ok and should_extract_assets:
+            start_time = datetime.now()
+            try:
                 logger.info("Running extract_assets for asset extraction")
-                self._step = JobStep.ASSETS
                 progress.save_job(self)
                 extract_assets_parameters = ExtractAssetsParameters(
                     output_case_directory=self._output_case_directory,
@@ -291,40 +349,61 @@ class Job:
                     job_id=self._job_id,
                     logger=logger,
                 )
-                extract_assets.extract_assets(
+                extract_assets_return = extract_assets.extract_assets(
                     extract_assets_parameters=extract_assets_parameters
                 )
+                self._run_ok = extract_assets_return.run_ok
                 logger.info("Successfully ran extract_assets")
-            else:
-                logger.warning("Skipping extract_assets")
-        except Exception:
-            logger.exception("An error occured in extract_assets")
-            self._run_ok = False
-        finally:
-            progress.save_job(self)
+            except Exception:
+                logger.exception("An error occured in extract_assets")
+                self._run_ok = False
+            finally:
+                end_time = datetime.now()
+                self._steps.append(
+                    Step(
+                        id=StepId.EXTRACT_ASSETS,
+                        run_ok=self._run_ok,
+                        start_time=start_time,
+                        end_time=end_time,
+                    )
+                )
+                progress.save_job(self)
+        else:
+            logger.warning("Skipping extract_assets")
 
         # EXECUTE CLEANUP ======================================================
-        try:
-            if should_execute_cleanup:  # don't care about run status here
+        if should_execute_cleanup:  # don't care about run status here
+            start_time = datetime.now()
+            try:
                 logger.info("Running execute_cleanup for job cleanup")
                 execute_cleanup_parameters = ExecuteCleanupParameters(
                     output_case_directory=self._output_case_directory,
                     job_id=self._job_id,
                     logger=logger,
                 )
-                execute_cleanup.execute_cleanup(
+                execute_cleanup_return = execute_cleanup.execute_cleanup(
                     execute_cleanup_parameters=execute_cleanup_parameters
                 )
+                self._run_ok = execute_cleanup_return.run_ok
                 logger.info("Successfully ran execute_cleanup")
-            else:
-                logger.warning("Skipping execute_cleanup")
-        except Exception:
-            self._run_ok = False
-            logger.exception("An error occured in execute_cleanup")
-        finally:
-            progress.save_job(self)
+            except Exception:
+                self._run_ok = False
+                logger.exception("An error occured in execute_cleanup")
+            finally:
+                end_time = datetime.now()
+                self._steps.append(
+                    Step(
+                        id=StepId.EXECUTE_CLEANUP,
+                        run_ok=self._run_ok,
+                        start_time=start_time,
+                        end_time=end_time,
+                    )
+                )
+                progress.save_job(self)
+        else:
+            logger.warning("Skipping execute_cleanup")
 
-        self._resolution_time = datetime.now()
+        self._end_time = datetime.now()
         if self._run_ok:
             self._status = JobStatus.COMPLETE
         else:

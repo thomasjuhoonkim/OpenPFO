@@ -1,5 +1,8 @@
+# system
+import os
+
 # classes
-from classes.functions import ExecuteSolverParameters
+from classes.functions import ExecuteSolverParameters, ExecuteSolverReturn
 
 # simple-slurm
 from simple_slurm import Slurm
@@ -11,8 +14,6 @@ def execute_solver(
     """
     The execute_solver function is used to create the geometry for each grid
     point in the design space.
-
-    NOTE: This function does not return a value.
     """
 
     """ ======================= YOUR CODE BELOW HERE ======================= """
@@ -34,7 +35,7 @@ def execute_solver(
     slurm.set_wait(True)
 
     slurm.add_cmd(
-        f"mpirun -np {processors} redistributePar -parallel -decompose -overwrite -case {case_directory}"
+        f"mpirun -np {processors} redistributePar -parallel -decompose -case {case_directory}"
     )
     slurm.add_cmd(
         f"mpirun -np {processors} simpleFoam -parallel -case {case_directory}"
@@ -43,9 +44,15 @@ def execute_solver(
         f"mpirun -np {processors} redistributePar -parallel -reconstruct -latestTime -case {case_directory}"
     )
 
-    slurm_job_id = slurm.sbatch()
-    logger.info(f"Successfully ran job {slurm_job_id} for simpleFoam.")
+    slurm.sbatch()
+    logger.info("Successfully ran simpleFoam.")
+
+    run_ok = True
+    if not os.path.isdir(f"{case_directory}/20"):
+        run_ok = False
+
+    EXECUTE_SOLVER_RETURN = ExecuteSolverReturn(run_ok=run_ok)
 
     """ ======================= YOUR CODE ABOVE HERE ======================= """
 
-    return None
+    return EXECUTE_SOLVER_RETURN

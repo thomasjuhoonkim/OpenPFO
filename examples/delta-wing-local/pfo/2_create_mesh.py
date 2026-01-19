@@ -1,5 +1,5 @@
 # classes
-from classes.functions import CreateMeshParameters
+from classes.functions import CreateMeshParameters, CreateMeshReturn
 
 # PyFoam
 from PyFoam.Execution.BasicRunner import BasicRunner
@@ -11,8 +11,6 @@ def create_mesh(
     """
     The create_mesh function is used to create the geometry for each grid
     point in the design space.
-
-    NOTE: This function does not return a value.
     """
 
     """ ======================= YOUR CODE BELOW HERE ======================= """
@@ -40,6 +38,8 @@ def create_mesh(
             logger.error(f"{command} failed")
             raise Exception(f"{command} failed")
 
+    CREATE_MESH_RETURN = CreateMeshReturn()
+
     """ ======================= YOUR CODE ABOVE HERE ======================= """
 
-    return None
+    return CREATE_MESH_RETURN

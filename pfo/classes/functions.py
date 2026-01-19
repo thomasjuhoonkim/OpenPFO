@@ -19,6 +19,12 @@ class DefaultParameters:
         self.output_case_directory = output_case_directory
         self.job_id = job_id
         self.logger = logger
+        self.processors = config["compute"]["processors"]
+
+
+class DefaultReturn:
+    def __init__(self, run_ok=True):
+        self.run_ok = run_ok
 
 
 # ==============================================================================
@@ -40,14 +46,17 @@ class CreateGeometryParameters:
         self.grid_point = grid_point
         self.logger = logger
         self.output_assets_directory = output_assets_directory
+        self.processors = config["compute"]["processors"]
 
 
-class CreateGeometryReturn:
+class CreateGeometryReturn(DefaultReturn):
     def __init__(
         self,
         output_geometry_filepath: str,
+        run_ok=True,
         extra_variables: list[Variable] = [],
     ):
+        super().__init__(run_ok=run_ok)
         self.output_geometry_filepath = output_geometry_filepath
         self.extra_variables = extra_variables
 
@@ -71,7 +80,11 @@ class ModifyCaseParameters(DefaultParameters):
         self.output_geometry_filepath = output_geometry_filepath
         self.grid_point = grid_point
         self.extra_variables = extra_variables
-        self.processors = config["compute"]["processors"]
+
+
+class ModifyCaseReturn(DefaultReturn):
+    def __init__(self, run_ok=True):
+        super().__init__(run_ok=run_ok)
 
 
 # ==============================================================================
@@ -89,7 +102,11 @@ class CreateMeshParameters(DefaultParameters):
             output_case_directory=output_case_directory, job_id=job_id, logger=logger
         )
         self.output_geometry_filepath = output_geometry_filepath
-        self.processors = config["compute"]["processors"]
+
+
+class CreateMeshReturn(DefaultReturn):
+    def __init__(self, run_ok=True):
+        super().__init__(run_ok=run_ok)
 
 
 # ==============================================================================
@@ -100,7 +117,11 @@ class ExecuteSolverParameters(DefaultParameters):
         super().__init__(
             output_case_directory=output_case_directory, job_id=job_id, logger=logger
         )
-        self.processors = config["compute"]["processors"]
+
+
+class ExecuteSolverReturn(DefaultReturn):
+    def __init__(self, run_ok=True):
+        super().__init__(run_ok=run_ok)
 
 
 # ==============================================================================
@@ -120,8 +141,9 @@ class ExtractObjectivesParameters(DefaultParameters):
         self.objectives = objectives
 
 
-class ExtractObjectivesReturn:
-    def __init__(self, objectives: list[Objective]):
+class ExtractObjectivesReturn(DefaultReturn):
+    def __init__(self, objectives: list[Objective], run_ok=True):
+        super().__init__(run_ok=run_ok)
         self.objectives = objectives
 
 
@@ -144,7 +166,11 @@ class ExtractAssetsParameters(DefaultParameters):
         self.output_case_foam_filepath = output_case_foam_filepath
         self.output_assets_directory = output_assets_directory
         self.output_geometry_filepath = output_geometry_filepath
-        self.processors = config["compute"]["processors"]
+
+
+class ExtractAssetsReturn(DefaultReturn):
+    def __init__(self, run_ok=True):
+        super().__init__(run_ok)
 
 
 # ==============================================================================
@@ -153,4 +179,8 @@ class ExtractAssetsParameters(DefaultParameters):
 class ExecuteCleanupParameters(DefaultParameters):
     def __init__(self, output_case_directory: str, job_id: str, logger: Logger):
         super().__init__(output_case_directory, job_id, logger)
-        self.processors = config["compute"]["processors"]
+
+
+class ExecuteCleanupReturn(DefaultReturn):
+    def __init__(self, run_ok=True):
+        super().__init__(run_ok=run_ok)

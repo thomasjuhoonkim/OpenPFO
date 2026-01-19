@@ -1,5 +1,5 @@
 # classes
-from classes.functions import ExtractAssetsParameters
+from classes.functions import ExtractAssetsParameters, ExtractAssetsReturn
 
 # simple-slurm
 from simple_slurm import Slurm
@@ -16,15 +16,27 @@ def extract_assets(
     All data from this function will be available to export after the full
     workflow has completed. You may store any data from this function in the
     provided assets output directory.
-
-    NOTE: This function does not return a value.
     """
 
     """ ======================= YOUR CODE BELOW HERE ======================= """
 
     case_directory = extract_assets_parameters.output_case_foam_filepath
     output_directory = extract_assets_parameters.output_assets_directory
+    processors = extract_assets_parameters.processors
     logger = extract_assets_parameters.logger
+
+    slurm1 = Slurm(
+        job_name="paraview",
+        account="def-jphickey",
+        time="00:05:00",
+        nodes=1,
+        ntasks_per_node=1,
+        cpus_per_task=16,
+        mem_per_cpu="4G",
+        output="OpenPFO.log",
+        open_mode="append",
+    )
+    slurm1.set_wait(True)
 
     SHARED = "pvbatch --force-offscreen-rendering --opengl-window-backend OSMesa"
     commands = [
@@ -36,26 +48,36 @@ def extract_assets(
         f"{SHARED} input/paraview/slice-velocity.py {case_directory} {output_directory}",
         f"{SHARED} input/paraview/slice-pressure.py {case_directory} {output_directory}",
     ]
+    for command in commands:
+        slurm1.add_cmd(command)
 
-    slurm = Slurm(
-        job_name="extractAssets",
+    slurm1.sbatch()
+    logger.info("Successfully ran paraview.")
+
+    # ==========================================================================
+
+    slurm2 = Slurm(
+        job_name="foamToVTK",
         account="def-jphickey",
         time="00:05:00",
         nodes=1,
-        ntasks_per_node=1,
-        cpus_per_task=16,
-        mem_per_cpu="4G",
+        ntasks_per_node=processors,
+        mem_per_cpu="1G",
         output="OpenPFO.log",
         open_mode="append",
     )
-    slurm.set_wait(True)
+    slurm2.set_wait(True)
 
-    for command in commands:
-        slurm.add_cmd(command)
+    slurm2.add_cmd(
+        f"mpirun -np {processors} foamToVTK -parallel -binary -case {case_directory}",
+        f"mv VTK {output_directory}",
+    )
 
-    slurm_job_id = slurm.sbatch()
-    logger.info(f"Successfully ran job {slurm_job_id} for extractAssets.")
+    slurm2.sbatch()
+    logger.info("Successfully ran foamToVTK.")
+
+    EXTRACT_ASSETS_RETURN = ExtractAssetsReturn()
 
     """ ======================= YOUR CODE ABOVE HERE ======================= """
 
-    return None
+    return EXTRACT_ASSETS_RETURN

@@ -23,6 +23,7 @@ from constants.path import OUTPUT_RESULTS_JSON
 # util
 from util.get_serialized_objectives import get_serialized_objectives
 from util.get_serialized_point import get_serialized_point
+from util.get_serialized_steps import get_serialized_steps
 from util.get_logger import get_logger
 from util.get_config import get_config
 
@@ -58,19 +59,19 @@ class Progress:
         job_result["id"] = job.get_id()
         job_result["status"] = job.get_status()
         job_result["runOk"] = job.get_run_ok()
-        job_result["step"] = job.get_step()  # idk about this one
+        job_result["steps"] = get_serialized_steps(steps=job.get_steps())
         job_result["startTime"] = (
             job.get_start_time().isoformat() if job.get_start_time() is not None else ""
         )
-        job_result["resolutionTime"] = (
-            job.get_resolution_time().isoformat()
-            if job.get_resolution_time() is not None
-            else ""
+        job_result["endTime"] = (
+            job.get_end_time().isoformat() if job.get_end_time() is not None else ""
         )
         job_result["caseDirectory"] = job.get_case_directory()
         job_result["assetsDirectory"] = job.get_assets_directory()
-        job_result["point"] = get_serialized_point(job.get_point())
-        job_result["objectives"] = get_serialized_objectives(job.get_objectives())
+        job_result["point"] = get_serialized_point(point=job.get_point())
+        job_result["objectives"] = get_serialized_objectives(
+            objectives=job.get_objectives()
+        )
 
         job_index = next(
             (
