@@ -44,9 +44,9 @@ def execute_cleanup(
     # ==========================================================================
 
     slurm2 = Slurm(
-        job_name="foamCleanCase",
+        job_name="cleanCase",
         account="def-jphickey",
-        time="00:01:00",
+        time="00:05:00",
         nodes=1,
         ntasks_per_node=1,
         cpus_per_task=1,
@@ -56,7 +56,9 @@ def execute_cleanup(
     )
     slurm2.set_wait(True)
 
-    slurm2.add_cmd("foamCleanCase")
+    slurm2.add_cmd(
+        f"pyFoamClearCase.py {case_directory} --keep-postprocessing --processors-remove"
+    )
 
     slurm_job_id = slurm2.sbatch()
     logger.info(f"Successfully ran job {slurm_job_id} for foamCleanCase.")
