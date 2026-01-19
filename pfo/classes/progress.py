@@ -161,7 +161,7 @@ class Progress:
     def save_execution_time(self, execution_time: int = None):
         if execution_time is None:
             time_diff = self._end_time - self._start_time
-        execution_time = time_diff.total_seconds()
+            execution_time = time_diff.total_seconds()
 
         self._results["executionTimeSeconds"] = execution_time
 
