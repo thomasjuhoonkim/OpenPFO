@@ -8,52 +8,63 @@ from commands.check_config import check_config
 
 # classes
 from classes.problem import OpenPFOProblem
+from classes.progress import Progress
+
+# constants
+from constants.path import OUTPUT_RESULTS_JSON
 
 # util
-from util.get_initial_parameters import get_initial_parameters
-from util.get_initial_objectives import get_initial_objectives
-from util.get_progress import get_progress
+from util.get_config_parameters import get_config_parameters
+from util.get_config_objectives import get_config_objectives
+from util.format_solutions import format_solutions
+from util.get_solutions import get_solutions
 from util.get_logger import get_logger
-
-# pymoo
-from pymoo.algorithms.moo.nsga2 import NSGA2
 
 # datetime
 from datetime import datetime
-
-from util.get_solutions import get_solutions
 
 # algorithm
 from A_create_algorithm import create_algorithm
 
 logger = get_logger()
-progress = get_progress()
 
 
 def run(
     cleanup: Annotated[bool, typer.Option(help="Run cleanup after each job")] = True,
-    # resume: Annotated[
-    #     bool, typer.Option(help="Resume progress from an existing run")
-    # ] = False,
+    resume: Annotated[
+        bool, typer.Option(help="Resume progress from an existing run")
+    ] = False,
 ):
     # pre-run checks
-    check_output()
+    if not resume:
+        check_output()
     check_config()
 
-    # start time
-    start_time = datetime.now()
-    logger.info(f"Start time: {start_time}")
-    progress.save_start_time(start_time=start_time)
+    # progress
+    progress = Progress(resume=resume)
 
-    # configure initial parameters
-    parameters = get_initial_parameters()
-    objectives = get_initial_objectives()
+    # start time and/or resume time
+    start_time = None
+    if resume:
+        start_time = progress.get_start_time()
+        resume_time = datetime.now()
+        logger.info(f"Original start time: {start_time}")
+        logger.info(f"Resume time: {resume_time}")
+    else:
+        start_time = datetime.now()
+        logger.info(f"Start time: {start_time}")
+        progress.save_start_time(start_time=start_time)
 
-    # problem
+    # pymoo
+    parameters = get_config_parameters()
+    objectives = get_config_objectives()
     problem = OpenPFOProblem(
-        parameters=parameters, objectives=objectives, should_execute_cleanup=cleanup
+        should_execute_cleanup=cleanup,
+        parameters=parameters,
+        objectives=objectives,
+        progress=progress,
     )
-    algorithm: NSGA2 = create_algorithm(problem=problem)
+    algorithm = create_algorithm(problem=problem)
 
     # run
     result = algorithm.run()
@@ -62,19 +73,11 @@ def run(
     solutions = get_solutions(result=result)
 
     # solution
-    solution_representations = [
-        f"SOLUTION {i}\n{solution.get_solution_representation()}"
-        for i, solution in enumerate(solutions)
-    ]
     logger.info("Final result:")
-    logger.info("\n" + "\n\n".join(solution_representations))
+    logger.info(format_solutions(solutions=solutions))
     progress.save_solutions(solutions=solutions)
 
     # end time
     end_time = datetime.now()
     logger.info(f"End time: {end_time}")
     progress.save_end_time(end_time=end_time)
-
-    # execution time
-    logger.info(f"Execution time: {result.exec_time} s")
-    progress.save_execution_time(execution_time=result.exec_time)

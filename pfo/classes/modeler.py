@@ -31,7 +31,7 @@ class FreeCADModeler(AbstractModeler):
 
             FreeCAD.Version()
             logger.info("FreeCAD interface is valid")
-        except Exception:
+        except BaseException:
             logger.exception("An error occured while loading FreeCAD")
             sys.exit(1)
 
@@ -45,7 +45,7 @@ class FreeCADModeler(AbstractModeler):
             part = document.getObject("Body")
             logger.info(f"FreeCAD Body found: {part.Name}")
 
-        except Exception:
+        except BaseException:
             logger.exception("An error occured while checking the model")
             sys.exit(1)
 

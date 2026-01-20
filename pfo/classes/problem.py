@@ -8,6 +8,7 @@ from pymoo.core.problem import Problem
 from classes.point import Point
 from classes.search import Search
 from classes.variable import Variable
+from classes.progress import Progress
 from classes.objective import Objective
 from classes.parameter import Parameter
 
@@ -20,13 +21,15 @@ logger = get_logger()
 class OpenPFOProblem(Problem):
     def __init__(
         self,
-        parameters: list[Parameter],
-        objectives: list[Objective],
+        parameters: list["Parameter"],
+        objectives: list["Objective"],
+        progress: "Progress",
         should_execute_cleanup=True,
     ):
         self._parameters = parameters
         self._objectives = objectives
         self._search_count = 0
+        self._progress = progress
         self._should_execute_cleanup = should_execute_cleanup
 
         lower_bounds = np.array(object=[], dtype=np.float64)
@@ -48,7 +51,7 @@ class OpenPFOProblem(Problem):
         self._search_count += 1
         return f"search-{id}"
 
-    def _get_grid_points(self, x: list[list[np.float64]]) -> list[Point]:
+    def _get_grid_points(self, x: list[list[np.float64]]) -> list["Point"]:
         parameters = self._parameters
 
         grid_points = []
@@ -72,8 +75,7 @@ class OpenPFOProblem(Problem):
         grid_points = self._get_grid_points(x)
         search_id = self._generate_search_id()
 
-        search = Search(search_id=search_id, grid_points=grid_points)
-        search.create_jobs()
+        search = Search(id=search_id, grid_points=grid_points, progress=self._progress)
         search.run(should_execute_cleanup=self._should_execute_cleanup)
 
         objective_values = search.get_all_objective_values()

@@ -68,13 +68,32 @@ def validate_variable(variable: dict):
     return None
 
 
+def validate_point(point: dict):
+    attributes = [("variables", list)]
+
+    for field, expected_type in attributes:
+        if field not in point:
+            logger.error(f'"{field}" is missing from variable')
+            sys.exit(1)
+        if not isinstance(point[field], expected_type):
+            logger.error(f'"{field}" in variable is not {expected_type}')
+            sys.exit(1)
+
+    for variable in point["variables"]:
+        validate_variable(variable=variable)
+
+    logger.info("Point is valid")
+
+    return None
+
+
 def validate_step(step: dict):
     attributes = [
         ("id", str),
         ("runOk", bool),
         ("startTime", str),
         ("endTime", str),
-        ("executionTime", (int, float)),
+        ("executionTimeSeconds", (int, float)),
     ]
 
     for field, expected_type in attributes:
@@ -96,10 +115,9 @@ def validate_job(job: dict):
         ("steps", list),
         ("startTime", str),
         ("endTime", str),
-        ("executionTime", (int, float)),
-        ("caseDirectory", str),
-        ("assetsDirectory", str),
-        ("point", list),
+        ("outputGeometryFilepath", str),
+        ("outputCaseDirectory", str),
+        ("outputAssetsDirectory", str),
         ("objectives", list),
     ]
 
@@ -111,21 +129,20 @@ def validate_job(job: dict):
             logger.error(f'"{field}" in job is not {expected_type}')
             sys.exit(1)
 
-    for i, step in enumerate(job["steps"]):
+    for step in job["steps"]:
         validate_step(step)
-        logger.info(f"step {i} valid")
 
     logger.info("Steps are valid")
 
-    for i, variable in enumerate(job["point"]):
-        validate_variable(variable)
-        logger.info(f"variable {i} valid")
+    if "point" not in job:
+        logger.error("point is missing from job")
+        sys.exit(1)
+    validate_point(point=job["point"])
 
     logger.info("Variables are valid")
 
-    for i, objective in enumerate(job["objectives"]):
+    for objective in job["objectives"]:
         validate_objective(objective)
-        logger.info(f"objective {i} valid")
 
     logger.info("Objectives are valid")
 
@@ -152,15 +169,13 @@ def validate_solution(solution: dict):
             logger.error(f'"{field}" in solution is not {expected_type}')
             sys.exit(1)
 
-    for i, parameter in enumerate(solution["parameters"]):
+    for parameter in solution["parameters"]:
         validate_parameter(parameter)
-        logger.info(f"parameter {i} valid")
 
     logger.info("Parameters are valid")
 
-    for i, objective in enumerate(solution["objectives"]):
+    for objective in solution["objectives"]:
         validate_objective(objective)
-        logger.info(f"objective {i} valid")
 
     logger.info("Objectives are valid")
 
@@ -210,12 +225,6 @@ def validate_config(config: dict):
     if "optimizer" not in config:
         logger.error("[optimizer] is missing")
         sys.exit(1)
-    if "seed" not in config["optimizer"]:
-        logger.error("seed is missing from [optimizer]")
-        sys.exit(1)
-    if not isinstance(config["optimizer"]["seed"], (int, float)):
-        logger.error("seed is not a float")
-        sys.exit(1)
     if "objectives" not in config["optimizer"]:
         logger.error("[[optimizer.objectives]] is missing from [optimizer]")
         sys.exit(1)
@@ -247,9 +256,8 @@ def validate_workflow(workflow: dict):
         logger.error("jobs is not a list")
         sys.exit(1)
 
-    for i, job in enumerate(workflow["jobs"]):
+    for job in workflow["jobs"]:
         validate_job(job)
-        logger.info(f"job {i} valid")
 
     logger.info("Jobs are valid")
 
@@ -260,9 +268,8 @@ def validate_workflow(workflow: dict):
         logger.error("searches is not a list")
         sys.exit(1)
 
-    for i, search in enumerate(workflow["searches"]):
+    for search in workflow["searches"]:
         validate_search(search)
-        logger.info(f"search {i} valid")
 
     logger.info("Searches are valid")
 
@@ -289,11 +296,10 @@ def validate_search(search: dict):
             logger.error(f'"{field}" in search is not {expected_type}')
             sys.exit(1)
 
-    for i, job_id in enumerate(search["jobs"]):
+    for job_id in search["jobs"]:
         if not isinstance(job_id, str):
             logger.error("job_id in search.jobs is not a string")
             sys.exit(1)
-        logger.info(f"job_id {i} valid")
 
     logger.info("Job IDs are valid")
 
@@ -324,14 +330,12 @@ def validate_results(results: dict):
         logger.error("solutions is not a list")
         sys.exit(1)
 
-    for i, solution in enumerate(results["solutions"]):
+    for solution in results["solutions"]:
         validate_solution(solution)
-        logger.info(f"solution {i} valid")
 
     logger.info("Solutions are valid")
 
     attributes = [
-        ("executionTimeSeconds", (int, float)),
         ("startTime", str),
         ("endTime", str),
         ("command", str),

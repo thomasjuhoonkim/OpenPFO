@@ -7,8 +7,8 @@ from commands.check_output import check_output
 from commands.check_config import check_config
 
 # util
-from util.get_initial_parameters import get_initial_parameters
-from util.get_initial_objectives import get_initial_objectives
+from util.get_config_parameters import get_config_parameters
+from util.get_config_objectives import get_config_objectives
 from util.get_logger import get_logger
 
 logger = get_logger()

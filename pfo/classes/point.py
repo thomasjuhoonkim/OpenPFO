@@ -14,3 +14,12 @@ class Point:
             values.append(f"{variable.get_name()}: {variable.get_value()}")
 
         return f"({', '.join(values)})"
+
+    def serialize(self):
+        return {"variables": [variable.serialize() for variable in self._variables]}
+
+    @classmethod
+    def from_dict(cls, point: dict):
+        return Point(
+            variables=[Variable.from_dict(variable) for variable in point["variables"]]
+        )

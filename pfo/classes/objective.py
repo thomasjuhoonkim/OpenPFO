@@ -25,3 +25,20 @@ class Objective:
 
     def get_pymoo_value(self):
         return -1 * self._value if self._type == "maximize" else self._value
+
+    def serialize(self):
+        return {
+            "id": self._id,
+            "name": self._name,
+            "type": self._type,
+            "value": self._value,
+        }
+
+    @classmethod
+    def from_dict(cls, objective: dict):
+        objective_object = cls(
+            id=objective["id"], name=objective["name"], type=objective["type"]
+        )
+        if objective["value"] is not None:
+            objective_object.set_value(value=objective["value"])
+        return objective_object

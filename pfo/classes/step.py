@@ -29,3 +29,21 @@ class Step:
     def get_execution_time(self):
         time_diff = self._end_time - self._start_time
         return time_diff.total_seconds()
+
+    def serialize(self):
+        return {
+            "id": self._id.value,
+            "runOk": self._run_ok,
+            "startTime": self._start_time.isoformat(),
+            "endTime": self._end_time.isoformat(),
+            "executionTimeSeconds": self.get_execution_time(),
+        }
+
+    @classmethod
+    def from_dict(cls, step: dict):
+        return cls(
+            id=StepId(value=step["id"]),
+            run_ok=step["runOk"],
+            start_time=datetime.fromisoformat(step["startTime"]),
+            end_time=datetime.fromisoformat(step["endTime"]),
+        )

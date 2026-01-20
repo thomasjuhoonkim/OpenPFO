@@ -54,11 +54,11 @@ class CreateGeometryReturn(DefaultReturn):
         self,
         output_geometry_filepath: str,
         run_ok=True,
-        extra_variables: list[Variable] = [],
+        extra_variables: list[Variable] | None = None,
     ):
         super().__init__(run_ok=run_ok)
         self.output_geometry_filepath = output_geometry_filepath
-        self.extra_variables = extra_variables
+        self.extra_variables = extra_variables if extra_variables is not None else []
 
 
 # ==============================================================================

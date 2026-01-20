@@ -3,9 +3,7 @@ import fluidfoam
 
 # classes
 from classes.functions import ExtractObjectivesParameters, ExtractObjectivesReturn
-
-# util
-from util.get_objective_by_id import get_objective_by_id
+from classes.objective import Objective
 
 
 def extract_objectives(
@@ -23,6 +21,9 @@ def extract_objectives(
 
     NOTE: This function MUST return a list of objectives to MINIMIZE for.
     """
+
+    def get_objective_by_id(objectives: list[Objective], id: str):
+        return next((o for o in objectives if o.get_id() == id), None)
 
     """ ======================= YOUR CODE BELOW HERE ======================= """
 

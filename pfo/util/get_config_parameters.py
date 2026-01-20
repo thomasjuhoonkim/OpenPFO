@@ -7,7 +7,7 @@ config = get_config()
 CONFIG_PARAMETERS = config["model"]["parameters"]
 
 
-def get_initial_parameters() -> list[Parameter]:
+def get_config_parameters() -> list[Parameter]:
     parameters = []
     for config_parameter in CONFIG_PARAMETERS:
         parameter = Parameter(

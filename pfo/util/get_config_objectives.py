@@ -9,7 +9,7 @@ config = get_config()
 CONFIG_OBJECTIVES = config["optimizer"]["objectives"]
 
 
-def get_initial_objectives() -> list[Objective]:
+def get_config_objectives() -> list[Objective]:
     objectives = []
 
     for config_objective in CONFIG_OBJECTIVES:

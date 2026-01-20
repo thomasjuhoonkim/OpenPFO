@@ -2,7 +2,6 @@
 import typer
 
 # commands - reset
-from commands.reset_case_template import reset_case_template
 from commands.reset_output import reset_output
 
 # commands - check
@@ -31,10 +30,6 @@ from commands.hello import hello
 app = typer.Typer(name="pfo", help="Opensource Parametric Flow Optimizer")
 
 # reset
-app.command(
-    name="resetCaseTemplate",
-    help="Resets the case template directory in `input/case_template` back to original settings. (WARNING: Your progress will be lost)",
-)(reset_case_template)
 app.command(
     name="resetOutput",
     help="Resets the output directory in `output/` back to original settings. (WARNING: Your progress will be lost)",

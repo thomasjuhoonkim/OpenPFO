@@ -4,6 +4,7 @@ class Parameter:
         self._id = id
         self._min = min
         self._max = max
+        self._value = None
 
     def get_name(self):
         return self._name
@@ -22,3 +23,25 @@ class Parameter:
 
     def get_value(self):
         return self._value
+
+    def serialize(self):
+        return {
+            "id": self.get_id(),
+            "name": self.get_name(),
+            "min": self.get_min(),
+            "max": self.get_max(),
+            "value": self.get_value(),
+        }
+
+    @classmethod
+    def from_dict(cls, parameter: dict):
+        parameter_object = Parameter(
+            name=parameter["name"],
+            id=parameter["id"],
+            min=parameter["min"],
+            max=parameter["max"],
+            value=parameter["value"],
+        )
+        if parameter["value"] is not None:
+            parameter_object.set_value(value=parameter["value"])
+        return parameter_object

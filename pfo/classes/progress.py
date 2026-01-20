@@ -11,23 +11,18 @@ from typing import TYPE_CHECKING
 # datetime
 from datetime import datetime
 
-# util
-from util.validate_results import validate_results
-from util.get_serialized_job import get_serialized_job
-
-
 # classes
 if TYPE_CHECKING:
-    from classes.job import Job
     from classes.search import Search
     from classes.solution import Solution
+from classes.job import Job
 
 # constants
 from constants.path import OUTPUT_RESULTS_JSON
 
 # util
-from util.get_serialized_objective import get_serialized_objective
-from util.get_serialized_parameter import get_serialized_parameter
+from util.validate_results import validate_results
+from util.get_pfo_command import get_pfo_command
 from util.get_logger import get_logger
 from util.get_config import get_config
 
@@ -36,34 +31,66 @@ logger = get_logger()
 
 
 class Progress:
-    def __init__(self, results_json_filepath=None):
-        if results_json_filepath:
-            if not os.path.isfile(OUTPUT_RESULTS_JSON):
-                logger.error(f"{OUTPUT_RESULTS_JSON} does not exist")
-                sys.exit(1)
+    def __init__(self, resume=False):
+        can_resume = False
+        if resume:
+            if os.path.isfile(OUTPUT_RESULTS_JSON):
+                with open(OUTPUT_RESULTS_JSON, "r") as json_file:
+                    self._results = json.load(json_file)
+
+                # validate_results simply exists rather than returning a boolean
+                validate_results(self._results)
+
+                # ensure the command is the same
+                current_command_set = set(sys.argv)
+                current_command_set.remove("--resume")
+                results_command = self._results["command"]
+                if current_command_set != set(results_command.split(" ")):
+                    logger.error(
+                        f"Command used in current progress ({results_command}) does not match current command ({get_pfo_command(sys.argv)})"
+                    )
+                    sys.exit(1)
+
+                # otherwise, you can assume
+                can_resume = True
+            else:
+                logger.info(
+                    f"Could not find {OUTPUT_RESULTS_JSON}, no progress to resume from, starting from the beginning"
+                )
+
+        if resume and can_resume:
             logger.info(f"{OUTPUT_RESULTS_JSON} found!")
 
-            with open(results_json_filepath, "r") as json_file:
-                self._results = json.load(json_file)
-
-            validate_results(self._results)
-
-            self._start_time = self._results["startTime"]
-            self._end_time = self._results["endTime"]
+            self._start_time = (
+                datetime.fromisoformat(self._results["startTime"])
+                if self._results["startTime"]
+                else None
+            )
+            self._end_time = (
+                datetime.fromisoformat(self._results["endTime"])
+                if self._results["endTime"]
+                else None
+            )
             self._existing_results = True
         else:
             self._results = {
                 "config": config,
                 "workflow": {"jobs": [], "searches": []},
                 "solutions": [],
-                "executionTimeSeconds": 0,
                 "startTime": "",
                 "endTime": "",
-                "command": " ".join(sys.argv),
+                "command": get_pfo_command(sys.argv),
             }
+            self.attempts = []
             self._start_time = datetime.now()
             self._end_time = datetime.now()
             self._existing_results = False
+
+        # internal lookup cache
+        self._jobs_by_id = {job["id"]: job for job in self._results["workflow"]["jobs"]}
+        self._searches_by_id = {
+            search["id"]: search for search in self._results["workflow"]["searches"]
+        }
 
     def _save(self):
         with open(OUTPUT_RESULTS_JSON, "w") as results_json:
@@ -74,21 +101,10 @@ class Progress:
         return None
 
     def save_job(self, job: "Job"):
-        job_result = get_serialized_job(job)
+        job_result = job.serialize()
 
-        job_index = next(
-            (
-                i
-                for i, _job in enumerate(self._results["workflow"]["jobs"])
-                if _job["id"] == job.get_id()
-            ),
-            None,
-        )
-
-        if job_index is not None:
-            self._results["workflow"]["jobs"][job_index] = job_result
-        else:
-            self._results["workflow"]["jobs"].append(job_result)
+        self._jobs_by_id[job.get_id()] = job_result
+        self._results["workflow"]["jobs"] = list(self._jobs_by_id.values())
 
         self._save()
 
@@ -97,24 +113,10 @@ class Progress:
         return None
 
     def save_search(self, search: "Search"):
-        search_result = {}
+        search_result = search.serialize()
 
-        search_result["id"] = search.get_id()
-        search_result["jobs"] = [j.get_id() for j in search.get_jobs()]
-
-        search_index = next(
-            (
-                i
-                for i, _search in enumerate(self._results["workflow"]["searches"])
-                if _search["id"] == search.get_id()
-            ),
-            None,
-        )
-
-        if search_index is not None:
-            self._results["workflow"]["searches"][search_index] = search_result
-        else:
-            self._results["workflow"]["searches"].append(search_result)
+        self._searches_by_id[search.get_id()] = search_result
+        self._results["workflow"]["searches"] = list(self._searches_by_id.values())
 
         self._save()
 
@@ -130,10 +132,10 @@ class Progress:
             objectives = []
 
             for parameter in solution.get_parameters():
-                parameters.append(get_serialized_parameter(parameter=parameter))
+                parameters.append(parameter.serialize())
 
             for objective in solution.get_objectives():
-                objectives.append(get_serialized_objective(objective=objective))
+                objectives.append(objective.serialize())
 
             solutions_result.append(
                 {"parameters": parameters, "objectives": objectives}
@@ -176,15 +178,17 @@ class Progress:
 
         return None
 
-    def save_execution_time(self, execution_time: int = None):
-        if execution_time is None:
-            time_diff = self._end_time - self._start_time
-            execution_time = time_diff.total_seconds()
+    def get_command(self):
+        return self._results["command"]
 
-        self._results["executionTimeSeconds"] = execution_time
+    def get_start_time(self):
+        return self._start_time
 
-        self._save()
+    def get_end_time(self):
+        return self._end_time
 
-        logger.debug(f"Execution time saved successfully in {OUTPUT_RESULTS_JSON}")
-
-        return None
+    def get_job(self, job_id: str):
+        job = self._jobs_by_id.get(job_id, None)
+        if job is None:
+            return None
+        return Job.from_dict(job=job, progress=self)

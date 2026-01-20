@@ -11,14 +11,13 @@ from commands.check_config import check_config
 
 # classes
 from classes.job import Job
+from classes.progress import Progress
 
 # util
 from util.get_logger import get_logger
-from util.get_progress import get_progress
 from util.get_random_points import get_random_points
 
 logger = get_logger()
-progress = get_progress()
 
 
 def check_geometries(
@@ -33,6 +32,9 @@ def check_geometries(
     check_output()
     check_config()
 
+    # progress
+    progress = Progress()
+
     # start time
     start_time = datetime.now()
     logger.info(f"Start time: {start_time}")
@@ -42,7 +44,7 @@ def check_geometries(
     grid_points = get_random_points(count=count)
     for i, point in enumerate(grid_points):
         job_id = f"check-geometries-{i}"
-        job = Job(job_id=job_id, point=point)
+        job = Job(id=job_id, point=point, progress=progress)
 
         job.prepare_job(should_create_case_directory=False)
         job.dispatch(
@@ -61,8 +63,3 @@ def check_geometries(
     end_time = datetime.now()
     logger.info(f"End time: {end_time}")
     progress.save_end_time(end_time=end_time)
-
-    # execution time
-    execution_time = end_time - start_time
-    logger.info(f"Execution time: {execution_time.total_seconds()} s")
-    progress.save_execution_time(execution_time.total_seconds())
