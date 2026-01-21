@@ -173,26 +173,6 @@ class Job:
         self._status = JobStatus.READY
         self._progress.save_job(self)
 
-    def _get_step_by_id(self, id: "StepId"):
-        index = next(
-            (i for i, _step in enumerate(self._steps) if _step.get_id() == id), None
-        )
-        return self._steps[index] if index is not None else None
-
-    def _should_run_step(self, id: "StepId"):
-        step = self._get_step_by_id(id=id)
-        if step is not None:
-            logger.info(f"{id.value} step found in progress")
-            step_run_ok = step.get_run_ok()
-            if step_run_ok:
-                logger.info(f"Skipping {id.value} as it was successful")
-                return False
-            else:
-                logger.info(f"Re-running {id.value} as it was not successful")
-                return True
-        else:
-            return True
-
     def dispatch(
         self,
         should_create_geometry=True,
@@ -203,8 +183,28 @@ class Job:
         should_extract_assets=True,
         should_execute_cleanup=True,
     ):
-        if self._run_ok:
-            logger.info(f"Job {self._id} already complete, skipping")
+        if self._status == JobStatus.INITIALIZED:
+            logger.info(
+                f"Job {self._id} was initialized but not prepared, preparing and starting..."
+            )
+            self.prepare_job()
+
+        if self._status == JobStatus.READY:
+            logger.info(f"Job {self._id} is ready, starting...")
+
+        if self._status == JobStatus.RUNNING:
+            logger.info(
+                f"Job {self._id} was previously running, cleaning up and restarting..."
+            )
+            # clean up
+
+        if self._status == JobStatus.FAILED:
+            logger.info(
+                f"Job {self._id} previously fully ran but failed, restarting..."
+            )
+
+        if self._status == JobStatus.COMPLETE:
+            logger.info(f"Job {self._id} already complete, skipping...")
             return None
 
         logger.info(
@@ -217,9 +217,7 @@ class Job:
         dispatch_ok = True
 
         # CREATE GEOMETRY ======================================================
-        if should_create_geometry and (
-            not dispatch_ok or self._should_run_step(id=StepId.CREATE_GEOMETRY)
-        ):
+        if should_create_geometry and dispatch_ok:
             start_time = datetime.now()
             try:
                 logger.info(
@@ -258,9 +256,7 @@ class Job:
             logger.warning("Skipping create_geometry")
 
         # MODIFY CASE ==========================================================
-        if should_modify_case and (
-            not dispatch_ok or self._should_run_step(id=StepId.MODIFY_CASE)
-        ):
+        if should_modify_case and dispatch_ok:
             start_time = datetime.now()
             try:
                 logger.info("Running modify_case to customize OpenFOAM case")
@@ -296,9 +292,7 @@ class Job:
             logger.warning("Skipping modify_case")
 
         # CREATE MESH ==========================================================
-        if should_create_mesh and (
-            not dispatch_ok or self._should_run_step(id=StepId.CREATE_MESH)
-        ):
+        if should_create_mesh and dispatch_ok:
             start_time = datetime.now()
             try:
                 logger.info("Running create_mesh to generate a mesh for geometry")
@@ -332,9 +326,7 @@ class Job:
             logger.warning("Skipping create_mesh")
 
         # EXECUTE SOLVER =======================================================
-        if should_execute_solver and (
-            not dispatch_ok or self._should_run_step(id=StepId.EXECUTE_SOLVER)
-        ):
+        if should_execute_solver and dispatch_ok:
             start_time = datetime.now()
             try:
                 logger.info("Running execute_solver to obtain simulation results")
@@ -367,9 +359,7 @@ class Job:
             logger.warning("Skipping execute_solver")
 
         # EXTRACT OBJECTIVES ===================================================
-        if should_extract_objectives and (
-            not dispatch_ok or self._should_run_step(id=StepId.EXTRACT_OBJECTIVES)
-        ):
+        if should_extract_objectives and dispatch_ok:
             start_time = datetime.now()
             try:
                 logger.info(
@@ -390,10 +380,6 @@ class Job:
                 logger.info("Successfully ran extract_objectives")
             except BaseException:
                 dispatch_ok = False
-                objectives = get_config_objectives()
-                for objective in objectives:
-                    objective.set_value(value=np.finfo(np.float64).max)
-                self._objectives = objectives
                 logger.exception("An error occured in extract_objectives")
             finally:
                 end_time = datetime.now()
@@ -410,9 +396,7 @@ class Job:
             logger.warning("Skipping extract_objectives")
 
         # EXTRACT ASSETS =======================================================
-        if should_extract_assets and (
-            not dispatch_ok or self._should_run_step(id=StepId.EXTRACT_ASSETS)
-        ):
+        if should_extract_assets and dispatch_ok:
             start_time = datetime.now()
             try:
                 logger.info("Running extract_assets for asset extraction")
@@ -486,6 +470,10 @@ class Job:
         if dispatch_ok:
             self._status = JobStatus.COMPLETE
         else:
+            objectives = get_config_objectives()
+            for objective in objectives:
+                objective.set_value(value=np.finfo(np.float64).max)
+            self._objectives = objectives
             self._status = JobStatus.FAILED
         self._progress.save_job(self)
 
