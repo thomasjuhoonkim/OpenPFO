@@ -16,6 +16,9 @@ from constants.path import (
     OUTPUT_CASES_DIRECTORY,
 )
 
+# numpy
+import numpy as np
+
 # classes
 if TYPE_CHECKING:
     from classes.progress import Progress
@@ -200,6 +203,10 @@ class Job:
         should_extract_assets=True,
         should_execute_cleanup=True,
     ):
+        if self._run_ok:
+            logger.info(f"Job {self._id} already complete, skipping")
+            return None
+
         logger.info(
             f"======================= JOB {self._id} START ======================="
         )
@@ -207,11 +214,11 @@ class Job:
         self._status = JobStatus.RUNNING
         self._progress.save_job(self)
 
+        dispatch_ok = True
+
         # CREATE GEOMETRY ======================================================
-        if (
-            self._run_ok
-            and should_create_geometry
-            and self._should_run_step(id=StepId.CREATE_GEOMETRY)
+        if should_create_geometry and (
+            not dispatch_ok or self._should_run_step(id=StepId.CREATE_GEOMETRY)
         ):
             start_time = datetime.now()
             try:
@@ -227,21 +234,21 @@ class Job:
                 create_geometry_return = create_geometry.create_geometry(
                     create_geometry_parameters=create_geometry_parameters
                 )
-                self._run_ok = create_geometry_return.run_ok
+                dispatch_ok = create_geometry_return.run_ok
                 self._output_geometry_filepath = (
                     create_geometry_return.output_geometry_filepath
                 )
                 self._extra_variables = create_geometry_return.extra_variables
                 logger.info("Successfully ran create_geometry")
             except BaseException:
-                self._run_ok = False
+                dispatch_ok = False
                 logger.exception("An error occured in create_geometry")
             finally:
                 end_time = datetime.now()
                 self._steps.append(
                     Step(
                         id=StepId.CREATE_GEOMETRY,
-                        run_ok=self._run_ok,
+                        run_ok=dispatch_ok,
                         start_time=start_time,
                         end_time=end_time,
                     )
@@ -251,10 +258,8 @@ class Job:
             logger.warning("Skipping create_geometry")
 
         # MODIFY CASE ==========================================================
-        if (
-            self._run_ok
-            and should_modify_case
-            and self._should_run_step(id=StepId.MODIFY_CASE)
+        if should_modify_case and (
+            not dispatch_ok or self._should_run_step(id=StepId.MODIFY_CASE)
         ):
             start_time = datetime.now()
             try:
@@ -271,17 +276,17 @@ class Job:
                 modify_case_return = modify_case.modify_case(
                     modify_case_parameters=modify_case_parameters
                 )
-                self._run_ok = modify_case_return.run_ok
+                dispatch_ok = modify_case_return.run_ok
                 logger.info("Successfully ran modify_case")
             except BaseException:
-                self._run_ok = False
+                dispatch_ok = False
                 logger.exception("An error occured in modify_case")
             finally:
                 end_time = datetime.now()
                 self._steps.append(
                     Step(
                         id=StepId.MODIFY_CASE,
-                        run_ok=self._run_ok,
+                        run_ok=dispatch_ok,
                         start_time=start_time,
                         end_time=end_time,
                     )
@@ -291,10 +296,8 @@ class Job:
             logger.warning("Skipping modify_case")
 
         # CREATE MESH ==========================================================
-        if (
-            self._run_ok
-            and should_create_mesh
-            and self._should_run_step(id=StepId.CREATE_MESH)
+        if should_create_mesh and (
+            not dispatch_ok or self._should_run_step(id=StepId.CREATE_MESH)
         ):
             start_time = datetime.now()
             try:
@@ -309,17 +312,17 @@ class Job:
                 create_mesh_return = create_mesh.create_mesh(
                     create_mesh_parameters=create_mesh_parameters
                 )
-                self._run_ok = create_mesh_return.run_ok
+                dispatch_ok = create_mesh_return.run_ok
                 logger.info("Successfully ran create_mesh")
             except BaseException:
-                self._run_ok = False
+                dispatch_ok = False
                 logger.exception("An error occured in create_mesh")
             finally:
                 end_time = datetime.now()
                 self._steps.append(
                     Step(
                         id=StepId.CREATE_MESH,
-                        run_ok=self._run_ok,
+                        run_ok=dispatch_ok,
                         start_time=start_time,
                         end_time=end_time,
                     )
@@ -329,10 +332,8 @@ class Job:
             logger.warning("Skipping create_mesh")
 
         # EXECUTE SOLVER =======================================================
-        if (
-            self._run_ok
-            and should_execute_solver
-            and self._should_run_step(id=StepId.EXECUTE_SOLVER)
+        if should_execute_solver and (
+            not dispatch_ok or self._should_run_step(id=StepId.EXECUTE_SOLVER)
         ):
             start_time = datetime.now()
             try:
@@ -346,17 +347,17 @@ class Job:
                 execute_solver_return = execute_solver.execute_solver(
                     execute_solver_parameters
                 )
-                self._run_ok = execute_solver_return.run_ok
+                dispatch_ok = execute_solver_return.run_ok
                 logger.info("Successfully ran execute_solver")
             except BaseException:
-                self._run_ok = False
+                dispatch_ok = False
                 logger.exception("An error occured in execute_solver")
             finally:
                 end_time = datetime.now()
                 self._steps.append(
                     Step(
                         id=StepId.EXECUTE_SOLVER,
-                        run_ok=self._run_ok,
+                        run_ok=dispatch_ok,
                         start_time=start_time,
                         end_time=end_time,
                     )
@@ -366,10 +367,8 @@ class Job:
             logger.warning("Skipping execute_solver")
 
         # EXTRACT OBJECTIVES ===================================================
-        if (
-            self._run_ok
-            and should_extract_objectives
-            and self._should_run_step(id=StepId.EXTRACT_OBJECTIVES)
+        if should_extract_objectives and (
+            not dispatch_ok or self._should_run_step(id=StepId.EXTRACT_OBJECTIVES)
         ):
             start_time = datetime.now()
             try:
@@ -386,18 +385,22 @@ class Job:
                 extract_objectives_return = extract_objectives.extract_objectives(
                     extract_objectives_parameters=extract_objectives_parameters
                 )
-                self._run_ok = extract_objectives_return.run_ok
+                dispatch_ok = extract_objectives_return.run_ok
                 self._objectives = extract_objectives_return.objectives
                 logger.info("Successfully ran extract_objectives")
             except BaseException:
-                self._run_ok = False
+                dispatch_ok = False
+                objectives = get_config_objectives()
+                for objective in objectives:
+                    objective.set_value(value=np.finfo(np.float64).max)
+                self._objectives = objectives
                 logger.exception("An error occured in extract_objectives")
             finally:
                 end_time = datetime.now()
                 self._steps.append(
                     Step(
                         id=StepId.EXTRACT_OBJECTIVES,
-                        run_ok=self._run_ok,
+                        run_ok=dispatch_ok,
                         start_time=start_time,
                         end_time=end_time,
                     )
@@ -407,10 +410,8 @@ class Job:
             logger.warning("Skipping extract_objectives")
 
         # EXTRACT ASSETS =======================================================
-        if (
-            self._run_ok
-            and should_extract_assets
-            and self._should_run_step(id=StepId.EXTRACT_ASSETS)
+        if should_extract_assets and (
+            not dispatch_ok or self._should_run_step(id=StepId.EXTRACT_ASSETS)
         ):
             start_time = datetime.now()
             try:
@@ -427,17 +428,17 @@ class Job:
                 extract_assets_return = extract_assets.extract_assets(
                     extract_assets_parameters=extract_assets_parameters
                 )
-                self._run_ok = extract_assets_return.run_ok
+                dispatch_ok = extract_assets_return.run_ok
                 logger.info("Successfully ran extract_assets")
             except BaseException:
                 logger.exception("An error occured in extract_assets")
-                self._run_ok = False
+                dispatch_ok = False
             finally:
                 end_time = datetime.now()
                 self._steps.append(
                     Step(
                         id=StepId.EXTRACT_ASSETS,
-                        run_ok=self._run_ok,
+                        run_ok=dispatch_ok,
                         start_time=start_time,
                         end_time=end_time,
                     )
@@ -448,7 +449,8 @@ class Job:
 
         # EXECUTE CLEANUP ======================================================
         # don't care about run_ok here, always cleanup regardless of whether run was ok or not
-        if should_execute_cleanup and self._should_run_step(id=StepId.EXECUTE_CLEANUP):
+        cleanup_ok = True
+        if should_execute_cleanup:
             start_time = datetime.now()
             try:
                 logger.info("Running execute_cleanup for job cleanup")
@@ -460,17 +462,17 @@ class Job:
                 execute_cleanup_return = execute_cleanup.execute_cleanup(
                     execute_cleanup_parameters=execute_cleanup_parameters
                 )
-                self._run_ok = execute_cleanup_return.run_ok
+                cleanup_ok = execute_cleanup_return.run_ok
                 logger.info("Successfully ran execute_cleanup")
             except BaseException:
-                self._run_ok = False
+                cleanup_ok = False
                 logger.exception("An error occured in execute_cleanup")
             finally:
                 end_time = datetime.now()
                 self._steps.append(
                     Step(
                         id=StepId.EXECUTE_CLEANUP,
-                        run_ok=self._run_ok,
+                        run_ok=cleanup_ok,
                         start_time=start_time,
                         end_time=end_time,
                     )
@@ -479,8 +481,9 @@ class Job:
         else:
             logger.warning("Skipping execute_cleanup")
 
+        self._run_ok = dispatch_ok
         self._end_time = datetime.now()
-        if self._run_ok:
+        if dispatch_ok:
             self._status = JobStatus.COMPLETE
         else:
             self._status = JobStatus.FAILED

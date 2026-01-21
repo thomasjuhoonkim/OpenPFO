@@ -43,7 +43,8 @@ class Progress:
 
                 # ensure the command is the same
                 current_command_set = set(sys.argv)
-                current_command_set.remove("--resume")
+                if "--resume" in current_command_set:
+                    current_command_set.remove("--resume")
                 results_command = self._results["command"]
                 if current_command_set != set(results_command.split(" ")):
                     logger.error(
