@@ -17,12 +17,12 @@ def execute_solver(
 
     case_directory = execute_solver_parameters.output_case_directory
     logger = execute_solver_parameters.logger
-    processors = execute_solver_parameters.processors
+    processors_per_job = execute_solver_parameters.processors_per_job
 
     commands = [
-        f"mpirun -np {processors} redistributePar -parallel -decompose -overwrite -case {case_directory}",
-        f"mpirun -np {processors} simpleFoam -parallel -case {case_directory}",
-        f"mpirun -np {processors} redistributePar -parallel -reconstruct -latestTime -case {case_directory}",
+        f"mpirun -np {processors_per_job} redistributePar -parallel -decompose -overwrite -case {case_directory}",
+        f"mpirun -np {processors_per_job} simpleFoam -parallel -case {case_directory}",
+        f"mpirun -np {processors_per_job} redistributePar -parallel -reconstruct -latestTime -case {case_directory}",
     ]
 
     for command in commands:

@@ -19,7 +19,7 @@ class DefaultParameters:
         self.output_case_directory = output_case_directory
         self.job_id = job_id
         self.logger = logger
-        self.processors = config["compute"]["processors"]
+        self.processors_per_job = config["compute"]["processors_per_job"]
 
 
 class DefaultReturn:
@@ -46,7 +46,7 @@ class CreateGeometryParameters:
         self.grid_point = grid_point
         self.logger = logger
         self.output_assets_directory = output_assets_directory
-        self.processors = config["compute"]["processors"]
+        self.processors_per_job = config["compute"]["processors_per_job"]
 
 
 class CreateGeometryReturn(DefaultReturn):

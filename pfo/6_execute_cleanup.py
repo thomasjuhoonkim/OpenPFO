@@ -16,7 +16,7 @@ def execute_cleanup(
 
     case_directory = execute_cleanup_parameters.output_case_directory
     logger = execute_cleanup_parameters.logger
-    processors = execute_cleanup_parameters.processors
+    processors_per_job = execute_cleanup_parameters.processors_per_job
 
     slurm1 = Slurm(
         job_name="cleanProcessors",
@@ -24,16 +24,14 @@ def execute_cleanup(
         time="00:01:00",
         nodes=1,
         ntasks_per_node=1,
-        cpus_per_task={processors},
+        cpus_per_task={processors_per_job},
         mem_per_cpu="1G",
         output="OpenPFO.log",
         open_mode="append",
     )
     slurm1.set_wait(True)
 
-    command = (
-        f"parallel rm -rf {case_directory}/processor{{}} ::: $(seq 0 {processors - 1})"
-    )
+    command = f"parallel rm -rf {case_directory}/processor{{}} ::: $(seq 0 {processors_per_job - 1})"
     slurm1.add_cmd(command)
 
     slurm1.sbatch()

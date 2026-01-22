@@ -20,7 +20,7 @@ def create_mesh(
 
     case_directory = create_mesh_parameters.output_case_directory
     logger = create_mesh_parameters.logger
-    processors = create_mesh_parameters.processors
+    processors_per_job = create_mesh_parameters.processors_per_job
 
     slurm = Slurm(
         job_name="cartesianMesh",
@@ -28,7 +28,7 @@ def create_mesh(
         time="00:05:00",
         nodes=1,
         ntasks_per_node=1,
-        cpus_per_task=processors,
+        cpus_per_task=processors_per_job,
         mem="16G",
         output="OpenPFO.log",
         open_mode="append",

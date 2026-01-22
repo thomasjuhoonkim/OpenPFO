@@ -76,7 +76,8 @@ class OpenPFOProblem(Problem):
         search_id = self._generate_search_id()
 
         search = Search(id=search_id, grid_points=grid_points, progress=self._progress)
-        search.run(should_execute_cleanup=self._should_execute_cleanup)
+        search.create_jobs()
+        search.run_all(should_execute_cleanup=self._should_execute_cleanup)
 
         objective_values = search.get_all_objective_values()
         out["F"] = objective_values

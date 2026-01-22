@@ -4,6 +4,9 @@ import os
 # datetime
 from datetime import datetime
 
+# threading
+import threading
+
 # typing
 from typing import TYPE_CHECKING
 
@@ -15,9 +18,6 @@ from constants.path import (
     OUTPUT_ASSETS_DIRECTORY,
     OUTPUT_CASES_DIRECTORY,
 )
-
-# numpy
-import numpy as np
 
 # classes
 if TYPE_CHECKING:
@@ -167,7 +167,9 @@ class Job:
                 f"{self._output_case_directory}/system/decomposeParDict"
             )
             decompose_par_dict = ParsedParameterFile(decompose_par_dict_filepath)
-            decompose_par_dict["numberOfSubdomains"] = config["compute"]["processors"]
+            decompose_par_dict["numberOfSubdomains"] = config["compute"][
+                "processors_per_job"
+            ]
             decompose_par_dict.writeFile()
 
         self._status = JobStatus.READY
@@ -182,12 +184,14 @@ class Job:
         should_extract_objectives=True,
         should_extract_assets=True,
         should_execute_cleanup=True,
+        lock=threading.Lock(),
     ):
         if self._status == JobStatus.INITIALIZED:
             logger.info(
                 f"Job {self._id} was initialized but not prepared, preparing and starting..."
             )
-            self.prepare_job()
+            with lock:
+                self.prepare_job()
 
         if self._status == JobStatus.READY:
             logger.info(f"Job {self._id} is ready, starting...")
@@ -212,7 +216,8 @@ class Job:
         )
         self._start_time = datetime.now()
         self._status = JobStatus.RUNNING
-        self._progress.save_job(self)
+        with lock:
+            self._progress.save_job(self)
 
         dispatch_ok = True
 
@@ -251,7 +256,8 @@ class Job:
                         end_time=end_time,
                     )
                 )
-                self._progress.save_job(self)
+                with lock:
+                    self._progress.save_job(self)
         else:
             logger.warning("Skipping create_geometry")
 
@@ -260,7 +266,6 @@ class Job:
             start_time = datetime.now()
             try:
                 logger.info("Running modify_case to customize OpenFOAM case")
-                self._progress.save_job(self)
                 modify_case_parameters = ModifyCaseParameters(
                     output_case_directory=self._output_case_directory,
                     job_id=self._id,
@@ -287,7 +292,8 @@ class Job:
                         end_time=end_time,
                     )
                 )
-                self._progress.save_job(self)
+                with lock:
+                    self._progress.save_job(self)
         else:
             logger.warning("Skipping modify_case")
 
@@ -296,7 +302,6 @@ class Job:
             start_time = datetime.now()
             try:
                 logger.info("Running create_mesh to generate a mesh for geometry")
-                self._progress.save_job(self)
                 create_mesh_parameters = CreateMeshParameters(
                     output_case_directory=self._output_case_directory,
                     job_id=self._id,
@@ -321,7 +326,8 @@ class Job:
                         end_time=end_time,
                     )
                 )
-                self._progress.save_job(self)
+                with lock:
+                    self._progress.save_job(self)
         else:
             logger.warning("Skipping create_mesh")
 
@@ -330,7 +336,6 @@ class Job:
             start_time = datetime.now()
             try:
                 logger.info("Running execute_solver to obtain simulation results")
-                self._progress.save_job(self)
                 execute_solver_parameters = ExecuteSolverParameters(
                     output_case_directory=self._output_case_directory,
                     job_id=self._id,
@@ -354,7 +359,8 @@ class Job:
                         end_time=end_time,
                     )
                 )
-                self._progress.save_job(self)
+                with lock:
+                    self._progress.save_job(self)
         else:
             logger.warning("Skipping execute_solver")
 
@@ -365,7 +371,6 @@ class Job:
                 logger.info(
                     "Running extract_objectives for objective values extraction"
                 )
-                self._progress.save_job(self)
                 extract_objectives_parameters = ExtractObjectivesParameters(
                     output_case_directory=self._output_case_directory,
                     job_id=self._id,
@@ -391,7 +396,8 @@ class Job:
                         end_time=end_time,
                     )
                 )
-                self._progress.save_job(self)
+                with lock:
+                    self._progress.save_job(self)
         else:
             logger.warning("Skipping extract_objectives")
 
@@ -400,7 +406,6 @@ class Job:
             start_time = datetime.now()
             try:
                 logger.info("Running extract_assets for asset extraction")
-                self._progress.save_job(self)
                 extract_assets_parameters = ExtractAssetsParameters(
                     output_case_directory=self._output_case_directory,
                     output_case_foam_filepath=f"{self._output_case_directory}/{self._id}.foam",
@@ -427,15 +432,18 @@ class Job:
                         end_time=end_time,
                     )
                 )
-                self._progress.save_job(self)
+                with lock:
+                    self._progress.save_job(self)
         else:
             logger.warning("Skipping extract_assets")
 
         # EXECUTE CLEANUP ======================================================
         # don't care about run_ok here, always cleanup regardless of whether run was ok or not
+        # we create a separate clean_ok here to check the status of cleanup specifically
         cleanup_ok = True
         if should_execute_cleanup:
             start_time = datetime.now()
+            cleanup_ok = True
             try:
                 logger.info("Running execute_cleanup for job cleanup")
                 execute_cleanup_parameters = ExecuteCleanupParameters(
@@ -461,7 +469,8 @@ class Job:
                         end_time=end_time,
                     )
                 )
-                self._progress.save_job(self)
+                with lock:
+                    self._progress.save_job(self)
         else:
             logger.warning("Skipping execute_cleanup")
 
@@ -470,12 +479,10 @@ class Job:
         if dispatch_ok:
             self._status = JobStatus.COMPLETE
         else:
-            objectives = get_config_objectives()
-            for objective in objectives:
-                objective.set_avoid()
-            self._objectives = objectives
+            self._objectives = get_config_objectives()
             self._status = JobStatus.FAILED
-        self._progress.save_job(self)
+        with lock:
+            self._progress.save_job(self)
 
         logger.info(
             f"======================= JOB {self._id} END ========================="

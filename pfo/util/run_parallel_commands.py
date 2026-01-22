@@ -26,7 +26,7 @@ def run_parallel_commands(commands, max_workers=None):
                 results.append(result)
             except BaseException:
                 logger.exception(
-                    f"An error occurred while running command {' '.join(result.args)}"
+                    f"An exception occurred while running command {' '.join(result.args)}"
                 )
 
     logger.info("All commands have finished execution.")

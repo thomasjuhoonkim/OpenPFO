@@ -22,7 +22,7 @@ def extract_assets(
 
     case_directory = extract_assets_parameters.output_case_foam_filepath
     output_directory = extract_assets_parameters.output_assets_directory
-    processors = extract_assets_parameters.processors
+    processors_per_job = extract_assets_parameters.processors_per_job
 
     PVBATCH = "/Applications/ParaView-6.0.0.app/Contents/bin/pvbatch"
 
@@ -36,7 +36,7 @@ def extract_assets(
         f"{PVBATCH} input/paraview/slice-pressure.py {case_directory} {output_directory}",
     ]
 
-    run_parallel_commands(commands=commands, max_workers=processors)
+    run_parallel_commands(commands=commands, max_workers=processors_per_job)
 
     EXTRACT_ASSETS_RETURN = ExtractAssetsReturn()
 

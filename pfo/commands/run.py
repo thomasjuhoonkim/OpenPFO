@@ -10,9 +10,6 @@ from commands.check_config import check_config
 from classes.problem import OpenPFOProblem
 from classes.progress import Progress
 
-# constants
-from constants.path import OUTPUT_RESULTS_JSON
-
 # util
 from util.get_config_parameters import get_config_parameters
 from util.get_config_objectives import get_config_objectives

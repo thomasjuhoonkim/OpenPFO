@@ -20,14 +20,14 @@ def execute_solver(
 
     case_directory = execute_solver_parameters.output_case_directory
     logger = execute_solver_parameters.logger
-    processors = execute_solver_parameters.processors
+    processors_per_job = execute_solver_parameters.processors_per_job
 
     slurm = Slurm(
         job_name="simpleFoam",
         account="def-jphickey",
         time="00:30:00",
         nodes=1,
-        ntasks_per_node=processors,
+        ntasks_per_node=processors_per_job,
         mem_per_cpu="4G",
         output="OpenPFO.log",
         open_mode="append",
@@ -35,13 +35,13 @@ def execute_solver(
     slurm.set_wait(True)
 
     slurm.add_cmd(
-        f"mpirun -np {processors} redistributePar -parallel -decompose -case {case_directory}"
+        f"mpirun -np {processors_per_job} redistributePar -parallel -decompose -case {case_directory}"
     )
     slurm.add_cmd(
-        f"mpirun -np {processors} simpleFoam -parallel -case {case_directory}"
+        f"mpirun -np {processors_per_job} simpleFoam -parallel -case {case_directory}"
     )
     slurm.add_cmd(
-        f"mpirun -np {processors} redistributePar -parallel -reconstruct -latestTime -case {case_directory}"
+        f"mpirun -np {processors_per_job} redistributePar -parallel -reconstruct -latestTime -case {case_directory}"
     )
 
     slurm.sbatch()

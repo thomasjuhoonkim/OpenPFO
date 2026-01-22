@@ -19,18 +19,34 @@ class Objective:
     def get_type(self):
         return self._type
 
-    def set_avoid(self):
-        FLOAT_MAX = np.finfo(np.float64).max
-        return -1 * FLOAT_MAX if self._type == "maximize" else FLOAT_MAX
-
     def set_value(self, value: float):
         self._value = value
 
     def get_value(self):
         return self._value
 
-    def get_pymoo_value(self):
-        return -1 * self._value if self._type == "maximize" else self._value
+    def _get_default_value(self):
+        FLOAT_MAX = np.finfo(np.float64).max
+        value = self._value
+        if self._value is None:
+            value = FLOAT_MAX
+        return value
+
+    def get_minimized_value(self):
+        """When the objective function is looking to minimize all values, you need to invert values you are trying to maximize"""
+        value = self._get_default_value()
+        if self._type == "maximize":
+            return -1 * value
+        else:
+            return value
+
+    def get_maximized_value(self):
+        """When the objectuve function is looking to maximize all values, you need to invert vlaues you are trying to minimize"""
+        value = self._get_default_value()
+        if self._type == "minimize":
+            return -1 * value
+        else:
+            return value
 
     def serialize(self):
         return {

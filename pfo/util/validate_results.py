@@ -190,14 +190,20 @@ def validate_config(config: dict):
     if "hpc" not in config["compute"]:
         logger.error("hpc is missing from [compute]")
         sys.exit(1)
-    if "processors" not in config["compute"]:
-        logger.error("processors is missing from [compute]")
-        sys.exit(1)
     if not isinstance(config["compute"]["hpc"], bool):
         logger.error("hpc is not a boolean")
         sys.exit(1)
-    if not isinstance(config["compute"]["processors"], int):
-        logger.error("processors is not an integer")
+    if "processors_per_job" not in config["compute"]:
+        logger.error("processors_per_job is missing from [compute]")
+        sys.exit(1)
+    if not isinstance(config["compute"]["processors_per_job"], int):
+        logger.error("processors_per_job is not an integer")
+        sys.exit(1)
+    if "max_job_workers" not in config["compute"]:
+        logger.error("max_job_workers is missing from [compute]")
+        sys.exit(1)
+    if not isinstance(config["compute"]["max_job_workers"], int):
+        logger.error("max_job_workers is not an integer")
         sys.exit(1)
 
     if "model" not in config:
