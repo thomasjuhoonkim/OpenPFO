@@ -472,7 +472,7 @@ class Job:
         else:
             objectives = get_config_objectives()
             for objective in objectives:
-                objective.set_value(value=np.finfo(np.float64).max)
+                objective.set_avoid()
             self._objectives = objectives
             self._status = JobStatus.FAILED
         self._progress.save_job(self)

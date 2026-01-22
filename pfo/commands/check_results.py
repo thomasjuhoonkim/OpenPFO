@@ -1,13 +1,28 @@
-# classes
-from classes.progress import Progress
+# system
+import os
+
+# json
+import json
+
+# constants
+from constants.path import OUTPUT_RESULTS_JSON
 
 # util
 from util.get_logger import get_logger
+from util.validate_results import validate_results
 
 logger = get_logger()
 
 
 def check_results():
-    Progress(resume=True)
+    if not os.path.isfile(OUTPUT_RESULTS_JSON):
+        logger.error(f"{OUTPUT_RESULTS_JSON} does not exist")
 
-    return None
+    results = None
+    with open(OUTPUT_RESULTS_JSON, "r") as json_file:
+        results = json.load(json_file)  # noqa: F821
+
+    # validate_results simply exists rather than returning a boolean
+    validate_results(results=results)
+
+    logger.info("All results checked successfully")

@@ -1,5 +1,6 @@
 # classes
 from constants.objective import ObjectiveType
+import numpy as np
 
 
 class Objective:
@@ -17,6 +18,10 @@ class Objective:
 
     def get_type(self):
         return self._type
+
+    def set_avoid(self):
+        FLOAT_MAX = np.finfo(np.float64).max
+        return -1 * FLOAT_MAX if self._type == "maximize" else FLOAT_MAX
 
     def set_value(self, value: float):
         self._value = value
