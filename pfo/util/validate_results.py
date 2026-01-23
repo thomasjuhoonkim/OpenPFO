@@ -34,7 +34,7 @@ def validate_objective(objective: dict):
         ("id", str),
         ("name", str),
         ("type", str),
-        ("value", (int, float)),
+        ("value", (int, float, type(None))),
     ]
 
     for field, expected_type in attributes:
