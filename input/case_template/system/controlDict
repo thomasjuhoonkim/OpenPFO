@@ -46,6 +46,11 @@ runTimeModifiable true;
 
 allowSystemOperations 1;
 
+OptimisationSwitches
+{
+    fileHandler collated;
+}
+
 functions
 {
     forceCoeffs1
