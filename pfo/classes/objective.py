@@ -26,7 +26,7 @@ class Objective:
         return self._value
 
     def is_valid(self):
-        return self._value is None
+        return self._value is not None
 
     def serialize(self):
         return {

@@ -89,13 +89,13 @@ class OpenPFOProblem(Problem):
             objective_values = []
             for objective in job_objectives:
                 real_value = None
-                if not objective.is_valid():
+                if objective.is_valid():
+                    real_value = objective.get_value()
+                else:
                     if objective.get_type() == ObjectiveType.MINIMIZE:
                         real_value = np.finfo(np.float64).max
                     else:
                         real_value = np.finfo(np.float64).min
-                else:
-                    real_value = objective.get_value()
                 # pymoo expects minimization for all objectives
                 minimized_value = (
                     -1 * real_value
