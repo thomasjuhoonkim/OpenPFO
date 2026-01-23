@@ -4,6 +4,9 @@ import numpy as np
 # pymoo
 from pymoo.core.problem import Problem
 
+# constants
+from constants.objective import ObjectiveType
+
 # classes
 from classes.point import Point
 from classes.search import Search
@@ -79,5 +82,25 @@ class OpenPFOProblem(Problem):
         search.create_jobs()
         search.run_all(should_execute_cleanup=self._should_execute_cleanup)
 
-        objective_values = search.get_all_objective_values()
-        out["F"] = objective_values
+        # convert objectives into pymoo objectives
+        objectives_per_job = search.get_objectives_per_job()
+        job_objective_values = []
+        for job_objectives in objectives_per_job:
+            objective_values = []
+            for objective in job_objectives:
+                real_value = objective.get_value()
+                # pymoo expects minimization for all objectives
+                minimized_value = (
+                    -1 * real_value
+                    if objective.get_type() == ObjectiveType.MAXIMIZE
+                    else real_value
+                )
+                objective_values.append(minimized_value)
+            job_objective_values.append(objective_values)
+
+        # objectives - transpose into list of objective values per objectives
+        # N = number of objectives
+        # M = number of jobs
+        # N Rows x M columns
+        objective_values_per_objective = list(zip(*job_objective_values))
+        out["F"] = objective_values_per_objective

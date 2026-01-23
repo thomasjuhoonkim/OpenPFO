@@ -4,6 +4,9 @@ from classes.objective import Objective
 # util
 from util.get_config import get_config
 
+# constants
+from constants.objective import ObjectiveType
+
 config = get_config()
 
 CONFIG_OBJECTIVES = config["optimizer"]["objectives"]
@@ -16,7 +19,7 @@ def get_config_objectives() -> list[Objective]:
         objective = Objective(
             id=config_objective["id"],
             name=config_objective["name"],
-            type=config_objective["type"],
+            type=ObjectiveType(config_objective["type"]),
         )
         objectives.append(objective)
 

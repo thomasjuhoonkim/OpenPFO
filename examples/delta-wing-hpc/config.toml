@@ -1,7 +1,7 @@
 [compute]
 hpc=true
 processors_per_job=64
-max_job_workers=6
+max_job_workers=4
 
 [model]
 # DESIGN SPACE PARAMETERS

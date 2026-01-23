@@ -27,7 +27,9 @@ class Search:
         self._jobs: list["Job"] = []
         self._job_counter = 0
         self._indices_by_job_id: dict[str, int] = {}
-        self._all_objectives_by_index: dict[int, list["Objective"]] = {}
+        self._objectives_per_job: list[list[Objective]] = [
+            None for _ in range(len(grid_points))
+        ]
 
         progress.save_search(self)
 
@@ -79,7 +81,7 @@ class Search:
                 job = jobs_by_future[future]
                 try:
                     index = self._indices_by_job_id[job.get_id()]
-                    self._all_objectives_by_index[index] = job.get_objectives()
+                    self._objectives_per_job[index] = job.get_objectives()
                     logger.info(f"Job {job.get_id()} completed successfully")
                 except BaseException:
                     logger.exception(
@@ -88,15 +90,8 @@ class Search:
 
         logger.info(f"Search {self._id} complete")
 
-    def get_all_objective_values(self):
-        all_objective_values = []
-        for _, objectives in sorted(self._all_objectives_by_index.items()):
-            objective_values = [
-                objective.get_minimized_value() for objective in objectives
-            ]
-            all_objective_values.append(objective_values)
-
-        return all_objective_values
+    def get_objectives_per_job(self):
+        return self._objectives_per_job
 
     def serialize(self):
         return {"id": self._id, "jobs": [job.get_id() for job in self._jobs]}
