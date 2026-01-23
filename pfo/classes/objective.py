@@ -22,7 +22,11 @@ class Objective:
         self._value = value
 
     def get_value(self):
+        """NOTE: Remember to handle errors yourself using `objective.is_valid()`. If there was an error during objective extraction, you will get returned `None`."""
         return self._value
+
+    def is_valid(self):
+        return self._value is None
 
     def serialize(self):
         return {
@@ -40,5 +44,5 @@ class Objective:
             type=ObjectiveType(objective["type"]),
         )
         if objective["value"] is not None:
-            objective_object.set_value(value=objective["value"])
+            objective_object.set_value(value=float(objective["value"]))
         return objective_object
