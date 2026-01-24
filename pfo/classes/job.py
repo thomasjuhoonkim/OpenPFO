@@ -203,9 +203,8 @@ class Job:
             # clean up
 
         if self._status == JobStatus.FAILED:
-            logger.info(
-                f"Job {self._id} previously fully ran but failed, restarting..."
-            )
+            logger.info(f"Job {self._id} previously fully ran but failed, skipping...")
+            return None
 
         if self._status == JobStatus.COMPLETE:
             logger.info(f"Job {self._id} already complete, skipping...")
