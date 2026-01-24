@@ -200,10 +200,10 @@ class Job:
             logger.info(
                 f"Job {self._id} was previously running, cleaning up and restarting..."
             )
-            # clean up
+            self.cleanup(lock=lock)
 
         if self._status == JobStatus.FAILED:
-            logger.info(f"Job {self._id} previously fully ran but failed, skipping...")
+            logger.info(f"Job {self._id} previously failed, skipping...")
             return None
 
         if self._status == JobStatus.COMPLETE:
@@ -439,37 +439,8 @@ class Job:
         # EXECUTE CLEANUP ======================================================
         # don't care about run_ok here, always cleanup regardless of whether run was ok or not
         # we create a separate clean_ok here to check the status of cleanup specifically
-        cleanup_ok = True
         if should_execute_cleanup:
-            start_time = datetime.now()
-            cleanup_ok = True
-            try:
-                logger.info("Running execute_cleanup for job cleanup")
-                execute_cleanup_parameters = ExecuteCleanupParameters(
-                    output_case_directory=self._output_case_directory,
-                    job_id=self._id,
-                    logger=logger,
-                )
-                execute_cleanup_return = execute_cleanup.execute_cleanup(
-                    execute_cleanup_parameters=execute_cleanup_parameters
-                )
-                cleanup_ok = execute_cleanup_return.run_ok
-                logger.info("Successfully ran execute_cleanup")
-            except BaseException:
-                cleanup_ok = False
-                logger.exception("An error occured in execute_cleanup")
-            finally:
-                end_time = datetime.now()
-                self._steps.append(
-                    Step(
-                        id=StepId.EXECUTE_CLEANUP,
-                        run_ok=cleanup_ok,
-                        start_time=start_time,
-                        end_time=end_time,
-                    )
-                )
-                with lock:
-                    self._progress.save_job(self)
+            self.cleanup(lock=lock)
         else:
             logger.warning("Skipping execute_cleanup")
 
@@ -486,6 +457,37 @@ class Job:
         logger.info(
             f"======================= JOB {self._id} END ========================="
         )
+
+    def cleanup(self, lock=threading.Lock()):
+        start_time = datetime.now()
+        cleanup_ok = True
+        try:
+            logger.info("Running execute_cleanup for job cleanup")
+            execute_cleanup_parameters = ExecuteCleanupParameters(
+                output_case_directory=self._output_case_directory,
+                job_id=self._id,
+                logger=logger,
+            )
+            execute_cleanup_return = execute_cleanup.execute_cleanup(
+                execute_cleanup_parameters=execute_cleanup_parameters
+            )
+            cleanup_ok = execute_cleanup_return.run_ok
+            logger.info("Successfully ran execute_cleanup")
+        except BaseException:
+            cleanup_ok = False
+            logger.exception("An error occured in execute_cleanup")
+        finally:
+            end_time = datetime.now()
+            self._steps.append(
+                Step(
+                    id=StepId.EXECUTE_CLEANUP,
+                    run_ok=cleanup_ok,
+                    start_time=start_time,
+                    end_time=end_time,
+                )
+            )
+            with lock:
+                self._progress.save_job(self)
 
     def serialize(self):
         return {
