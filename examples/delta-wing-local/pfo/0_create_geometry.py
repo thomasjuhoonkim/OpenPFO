@@ -19,7 +19,7 @@ def create_geometry(
 
     # destructure parameters
     job_id = create_geometry_parameters.job_id
-    point = create_geometry_parameters.grid_point
+    point = create_geometry_parameters.point
     output_assets_directory = create_geometry_parameters.output_assets_directory
 
     # OpenVSP

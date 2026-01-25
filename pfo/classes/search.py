@@ -19,16 +19,16 @@ config = get_config()
 
 
 class Search:
-    def __init__(self, id: str, grid_points: list["Point"], progress: "Progress"):
+    def __init__(self, id: str, points: list["Point"], progress: "Progress"):
         self._id = id
-        self._grid_points = grid_points
+        self._points = points
         self._progress = progress
 
         self._jobs: list["Job"] = []
         self._job_counter = 0
         self._indices_by_job_id: dict[str, int] = {}
         self._objectives_per_job: list[list[Objective]] = [
-            None for _ in range(len(grid_points))
+            None for _ in range(len(points))
         ]
 
         progress.save_search(self)
@@ -45,7 +45,7 @@ class Search:
         return self._jobs
 
     def create_jobs(self):
-        for i, grid_point in enumerate(self._grid_points):
+        for i, point in enumerate(self._points):
             # because pymoo is fully reproducible, ceteris paribus, each job id yields the same grid point
             job_id = self._generate_job_id()
 
@@ -55,7 +55,12 @@ class Search:
             if cached_job is not None:
                 job = cached_job
             else:
-                job = Job(id=job_id, point=grid_point, progress=self._progress)
+                job = Job(
+                    id=job_id,
+                    search_id=self._id,
+                    point=point,
+                    progress=self._progress,
+                )
                 job.prepare_job()
 
             self._jobs.append(job)
@@ -94,4 +99,14 @@ class Search:
         return self._objectives_per_job
 
     def serialize(self):
-        return {"id": self._id, "jobs": [job.get_id() for job in self._jobs]}
+        earliest_start_time = sorted([job.get_start_time() for job in self._jobs])[0]
+        latest_end_time = sorted(
+            [job.get_end_time() for job in self._jobs], reverse=True
+        )[0]
+        return {
+            "id": self._id,
+            "jobs": [job.get_id() for job in self._jobs],
+            "points": [point.serialize() for point in self._points],
+            "startTime": earliest_start_time.isoformat(),
+            "endTime": latest_end_time.isoformat(),
+        }

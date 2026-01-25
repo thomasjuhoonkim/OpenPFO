@@ -22,7 +22,7 @@ def modify_case(modify_case_parameters: ModifyCaseParameters):
     geometry_filepath = modify_case_parameters.output_geometry_filepath
     case_directory = modify_case_parameters.output_case_directory
     logger = modify_case_parameters.logger
-    point = modify_case_parameters.grid_point
+    point = modify_case_parameters.point
 
     commands = [
         f"cp {geometry_filepath} {case_directory}/original.stl",

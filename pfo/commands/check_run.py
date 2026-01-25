@@ -56,8 +56,8 @@ def check_run(
         progress.save_start_time(start_time=start_time)
 
     # jobs
-    grid_points = get_random_points(count=count)
-    for i, point in enumerate(grid_points):
+    points = get_random_points(count=count)
+    for i, point in enumerate(points):
         job_id = f"check-run-{i}"
         job = None
         cached_job = progress.get_job(job_id=job_id)

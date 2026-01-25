@@ -8,15 +8,14 @@ from pymoo.core.problem import Problem
 from constants.objective import ObjectiveType
 
 # classes
-from classes.point import Point
 from classes.search import Search
-from classes.variable import Variable
 from classes.progress import Progress
 from classes.objective import Objective
 from classes.parameter import Parameter
 
 # util
 from util.get_logger import get_logger
+from util.get_points import get_point
 
 logger = get_logger()
 
@@ -29,8 +28,6 @@ class OpenPFOProblem(Problem):
         progress: "Progress",
         should_execute_cleanup=True,
     ):
-        self._parameters = parameters
-        self._objectives = objectives
         self._search_count = 0
         self._progress = progress
         self._should_execute_cleanup = should_execute_cleanup
@@ -54,31 +51,20 @@ class OpenPFOProblem(Problem):
         self._search_count += 1
         return f"search-{id}"
 
-    def _get_grid_points(self, x: list[list[np.float64]]) -> list["Point"]:
-        parameters = self._parameters
-
-        grid_points = []
+    def _get_points(self, x: list[list[np.float64]]):
+        points = []
         for coordinates in x:
-            variables = []
-            for i, coordinate in enumerate(coordinates):
-                variable = Variable(
-                    name=parameters[i].get_name(),
-                    id=parameters[i].get_id(),
-                    value=coordinate,
-                )
-                variables.append(variable)
+            point = get_point(coordinates=coordinates)
+            points.append(point)
 
-            grid_point = Point(variables=variables)
-            grid_points.append(grid_point)
-
-        return grid_points
+        return points
 
     def _evaluate(self, x, out):
         # x: [N x n_var] where N is the population size and n_var is the number of parameters
-        grid_points = self._get_grid_points(x)
+        points = self._get_points(x)
         search_id = self._generate_search_id()
 
-        search = Search(id=search_id, grid_points=grid_points, progress=self._progress)
+        search = Search(id=search_id, points=points, progress=self._progress)
         search.create_jobs()
         search.run_all(should_execute_cleanup=self._should_execute_cleanup)
 

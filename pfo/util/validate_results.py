@@ -111,6 +111,7 @@ def validate_job(job: dict):
     attributes = [
         ("id", str),
         ("status", str),
+        ("searchId", str),
         ("runOk", bool),
         ("steps", list),
         ("startTime", str),
@@ -157,7 +158,7 @@ def validate_solution(solution: dict):
         sys.exit(1)
 
     attributes = [
-        ("parameters", list),
+        ("point", dict),
         ("objectives", list),
     ]
 
@@ -169,10 +170,9 @@ def validate_solution(solution: dict):
             logger.error(f'"{field}" in solution is not {expected_type}')
             sys.exit(1)
 
-    for parameter in solution["parameters"]:
-        validate_parameter(parameter)
+    validate_point(solution["point"])
 
-    logger.info("Parameters are valid")
+    logger.info("Point is valid")
 
     for objective in solution["objectives"]:
         validate_objective(objective)

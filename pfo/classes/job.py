@@ -68,6 +68,7 @@ class Job:
         self,
         id: str,
         point: "Point",
+        search_id: str,
         progress: "Progress",
         # defaults
         steps: list["Step"] | None = None,
@@ -83,6 +84,7 @@ class Job:
     ):
         self._id = id
         self._point = point
+        self._search_id = search_id
         self._progress = progress
         self._steps = steps if steps is not None else []
         self._status = status if status is not None else JobStatus.INITIALIZED
@@ -228,7 +230,7 @@ class Job:
                     f"Running create_geometry to generate a geometry for grid point {self._point.get_point_representation()}"
                 )
                 create_geometry_parameters = CreateGeometryParameters(
-                    grid_point=self._point,
+                    point=self._point,
                     output_assets_directory=self._output_assets_directory,
                     job_id=self._id,
                     logger=logger,
@@ -270,7 +272,7 @@ class Job:
                     job_id=self._id,
                     output_geometry_filepath=self._output_geometry_filepath,
                     logger=logger,
-                    grid_point=self._point,
+                    point=self._point,
                     extra_variables=self._extra_variables,
                 )
                 modify_case_return = modify_case.modify_case(
@@ -492,6 +494,7 @@ class Job:
     def serialize(self):
         return {
             "id": self.get_id(),
+            "search_id": self._search_id,
             "status": self._status.value,
             "runOk": self._run_ok,
             "steps": [step.serialize() for step in self._steps],
@@ -509,6 +512,7 @@ class Job:
         return cls(
             id=job["id"],
             point=Point.from_dict(point=job["point"]),
+            search_id=job["searchId"],
             progress=progress,
             steps=[Step.from_dict(step=step) for step in job["steps"]],
             status=JobStatus(value=job["status"]),

@@ -37,13 +37,13 @@ class CreateGeometryParameters:
 
     def __init__(
         self,
-        grid_point: Point,
+        point: Point,
         output_assets_directory: str,
         job_id: str,
         logger: Logger,
     ):
         self.job_id = job_id
-        self.grid_point = grid_point
+        self.point = point
         self.logger = logger
         self.output_assets_directory = output_assets_directory
         self.processors_per_job = config["compute"]["processors_per_job"]
@@ -71,14 +71,14 @@ class ModifyCaseParameters(DefaultParameters):
         job_id: str,
         output_geometry_filepath: str,
         logger: Logger,
-        grid_point: Point,
+        point: Point,
         extra_variables: list[Variable],
     ):
         super().__init__(
             output_case_directory=output_case_directory, job_id=job_id, logger=logger
         )
         self.output_geometry_filepath = output_geometry_filepath
-        self.grid_point = grid_point
+        self.point = point
         self.extra_variables = extra_variables
 
 

@@ -8,19 +8,17 @@ from classes.solution import Solution
 from constants.objective import ObjectiveType
 
 # util
+from util.get_points import get_point
 from util.get_config_objectives import get_config_objectives
-from util.get_config_parameters import get_config_parameters
 
 
 def get_solutions(result: Any):
     solutions: list[Solution] = []
 
     for i in range(len(result.X)):
-        parameters = get_config_parameters()
         objectives = get_config_objectives()
 
-        for j, parameter_value in enumerate(result.X[i]):
-            parameters[j].set_value(parameter_value)
+        point = get_point(coordinates=result.X[i])
         for j, objective_value in enumerate(result.F[i]):
             config_objective = objectives[j]
             if config_objective.get_type() == ObjectiveType.MAXIMIZE:
@@ -28,7 +26,7 @@ def get_solutions(result: Any):
             else:
                 objectives[j].set_value(objective_value)
 
-        solution = Solution(parameters=parameters, objectives=objectives)
+        solution = Solution(point=point, objectives=objectives)
         solutions.append(solution)
 
     return solutions

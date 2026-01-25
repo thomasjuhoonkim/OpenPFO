@@ -38,8 +38,8 @@ def check_prepare(
     progress.save_start_time(start_time=start_time)
 
     # jobs
-    grid_points = get_random_points(count=count)
-    for i, point in enumerate(grid_points):
+    points = get_random_points(count=count)
+    for i, point in enumerate(points):
         job_id = f"check-meshes-{i}"
         job = Job(id=job_id, point=point, progress=progress)
         job.prepare_job()
