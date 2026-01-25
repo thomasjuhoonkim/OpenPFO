@@ -10,10 +10,10 @@ max_job_workers=6
 # min: minimum value for the parameter
 # max: maximum value for the parameter
 [[model.parameters]]
-name="Root Chord"
-id="GFXAORPLFWH:WingGeom:XSec_1:Root_Chord"
-min=0.8
-max=1.50
+name="AoA"
+id="VQYINKCPHJD:WingGeom:XForm:Y_Rel_Rotation"
+min=-5
+max=15
 
 [optimizer]
 [[optimizer.objectives]]

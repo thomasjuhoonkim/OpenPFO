@@ -25,7 +25,7 @@ def execute_solver(
     slurm = Slurm(
         job_name="simpleFoam",
         account="def-jphickey",
-        time="00:40:00",
+        time="01:00:00",
         nodes=1,
         ntasks_per_node=processors_per_job,
         mem_per_cpu="4G",

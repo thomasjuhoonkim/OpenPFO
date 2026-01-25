@@ -31,20 +31,9 @@ def create_geometry(
     )
     openvsp_modeler.check_model()
 
-    root_chord_variable = point.get_variables()[0]
-    root_chord = root_chord_variable.get_value()
-    tip_chord = 0.10  # metres
-    taper_ratio = tip_chord / root_chord
-    sweep = 2253.36 * taper_ratio**2 - 730.13 * taper_ratio + 79.72
-    sweep_variable = Variable(
-        name="Sweep", id="DFMNISRTXAJ:WingGeom:XSec_1:Sweep", value=sweep
-    )
-    updated_variables = [*point.get_variables(), sweep_variable]
-    updated_point = Point(job_id=job_id, variables=updated_variables)
-
     output_geometry_filepath = openvsp_modeler.generate_geometry(
         job_id=job_id,
-        point=updated_point,
+        point=point,
         output_assets_directory=output_assets_directory,
     )
 

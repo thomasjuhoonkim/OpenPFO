@@ -1,3 +1,6 @@
+# system
+import sys
+
 # datetime
 from datetime import datetime
 
@@ -11,10 +14,12 @@ from commands.check_config import check_config
 
 # classes
 from classes.job import Job
+from classes.point import Point
 from classes.progress import Progress
 
 # util
 from util.get_logger import get_logger
+from util.get_linear_points import get_linear_points
 from util.get_random_points import get_random_points
 
 logger = get_logger()
@@ -24,6 +29,9 @@ def check_run(
     count: Annotated[
         int, typer.Option(help="The number of random points to generate")
     ] = 1,
+    random: Annotated[
+        bool, typer.Option(help="Randomize points in the design space")
+    ] = True,
     objectives: Annotated[
         bool, typer.Option(help="Extract objectives after each job")
     ] = True,
@@ -39,6 +47,12 @@ def check_run(
     if not resume:
         check_output()
     check_config()
+
+    if not random and count < 2:
+        logger.warning(
+            "To run with linear separation, you must ask for 2 or more points of separation"
+        )
+        sys.exit(1)
 
     # progress
     progress = Progress(resume=resume)
@@ -56,7 +70,15 @@ def check_run(
         progress.save_start_time(start_time=start_time)
 
     # jobs
-    points = get_random_points(count=count)
+    points: list["Point"] = []
+    if random:
+        points = get_random_points(count=count)
+    else:
+        points = get_linear_points(count=count)
+    logger.info("Running points:")
+    for point in points:
+        logger.info(point.get_representation())
+
     for i, point in enumerate(points):
         job_id = f"check-run-{i}"
         job = None

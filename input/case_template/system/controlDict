@@ -60,20 +60,20 @@ functions
         libs            (forces);
 
         writeControl    timeStep;
-        writeInterval   1;
+        writeInterval   5;
 
         log             yes;
 
-        patches         (jobGeometry);
+        patches         (solid);
         rho             rhoInf;      // Indicates incompressible
         rhoInf          1.225;           // Required when rho = rhoInf
         liftDir         (0 0 1);
         dragDir         (1 0 0);
-        CofR            (0.375 0 0);  // Axle midpoint on ground
+        CofR            (0.2275 0 0);  // Axle midpoint on ground
         pitchAxis       (0 1 0);
         magUInf         10;
-        lRef            1.5;        // Wheelbase length
-        Aref            0.7125;        // Estimated
+        lRef            0.91;        // Wheelbase length
+        Aref            4.55;        // Estimated
     }
     
     yPlus
@@ -81,15 +81,6 @@ functions
         type            yPlus;
         libs            ("libfieldFunctionObjects.so");
         writeControl    timeStep;   // or use 'timeStep' for every timestep
-    }
-
-    wallShearStress1
-    {
-        type            wallShearStress;
-        libs            (fieldFunctionObjects);
-        patches         (solid); // e.g., (walls)
-        writeToFile     true;
-        // ... other optional settings like writeControl
     }
 }
 

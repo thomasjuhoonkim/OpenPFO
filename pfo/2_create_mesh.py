@@ -25,21 +25,18 @@ def create_mesh(
     slurm = Slurm(
         job_name="cartesianMesh",
         account="def-jphickey",
-        time="00:05:00",
+        time="00:30:00",
         nodes=1,
         ntasks_per_node=1,
         cpus_per_task=processors_per_job,
-        mem="16G",
+        mem="64G",
         output="OpenPFO.log",
         open_mode="append",
     )
     slurm.set_wait(True)
 
     slurm.add_cmd(
-        f"surfaceTransformPoints -case {case_directory} -rotate-angle '((0 1 0) 5)' {case_directory}/original.stl {case_directory}/aoa.stl"
-    )
-    slurm.add_cmd(
-        f"surfaceGenerateBoundingBox -case {case_directory} {case_directory}/aoa.stl {case_directory}/combined.stl 50 50 25 25 10 10"
+        f"surfaceGenerateBoundingBox -case {case_directory} {case_directory}/original.stl {case_directory}/combined.stl 50 50 25 25 10 10"
     )
     slurm.add_cmd(
         f"surfaceFeatureEdges {case_directory}/combined.stl {case_directory}/combined.fms -angle 5 -case {case_directory}"
