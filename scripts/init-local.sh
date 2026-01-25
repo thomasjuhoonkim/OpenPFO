@@ -24,4 +24,7 @@ pip install -r requirements-local.txt
 echo "Installing OpenPFO in editable mode"
 pip install -e .
 
+# unsetting DYLD_LIBRARY_PATH
+unset DYLD_LIBRARY_PATH
+
 echo 'OpenPFO is initialized!'
