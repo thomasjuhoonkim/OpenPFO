@@ -88,9 +88,15 @@ class Progress:
             self._existing_results = False
 
         # internal lookup cache
-        self._jobs_by_id = {job["id"]: job for job in self._results["workflow"]["jobs"]}
-        self._searches_by_id = {
+        self._jobs_by_id: dict[str, dict] = {
+            job["id"]: job for job in self._results["workflow"]["jobs"]
+        }
+        self._searches_by_id: dict[str, dict] = {
             search["id"]: search for search in self._results["workflow"]["searches"]
+        }
+        self._job_ids_by_point_representation: dict[str, str] = {
+            job["point"]["representation"]: job["id"]
+            for job in self._results["workflow"]["jobs"]
         }
 
     def _save(self):
@@ -105,6 +111,9 @@ class Progress:
         job_result = job.serialize()
 
         self._jobs_by_id[job.get_id()] = job_result
+        self._job_ids_by_point_representation[job.get_point().get_representation()] = (
+            job.get_id()
+        )
         self._results["workflow"]["jobs"] = list(self._jobs_by_id.values())
 
         self._save()
@@ -132,6 +141,10 @@ class Progress:
             objectives = []
 
             point = solution.get_point()
+            point_job_id = self._job_ids_by_point_representation.get(
+                point.get_representation(), ""
+            )
+            point.set_job_id(job_id=point_job_id)
             for objective in solution.get_objectives():
                 objectives.append(objective.serialize())
 

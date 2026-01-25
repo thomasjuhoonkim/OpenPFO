@@ -50,7 +50,9 @@ def check_extraction(
     job_ids = os.listdir(OUTPUT_CASES_DIRECTORY)
     job_ids.sort()
     for job_id in job_ids:
-        job = Job(id=job_id, point=Point(variables=[]), progress=progress)
+        job = Job(
+            id=job_id, point=Point(job_id=job_id, variables=[]), progress=progress
+        )
 
         job.dispatch(
             should_create_geometry=not existing,

@@ -69,7 +69,7 @@ def validate_variable(variable: dict):
 
 
 def validate_point(point: dict):
-    attributes = [("representation", str), ("variables", list)]
+    attributes = [("jobId", str), ("representation", str), ("variables", list)]
 
     for field, expected_type in attributes:
         if field not in point:
