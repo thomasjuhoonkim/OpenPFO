@@ -49,6 +49,8 @@ allowSystemOperations 1;
 OptimisationSwitches
 {
     fileHandler collated;
+    maxThreadFileBufferSize 2e9;
+    maxMasterFileBufferSize 2e9;
 }
 
 functions
