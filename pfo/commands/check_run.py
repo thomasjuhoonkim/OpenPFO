@@ -5,6 +5,7 @@ import sys
 from datetime import datetime
 
 # typer
+from classes.search import Search
 from typing_extensions import Annotated
 import typer
 
@@ -79,25 +80,28 @@ def check_run(
     for point in points:
         logger.info(point.get_representation())
 
-    for i, point in enumerate(points):
-        job_id = f"check-run-{i}"
-        job = None
-        cached_job = progress.get_job(job_id=job_id)
-        if cached_job is not None:
-            job = cached_job
-        else:
-            job = Job(id=job_id, point=point, progress=progress)
-            job.prepare_job()
+    search = Search(id="check-run", points=points, progress=progress)
+    search.create_jobs()
+    search.run_all()
+    # for i, point in enumerate(points):
+    #     job_id = f"check-run-{i}"
+    #     job = None
+    #     cached_job = progress.get_job(job_id=job_id)
+    #     if cached_job is not None:
+    #         job = cached_job
+    #     else:
+    #         job = Job(id=job_id, point=point, progress=progress)
+    #         job.prepare_job()
 
-        job.dispatch(
-            should_create_geometry=True,
-            should_modify_case=True,
-            should_create_mesh=True,
-            should_execute_solver=True,
-            should_extract_objectives=objectives,
-            should_extract_assets=assets,
-            should_execute_cleanup=cleanup,
-        )
+    #     job.dispatch(
+    #         should_create_geometry=True,
+    #         should_modify_case=True,
+    #         should_create_mesh=True,
+    #         should_execute_solver=True,
+    #         should_extract_objectives=objectives,
+    #         should_extract_assets=assets,
+    #         should_execute_cleanup=cleanup,
+    #     )
 
     # end time
     end_time = datetime.now()
