@@ -1,0 +1,26 @@
+[compute]
+hpc=true
+processors_per_job=64
+max_job_workers=6
+
+[model]
+# DESIGN SPACE PARAMETERS
+# name: user-friendly name for the parameter
+# id: identifier for the parameter, cell for FreeCAD, paramater ID for OpenVSP
+# min: minimum value for the parameter
+# max: maximum value for the parameter
+[[model.parameters]]
+name="Root Chord"
+id="GFXAORPLFWH:WingGeom:XSec_1:Root_Chord"
+min=0.8
+max=1.50
+
+[optimizer]
+[[optimizer.objectives]]
+id="cd"
+name="Cd"
+type="minimize"
+[[optimizer.objectives]]
+id="cl"
+name="Cl"
+type="maximize"
