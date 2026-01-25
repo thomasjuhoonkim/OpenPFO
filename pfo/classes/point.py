@@ -1,3 +1,4 @@
+# classes
 from classes.variable import Variable
 
 
@@ -8,7 +9,7 @@ class Point:
     def get_variables(self):
         return self._variables
 
-    def get_point_representation(self):
+    def get_representation(self):
         values = []
         for variable in self._variables:
             values.append(f"{variable.get_name()}: {variable.get_value()}")
@@ -16,7 +17,10 @@ class Point:
         return f"({', '.join(values)})"
 
     def serialize(self):
-        return {"variables": [variable.serialize() for variable in self._variables]}
+        return {
+            "representation": self.get_representation(),
+            "variables": [variable.serialize() for variable in self._variables],
+        }
 
     @classmethod
     def from_dict(cls, point: dict):

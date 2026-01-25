@@ -129,17 +129,14 @@ class Progress:
         solutions_result = []
 
         for solution in solutions:
-            parameters = []
             objectives = []
 
-            for parameter in solution.get_parameters():
-                parameters.append(parameter.serialize())
-
+            point = solution.get_point()
             for objective in solution.get_objectives():
                 objectives.append(objective.serialize())
 
             solutions_result.append(
-                {"parameters": parameters, "objectives": objectives}
+                {"point": point.serialize(), "objectives": objectives}
             )
 
         self._results["solutions"] = solutions_result

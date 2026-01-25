@@ -1,3 +1,6 @@
+# datetime
+from datetime import datetime
+
 # threading
 import threading
 
@@ -30,8 +33,6 @@ class Search:
         self._objectives_per_job: list[list[Objective]] = [
             None for _ in range(len(points))
         ]
-
-        progress.save_search(self)
 
     def _generate_job_id(self):
         job_index = self._job_counter
@@ -99,10 +100,16 @@ class Search:
         return self._objectives_per_job
 
     def serialize(self):
-        earliest_start_time = sorted([job.get_start_time() for job in self._jobs])[0]
-        latest_end_time = sorted(
+        earliest_start_times = sorted([job.get_start_time() for job in self._jobs])
+        earliest_start_time = (
+            earliest_start_times[0] if len(earliest_start_times) else datetime.now()
+        )
+        latest_end_times = sorted(
             [job.get_end_time() for job in self._jobs], reverse=True
-        )[0]
+        )
+        latest_end_time = (
+            latest_end_times[0] if len(latest_end_times) else datetime.now()
+        )
         return {
             "id": self._id,
             "jobs": [job.get_id() for job in self._jobs],

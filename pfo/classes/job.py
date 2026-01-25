@@ -227,7 +227,7 @@ class Job:
             start_time = datetime.now()
             try:
                 logger.info(
-                    f"Running create_geometry to generate a geometry for grid point {self._point.get_point_representation()}"
+                    f"Running create_geometry to generate a geometry for grid point {self._point.get_representation()}"
                 )
                 create_geometry_parameters = CreateGeometryParameters(
                     point=self._point,
@@ -494,7 +494,7 @@ class Job:
     def serialize(self):
         return {
             "id": self.get_id(),
-            "search_id": self._search_id,
+            "searchId": self._search_id,
             "status": self._status.value,
             "runOk": self._run_ok,
             "steps": [step.serialize() for step in self._steps],

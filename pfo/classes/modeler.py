@@ -87,7 +87,7 @@ class FreeCADModeler(AbstractModeler):
         document.saveAs(output_fcstd)
 
         logger.info(
-            f"Generated {job_id}.stl, volume: {part.Shape.Volume}, area: {part.Shape.Area}, design variables: {point.get_point_representation()}"
+            f"Generated {job_id}.stl, volume: {part.Shape.Volume}, area: {part.Shape.Area}, design variables: {point.get_representation()}"
         )
 
         return output_geometry_filepath
@@ -167,7 +167,7 @@ void main()
         try:
             subprocess.run(command, capture_output=True, text=True, check=True)
             logger.info(
-                f"Generated {output_geometry_filepath}, design variables: {point.get_point_representation()}"
+                f"Generated {output_geometry_filepath}, design variables: {point.get_representation()}"
             )
         except subprocess.CalledProcessError as error:
             logger.error(f"{' '.join(command)} failed")
