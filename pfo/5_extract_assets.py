@@ -21,9 +21,9 @@ def extract_assets(
     """ ======================= YOUR CODE BELOW HERE ======================= """
 
     case_foam_filepath = extract_assets_parameters.output_case_foam_filepath
-    case_directory = extract_assets_parameters.output_case_directory
+    # case_directory = extract_assets_parameters.output_case_directory
     output_directory = extract_assets_parameters.output_assets_directory
-    processors_per_job = extract_assets_parameters.processors_per_job
+    # processors_per_job = extract_assets_parameters.processors_per_job
     logger = extract_assets_parameters.logger
 
     slurm1 = Slurm(
@@ -57,27 +57,27 @@ def extract_assets(
 
     # ==========================================================================
 
-    slurm2 = Slurm(
-        job_name="foamToVTK",
-        account="def-jphickey",
-        time="00:05:00",
-        nodes=1,
-        ntasks_per_node=processors_per_job,
-        mem_per_cpu="1G",
-        output="OpenPFO.log",
-        open_mode="append",
-    )
-    slurm2.set_wait(True)
+    # slurm2 = Slurm(
+    #     job_name="foamToVTK",
+    #     account="def-jphickey",
+    #     time="00:05:00",
+    #     nodes=1,
+    #     ntasks_per_node=processors_per_job,
+    #     mem_per_cpu="1G",
+    #     output="OpenPFO.log",
+    #     open_mode="append",
+    # )
+    # slurm2.set_wait(True)
 
-    slurm2.add_cmd(
-        f"mpirun -np {processors_per_job} foamToVTK -parallel -latestTime -case {case_directory}",
-    )
-    slurm2.add_cmd(
-        f"mv {case_directory}/VTK {output_directory}",
-    )
+    # slurm2.add_cmd(
+    #     f"mpirun -np {processors_per_job} foamToVTK -parallel -latestTime -case {case_directory}",
+    # )
+    # slurm2.add_cmd(
+    #     f"mv {case_directory}/VTK {output_directory}",
+    # )
 
-    slurm2.sbatch()
-    logger.info("Successfully ran foamToVTK.")
+    # slurm2.sbatch()
+    # logger.info("Successfully ran foamToVTK.")
 
     EXTRACT_ASSETS_RETURN = ExtractAssetsReturn()
 
