@@ -54,9 +54,10 @@ if __name__ == "__main__":
     tubeDisplay.RescaleTransferFunctionToDataRange(True, False)
 
     ColorBy(tubeDisplay, ("POINTS", "U", "Magnitude"))
-    # uLUT = GetColorTransferFunction("U")
-    # uPWF = GetOpacityTransferFunction("U")
-    # uTF2D = GetTransferFunction2D("U")
+    uLUT = GetColorTransferFunction("U")
+    HideScalarBarIfNotNeeded(uLUT, renderView)
+    tubeDisplay.RescaleTransferFunctionToDataRange(True, False)
+    tubeDisplay.SetScalarBarVisibility(renderView, True)
 
     Hide(reader1, renderView)
     Hide(streamTracer, renderView)

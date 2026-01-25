@@ -41,7 +41,7 @@ if __name__ == "__main__":
     streamTracer = StreamTracer(Input=reader1, SeedType="Line")
     streamTracer.SeedType.Point1 = [-10, -0.5, 0]
     streamTracer.SeedType.Point2 = [-10, 0, 0]
-    streamTracer.SeedType.Resolution = 100
+    streamTracer.SeedType.Resolution = 50
     streamTracer.Vectors = ["POINTS", "U"]
 
     streamTracerDisplay = Show(streamTracer, renderView)
@@ -54,9 +54,10 @@ if __name__ == "__main__":
     tubeDisplay.RescaleTransferFunctionToDataRange(True, False)
 
     ColorBy(tubeDisplay, ("POINTS", "U", "Magnitude"))
-    # uLUT = GetColorTransferFunction("U")
-    # uPWF = GetOpacityTransferFunction("U")
-    # uTF2D = GetTransferFunction2D("U")
+    uLUT = GetColorTransferFunction("U")
+    HideScalarBarIfNotNeeded(uLUT, renderView)
+    tubeDisplay.RescaleTransferFunctionToDataRange(True, False)
+    tubeDisplay.SetScalarBarVisibility(renderView, True)
 
     Hide(reader1, renderView)
     Hide(streamTracer, renderView)

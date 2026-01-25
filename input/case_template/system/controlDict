@@ -82,6 +82,15 @@ functions
         libs            ("libfieldFunctionObjects.so");
         writeControl    timeStep;   // or use 'timeStep' for every timestep
     }
+
+    wallShearStress1
+    {
+        type            wallShearStress;
+        libs            (fieldFunctionObjects);
+        patches         (solid); // e.g., (walls)
+        writeToFile     true;
+        // ... other optional settings like writeControl
+    }
 }
 
 // ************************************************************************* //

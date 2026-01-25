@@ -68,9 +68,9 @@ class Job:
         self,
         id: str,
         point: "Point",
-        search_id: str,
         progress: "Progress",
         # defaults
+        search_id="",
         steps: list["Step"] | None = None,
         status: JobStatus | None = None,
         run_ok=True,
@@ -179,6 +179,7 @@ class Job:
 
     def dispatch(
         self,
+        should_run_checks=True,
         should_create_geometry=True,
         should_modify_case=True,
         should_create_mesh=True,
@@ -188,29 +189,30 @@ class Job:
         should_execute_cleanup=True,
         lock=threading.Lock(),
     ):
-        if self._status == JobStatus.INITIALIZED:
-            logger.info(
-                f"Job {self._id} was initialized but not prepared, preparing and starting..."
-            )
-            with lock:
-                self.prepare_job()
+        if should_run_checks:
+            if self._status == JobStatus.INITIALIZED:
+                logger.info(
+                    f"Job {self._id} was initialized but not prepared, preparing and starting..."
+                )
+                with lock:
+                    self.prepare_job()
 
-        if self._status == JobStatus.READY:
-            logger.info(f"Job {self._id} is ready, starting...")
+            if self._status == JobStatus.READY:
+                logger.info(f"Job {self._id} is ready, starting...")
 
-        if self._status == JobStatus.RUNNING:
-            logger.info(
-                f"Job {self._id} was previously running, cleaning up and restarting..."
-            )
-            self.cleanup(lock=lock)
+            if self._status == JobStatus.RUNNING:
+                logger.info(
+                    f"Job {self._id} was previously running, cleaning up and restarting..."
+                )
+                self.cleanup(lock=lock)
 
-        if self._status == JobStatus.FAILED:
-            logger.info(f"Job {self._id} previously failed, skipping...")
-            return None
+            if self._status == JobStatus.FAILED:
+                logger.info(f"Job {self._id} previously failed, skipping...")
+                return None
 
-        if self._status == JobStatus.COMPLETE:
-            logger.info(f"Job {self._id} already complete, skipping...")
-            return None
+            if self._status == JobStatus.COMPLETE:
+                logger.info(f"Job {self._id} already complete, skipping...")
+                return None
 
         logger.info(
             f"======================= JOB {self._id} START ======================="

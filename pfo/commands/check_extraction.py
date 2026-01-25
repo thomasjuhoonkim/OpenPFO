@@ -26,10 +26,11 @@ from util.get_logger import get_logger
 logger = get_logger()
 
 
+# NOTE: needs refactoring to support both existing and not existing runs
 def check_extraction(
     existing: Annotated[
         bool, typer.Option(help="Run the check on existing output data")
-    ] = False,
+    ] = True,
     solve: Annotated[bool, typer.Option(help="Run the solver on each job")] = False,
     cleanup: Annotated[bool, typer.Option(help="Run cleanup after each job")] = True,
 ):
@@ -55,6 +56,7 @@ def check_extraction(
         )
 
         job.dispatch(
+            should_run_checks=False,
             should_create_geometry=not existing,
             should_modify_case=not existing,
             should_create_mesh=not existing,

@@ -24,30 +24,39 @@ if __name__ == "__main__":
     renderView = CreateView("RenderView")
     renderView.ViewSize = VIEW_SIZE
 
-    renderView.CameraPosition = [0.75, 2, 0]
-    renderView.CameraFocalPoint = [0.75, 0, 0]
+    renderView.CameraPosition = [-1.25, 1.25, 1]
+    renderView.CameraFocalPoint = [0.5, 0, 0]
     renderView.CameraViewUp = [0, 0, 1]
 
-    slice = Slice(Input=reader)
-    slice.SliceType = "Plane"
-    slice.SliceType.Origin = [0, 0, 0]
-    slice.SliceType.Normal = [0, 1, 0]
-    # slice.Crinkleslice = True
+    parafoam = GetActiveSource()
+    parafoam.MeshRegions = ["patch/jobGeometry"]
 
     pLUT = GetColorTransferFunction("p")
     HideScalarBarIfNotNeeded(pLUT, renderView)
 
-    display1 = Show(slice, renderView)
+    calculator1 = Calculator(registrationName="Calculator1", Input=parafoam)
+
+    calculator1.Set(
+        ResultArrayName="Cp",
+        Function="= (p - 0)/(0.5*1.225*(10^2))",
+    )
+    calculator1.AttributeType = "Cell Data"
+
+    display1 = Show(calculator1, renderView, "GeometryRepresentation")
     display1.RescaleTransferFunctionToDataRange(True, False)
     display1.SetScalarBarVisibility(renderView, True)
-    # display1.Representation = "Surface With Edges"
+    display1.Representation = "Surface"
 
-    ColorBy(display1, ("CELLS", "p", "Magnitude"))
+    Hide(parafoam, renderView)
+
+    ColorBy(display1, ("CELLS", "Cp"))
+
+    cpLUT = GetColorTransferFunction("Cp")
 
     Render()
 
     SaveScreenshot(
-        f"{assets_directory}/slice-pressure.png",
+        f"{assets_directory}/cp-contour.png",
         renderView,
         ImageResolution=renderView.ViewSize,
     )

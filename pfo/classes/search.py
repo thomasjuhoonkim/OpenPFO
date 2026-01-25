@@ -95,6 +95,8 @@ class Search:
                         f"An exception occured while running job {job.get_id()}"
                     )
 
+        self._progress.save_search(self)
+
         logger.info(f"Search {self._id} complete")
 
     def get_objectives_per_job(self):

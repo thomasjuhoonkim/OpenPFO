@@ -48,6 +48,9 @@ def extract_assets(
         f"{SHARED} input/paraview/streamline-half.py {case_foam_filepath} {output_directory}",
         f"{SHARED} input/paraview/slice-velocity.py {case_foam_filepath} {output_directory}",
         f"{SHARED} input/paraview/slice-pressure.py {case_foam_filepath} {output_directory}",
+        f"{SHARED} input/paraview/yplus.py {case_foam_filepath} {output_directory}",
+        f"{SHARED} input/paraview/cp-contour.py {case_foam_filepath} {output_directory}",
+        f"{SHARED} input/paraview/wall-shear.py {case_foam_filepath} {output_directory}",
     ]
     for command in commands:
         slurm1.add_cmd(command)
