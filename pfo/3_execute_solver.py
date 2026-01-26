@@ -25,7 +25,7 @@ def execute_solver(
     slurm = Slurm(
         job_name="simpleFoam",
         account="def-jphickey",
-        time="00:40:00",
+        time="00:30:00",
         nodes=1,
         ntasks_per_node=processors_per_job,
         mem_per_cpu="4G",
@@ -48,7 +48,7 @@ def execute_solver(
     logger.info("Successfully ran simpleFoam.")
 
     run_ok = True
-    if not os.path.isdir(f"{case_directory}/20"):
+    if not os.path.isdir(f"{case_directory}/10"):
         run_ok = False
 
     EXECUTE_SOLVER_RETURN = ExecuteSolverReturn(run_ok=run_ok)
