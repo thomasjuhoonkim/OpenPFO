@@ -24,7 +24,7 @@ if __name__ == "__main__":
     renderView = CreateView("RenderView")
     renderView.ViewSize = VIEW_SIZE
 
-    reader.MeshRegions = ["patch/jobGeometry"]
+    reader.MeshRegions = ["patch/solid"]
 
     display = Show(reader, renderView)
 

@@ -41,7 +41,7 @@ if __name__ == "__main__":
     display1.Representation = "Surface With Edges"
     ColorBy(display1, ("CELLS", ""))
 
-    reader2.MeshRegions = ["patch/jobGeometry"]
+    reader2.MeshRegions = ["patch/solid"]
 
     display2 = Show(reader2, renderView)
     display2.Representation = "Surface With Edges"

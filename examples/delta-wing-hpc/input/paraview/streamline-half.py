@@ -34,7 +34,7 @@ if __name__ == "__main__":
     display1 = Show(reader1, renderView)
     ColorBy(display1, ("CELLS", ""))
 
-    reader2.MeshRegions = ["patch/jobGeometry"]
+    reader2.MeshRegions = ["patch/solid"]
     display2 = Show(reader2, renderView)
     ColorBy(display2, ("CELLS", ""))
 

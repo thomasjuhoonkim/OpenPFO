@@ -117,7 +117,7 @@ renameBoundary
     {
         solid
         {
-            newName jobGeometry;
+            newName solid;
             type wall;
         }
         xMin

@@ -51,7 +51,7 @@ boundaryField
     {
         type            slip;
     }
-    jobGeometry
+    solid
     {
         type            omegaWallFunction;
         value           uniform 0;

@@ -64,7 +64,7 @@ functions
 
         log             yes;
 
-        patches         (jobGeometry);
+        patches         (solid);
         rho             rhoInf;      // Indicates incompressible
         rhoInf          1.225;           // Required when rho = rhoInf
         liftDir         (0 0 1);

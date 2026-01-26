@@ -50,7 +50,7 @@ boundaryField
     {
         type            slip;
     }
-    jobGeometry
+    solid
     {
         type            noSlip;
     }

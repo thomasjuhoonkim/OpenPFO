@@ -29,7 +29,7 @@ if __name__ == "__main__":
     renderView.CameraViewUp = [0, 0, 1]
 
     parafoam = GetActiveSource()
-    parafoam.MeshRegions = ["patch/jobGeometry"]
+    parafoam.MeshRegions = ["patch/solid"]
 
     wallShearStressLUT = GetColorTransferFunction("wallShearStress")
     HideScalarBarIfNotNeeded(wallShearStressLUT, renderView)
