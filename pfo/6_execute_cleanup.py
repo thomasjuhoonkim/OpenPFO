@@ -20,14 +20,14 @@ def execute_cleanup(
     job_id = execute_cleanup_parameters.job_id
 
     slurm1 = Slurm(
-        job_name="cleanProcessors",
+        job_name=f"{job_id}-cleanProcessors",
         account="def-jphickey",
         time="00:01:00",
         nodes=1,
         ntasks_per_node=1,
         cpus_per_task={processors_per_job},
         mem_per_cpu="1G",
-        output="OpenPFO.log",
+        output=f"{case_directory}/cleanProcessors.log",
         open_mode="append",
     )
     slurm1.set_wait(True)
