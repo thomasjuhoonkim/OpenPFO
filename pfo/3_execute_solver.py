@@ -28,7 +28,7 @@ def execute_solver(
         time="01:00:00",
         nodes=1,
         ntasks_per_node=processors_per_job,
-        threads_per_code=1,
+        threads_per_core=1,
         mem_per_cpu="4G",
         output=f"{case_directory}/simpleFoam.log",
         open_mode="append",
