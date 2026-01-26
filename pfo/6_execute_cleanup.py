@@ -17,6 +17,7 @@ def execute_cleanup(
     case_directory = execute_cleanup_parameters.output_case_directory
     logger = execute_cleanup_parameters.logger
     # processors_per_job = execute_cleanup_parameters.processors_per_job
+    job_id = execute_cleanup_parameters.job_id
 
     # slurm1 = Slurm(
     #     job_name="cleanProcessors",
@@ -40,14 +41,14 @@ def execute_cleanup(
     # ==========================================================================
 
     slurm2 = Slurm(
-        job_name="cleanCase",
+        job_name=f"{job_id}-cleanCase",
         account="def-jphickey",
         time="00:01:00",
         nodes=1,
         ntasks_per_node=1,
         cpus_per_task=1,
         mem_per_cpu="100M",
-        output="OpenPFO.log",
+        output=f"{case_directory}/cleanCase.log",
         open_mode="append",
     )
     slurm2.set_wait(True)

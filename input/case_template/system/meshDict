@@ -20,7 +20,7 @@ surfaceFile "combined.fms";
 
 // minCellSize 0.01; - don't use this, it causes refinment around the walls
 
-maxCellSize 0.25;
+maxCellSize 0.5;
 
 // boundaryCellSize 0.5; - don't use this, is causes refinment around the walls
 
@@ -75,8 +75,8 @@ objectRefinements
         centre (0.5 0 0);
         p0 (-2 0 0);
         p1 (8 0 0);
-        radius0 3;
-        radius1 3;
+        radius0 3.5;
+        radius1 3.5;
     }
     refinement2
     {
@@ -85,8 +85,8 @@ objectRefinements
         centre (0.5 0 0);
         p0 (-1 0 0);
         p1 (5 0 0);
-        radius0 2;
-        radius1 2;
+        radius0 3.25;
+        radius1 3.25;
     }
     refinement3
     {
@@ -94,7 +94,7 @@ objectRefinements
         cellSize 0.05;
         centre (1.75 0 0);
         lengthX 4.5;
-        lengthY 3;
+        lengthY 6;
         lengthZ 1;
     }
     refinement4
@@ -103,7 +103,7 @@ objectRefinements
         cellSize 0.01;
         centre (1.5 0 0);
         lengthX 3.25;
-        lengthY 1.5;
+        lengthY 5.5;
         lengthZ 0.5;
     }
     
@@ -115,11 +115,6 @@ renameBoundary
     
     newPatchNames
     {
-        solid
-        {
-            newName jobGeometry;
-            type wall;
-        }
         xMin
         {
             // newName inlet; - should be the actual name, need to modfy 0/ directory tho, too much work, just using previous conventions

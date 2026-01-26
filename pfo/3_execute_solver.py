@@ -25,11 +25,12 @@ def execute_solver(
     slurm = Slurm(
         job_name="simpleFoam",
         account="def-jphickey",
-        time="00:40:00",
+        time="01:00:00",
         nodes=1,
         ntasks_per_node=processors_per_job,
+        threads_per_code=1,
         mem_per_cpu="4G",
-        output="OpenPFO.log",
+        output=f"{case_directory}/simpleFoam.log",
         open_mode="append",
     )
     slurm.set_wait(True)
@@ -48,7 +49,7 @@ def execute_solver(
     logger.info("Successfully ran simpleFoam.")
 
     run_ok = True
-    if not os.path.isdir(f"{case_directory}/15"):
+    if not os.path.isdir(f"{case_directory}/20"):
         run_ok = False
 
     EXECUTE_SOLVER_RETURN = ExecuteSolverReturn(run_ok=run_ok)
