@@ -40,7 +40,7 @@ def modify_case(modify_case_parameters: ModifyCaseParameters):
     l_ref = (
         root_chord * (2 / 3) * ((1 + taper_ratio + taper_ratio**2) / (1 + taper_ratio))
     )
-    a_ref = l_ref / 0.9
+    a_ref = l_ref * 0.9
     c_of_r = root_chord - l_ref + (0.25 * l_ref)
 
     # case
