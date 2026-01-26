@@ -1,6 +1,6 @@
 [compute]
 hpc=true
-processors_per_job=256
+processors_per_job=192
 max_job_workers=1
 
 [model]
