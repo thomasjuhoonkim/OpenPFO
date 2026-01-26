@@ -20,7 +20,7 @@ surfaceFile "combined.fms";
 
 // minCellSize 0.01; - don't use this, it causes refinment around the walls
 
-maxCellSize 0.5;
+maxCellSize 0.25;
 
 // boundaryCellSize 0.5; - don't use this, is causes refinment around the walls
 
