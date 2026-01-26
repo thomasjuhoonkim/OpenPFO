@@ -56,7 +56,6 @@ class Search:
             if cached_job is not None:
                 job = cached_job
             else:
-                point.set_job_id(job_id=job_id)
                 job = Job(
                     id=job_id,
                     search_id=self._id,
