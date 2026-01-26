@@ -62,11 +62,11 @@ functions
         libs            (forces);
 
         writeControl    timeStep;
-        writeInterval   5;
+        writeInterval   1;
 
         log             yes;
 
-        patches         (solid);
+        patches         (jobGeometry);
         rho             rhoInf;      // Indicates incompressible
         rhoInf          1.225;           // Required when rho = rhoInf
         liftDir         (0 0 1);
