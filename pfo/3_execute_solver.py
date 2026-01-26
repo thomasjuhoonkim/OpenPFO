@@ -21,9 +21,10 @@ def execute_solver(
     case_directory = execute_solver_parameters.output_case_directory
     logger = execute_solver_parameters.logger
     processors_per_job = execute_solver_parameters.processors_per_job
+    job_id = execute_solver_parameters.job_id
 
     slurm = Slurm(
-        job_name="simpleFoam",
+        job_name=f"{job_id}-simpleFoam",
         account="def-jphickey",
         time="01:00:00",
         nodes=1,
