@@ -1,5 +1,5 @@
 [compute]
-hpc=false
+hpc=true
 processors_per_job=128
 max_job_workers=1
 
