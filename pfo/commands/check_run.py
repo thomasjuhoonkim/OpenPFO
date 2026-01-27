@@ -14,7 +14,6 @@ from commands.check_output import check_output
 from commands.check_config import check_config
 
 # classes
-from classes.job import Job
 from classes.point import Point
 from classes.progress import Progress
 
@@ -70,7 +69,7 @@ def check_run(
         logger.info(f"Start time: {start_time}")
         progress.save_start_time(start_time=start_time)
 
-    # jobs
+    # points
     points: list["Point"] = []
     if random:
         points = get_random_points(count=count)
@@ -82,26 +81,16 @@ def check_run(
 
     search = Search(id="check-run", points=points, progress=progress)
     search.create_jobs()
-    search.run_all()
-    # for i, point in enumerate(points):
-    #     job_id = f"check-run-{i}"
-    #     job = None
-    #     cached_job = progress.get_job(job_id=job_id)
-    #     if cached_job is not None:
-    #         job = cached_job
-    #     else:
-    #         job = Job(id=job_id, point=point, progress=progress)
-    #         job.prepare_job()
-
-    #     job.dispatch(
-    #         should_create_geometry=True,
-    #         should_modify_case=True,
-    #         should_create_mesh=True,
-    #         should_execute_solver=True,
-    #         should_extract_objectives=objectives,
-    #         should_extract_assets=assets,
-    #         should_execute_cleanup=cleanup,
-    #     )
+    search.run_all(
+        should_run_checks=True,
+        should_create_geometry=True,
+        should_modify_case=True,
+        should_create_mesh=True,
+        should_execute_solver=True,
+        should_extract_objectives=objectives,
+        should_extract_assets=assets,
+        should_execute_cleanup=cleanup,
+    )
 
     # end time
     end_time = datetime.now()

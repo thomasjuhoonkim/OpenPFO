@@ -11,11 +11,11 @@ from commands.check_config import check_config
 
 # classes
 from classes.job import Job
+from classes.point import Point
 from classes.progress import Progress
 
 # util
 from util.get_logger import get_logger
-from util.get_random_points import get_random_points
 
 logger = get_logger()
 
@@ -38,9 +38,9 @@ def check_prepare(
     progress.save_start_time(start_time=start_time)
 
     # jobs
-    points = get_random_points(count=count)
+    points = [Point(variables=[]) for _ in range(count)]
     for i, point in enumerate(points):
-        job_id = f"check-meshes-{i}"
+        job_id = f"check-meshes-job-{i}"
         job = Job(id=job_id, point=point, progress=progress)
         job.prepare_job()
 

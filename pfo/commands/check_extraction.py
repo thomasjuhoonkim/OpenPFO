@@ -18,7 +18,6 @@ from constants.path import OUTPUT_CASES_DIRECTORY
 
 # commands
 from commands.check_config import check_config
-from commands.check_output import check_output
 
 # util
 from util.get_logger import get_logger
@@ -26,18 +25,11 @@ from util.get_logger import get_logger
 logger = get_logger()
 
 
-# NOTE: needs refactoring to support both existing and not existing runs
 def check_extraction(
-    existing: Annotated[
-        bool, typer.Option(help="Run the check on existing output data")
-    ] = True,
-    solve: Annotated[bool, typer.Option(help="Run the solver on each job")] = False,
     cleanup: Annotated[bool, typer.Option(help="Run cleanup after each job")] = True,
 ):
     # pre-run checks
     check_config()
-    if not existing:
-        check_output()
 
     # progress
     progress = Progress()
@@ -55,11 +47,11 @@ def check_extraction(
 
         job.dispatch(
             should_run_checks=False,
-            should_create_geometry=not existing,
-            should_modify_case=not existing,
-            should_create_mesh=not existing,
-            should_execute_solver=solve,
-            should_extract_objectives=solve,
+            should_create_geometry=False,
+            should_modify_case=False,
+            should_create_mesh=False,
+            should_execute_solver=False,
+            should_extract_objectives=False,
             should_extract_assets=True,
             should_execute_cleanup=cleanup,
         )

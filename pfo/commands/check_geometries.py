@@ -5,7 +5,6 @@ import sys
 from datetime import datetime
 
 # typer
-from classes.point import Point
 from typing_extensions import Annotated
 import typer
 
@@ -14,7 +13,8 @@ from commands.check_output import check_output
 from commands.check_config import check_config
 
 # classes
-from classes.job import Job
+from classes.point import Point
+from classes.search import Search
 from classes.progress import Progress
 
 # util
@@ -54,7 +54,7 @@ def check_geometries(
     logger.info(f"Start time: {start_time}")
     progress.save_start_time(start_time=start_time)
 
-    # jobs
+    # points
     points: list["Point"] = []
     if random:
         points = get_random_points(count=count)
@@ -64,24 +64,26 @@ def check_geometries(
     for point in points:
         logger.info(point.get_representation())
 
-    for i, point in enumerate(points):
-        job_id = f"check-geometries-{i}"
-        job = Job(id=job_id, point=point, progress=progress)
-
-        job.prepare_job(should_create_case_directory=False)
-        job.dispatch(
-            should_create_geometry=True,
-            should_modify_case=False,
-            should_create_mesh=False,
-            should_execute_solver=False,
-            should_extract_objectives=False,
-            should_extract_assets=False,
-            should_execute_cleanup=False,
-        )
-        if visualize:
-            job.visualize_geometry()
+    search = Search(id="check-geometries", points=points, progress=progress)
+    search.create_jobs()
+    search.run_all(
+        should_run_checks=True,
+        should_create_geometry=True,
+        should_modify_case=False,
+        should_create_mesh=False,
+        should_execute_solver=False,
+        should_extract_objectives=False,
+        should_extract_assets=False,
+        should_execute_cleanup=False,
+    )
 
     # end time
     end_time = datetime.now()
     logger.info(f"End time: {end_time}")
     progress.save_end_time(end_time=end_time)
+
+    # visualize
+    if visualize:
+        jobs = search.get_jobs()
+        for job in jobs:
+            job.visualize_geometry()

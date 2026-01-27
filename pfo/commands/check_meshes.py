@@ -10,11 +10,13 @@ from commands.check_output import check_output
 from commands.check_config import check_config
 
 # classes
-from classes.job import Job
+from classes.point import Point
+from classes.search import Search
 from classes.progress import Progress
 
 # util
 from util.get_logger import get_logger
+from util.get_linear_points import get_linear_points
 from util.get_random_points import get_random_points
 
 logger = get_logger()
@@ -24,6 +26,9 @@ def check_meshes(
     count: Annotated[
         int, typer.Option(help="The number of random points to generate")
     ] = 1,
+    random: Annotated[
+        bool, typer.Option(help="Randomize points in the design space")
+    ] = True,
     assets: Annotated[
         bool, typer.Option(help="Run asset extraction after each job")
     ] = False,
@@ -41,22 +46,28 @@ def check_meshes(
     logger.info(f"Start time: {start_time}")
     progress.save_start_time(start_time=start_time)
 
-    # jobs
-    points = get_random_points(count=count)
-    for i, point in enumerate(points):
-        job_id = f"check-meshes-{i}"
-        job = Job(id=job_id, point=point, progress=progress)
+    # points
+    points: list["Point"] = []
+    if random:
+        points = get_random_points(count=count)
+    else:
+        points = get_linear_points(count=count)
+    logger.info("Running points:")
+    for point in points:
+        logger.info(point.get_representation())
 
-        job.prepare_job()
-        job.dispatch(
-            should_create_geometry=True,
-            should_modify_case=True,
-            should_create_mesh=True,
-            should_execute_solver=False,
-            should_extract_objectives=False,
-            should_extract_assets=assets,
-            should_execute_cleanup=cleanup,
-        )
+    search = Search(id="check-meshes", points=points, progress=progress)
+    search.create_jobs()
+    search.run_all(
+        should_run_checks=True,
+        should_create_geometry=True,
+        should_modify_case=True,
+        should_create_mesh=True,
+        should_execute_solver=False,
+        should_extract_objectives=False,
+        should_extract_assets=assets,
+        should_execute_cleanup=cleanup,
+    )
 
     # end time
     end_time = datetime.now()

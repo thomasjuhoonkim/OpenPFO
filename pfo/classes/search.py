@@ -69,7 +69,17 @@ class Search:
 
         self._progress.save_search(self)
 
-    def run_all(self, should_execute_cleanup=True):
+    def run_all(
+        self,
+        should_run_checks=True,
+        should_create_geometry=True,
+        should_modify_case=True,
+        should_create_mesh=True,
+        should_execute_solver=True,
+        should_extract_objectives=True,
+        should_extract_assets=True,
+        should_execute_cleanup=True,
+    ):
         lock = threading.Lock()
         with concurrent.futures.ThreadPoolExecutor(
             max_workers=config["compute"]["max_job_workers"]
@@ -77,6 +87,13 @@ class Search:
             jobs_by_future = {
                 executor.submit(
                     job.dispatch,
+                    should_run_checks=should_run_checks,
+                    should_create_geometry=should_create_geometry,
+                    should_modify_case=should_modify_case,
+                    should_create_mesh=should_create_mesh,
+                    should_execute_solver=should_execute_solver,
+                    should_extract_objectives=should_extract_objectives,
+                    should_extract_assets=should_extract_assets,
                     should_execute_cleanup=should_execute_cleanup,
                     lock=lock,
                 ): job
