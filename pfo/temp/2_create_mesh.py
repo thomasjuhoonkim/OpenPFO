@@ -15,9 +15,9 @@ def create_mesh(
     The create_mesh function is used to create the geometry for each grid
     point in the design space.
     """
-    case_directory = create_mesh_parameters.output_case_directory
-    logger = create_mesh_parameters.logger
+    assets_directory = create_mesh_parameters.output_assets_directory
     processors_per_job = create_mesh_parameters.processors_per_job
+    logger = create_mesh_parameters.logger
     job_id = create_mesh_parameters.job_id
     point = create_mesh_parameters.point
 

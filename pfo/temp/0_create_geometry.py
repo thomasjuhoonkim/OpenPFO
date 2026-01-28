@@ -9,10 +9,10 @@ def create_geometry(
     The create_geometry function is used to create the geometry for each grid
     point in the design space.
 
-    NOTE: This function returns the geometry filepath.
+    NOTE: This function does not return a value.
     """
 
-    output_assets_directory = create_geometry_parameters.output_assets_directory
+    assets_directory = create_geometry_parameters.output_assets_directory
     processors_per_job = create_geometry_parameters.processors_per_job
     job_id = create_geometry_parameters.job_id
     logger = create_geometry_parameters.logger
@@ -20,9 +20,7 @@ def create_geometry(
 
     """ ======================= YOUR CODE BELOW HERE ======================= """
 
-    CREATE_GEOMETRY_RETURN = CreateGeometryReturn(
-        output_geometry_filepath="",
-    )
+    CREATE_GEOMETRY_RETURN = CreateGeometryReturn()
 
     """ ======================= YOUR CODE ABOVE HERE ======================= """
 

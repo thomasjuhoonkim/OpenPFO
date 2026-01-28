@@ -15,10 +15,11 @@ def execute_solver(
     The execute_solver function is used to create the geometry for each grid
     point in the design space.
     """
-    case_directory = execute_solver_parameters.output_case_directory
-    logger = execute_solver_parameters.logger
+    assets_directory = execute_solver_parameters.output_assets_directory
     processors_per_job = execute_solver_parameters.processors_per_job
+    logger = execute_solver_parameters.logger
     job_id = execute_solver_parameters.job_id
+    point = execute_solver_parameters.point
 
     """ ======================= YOUR CODE BELOW HERE ======================= """
 

@@ -5,20 +5,17 @@ import typer
 from commands.reset_output import reset_output
 
 # commands - check
-from commands.check_output import check_output
-from commands.check_config import check_config
+from commands.check_objectives import check_objectives
+from commands.check_geometries import check_geometries
 from commands.check_results import check_results
 from commands.check_prepare import check_prepare
-from commands.check_geometries import check_geometries
-from commands.check_cases import check_cases
+from commands.check_output import check_output
+from commands.check_config import check_config
 from commands.check_meshes import check_meshes
 from commands.check_run import check_run
-from commands.check_extraction import check_extraction
-from commands.check_setup import check_setup
 
 # commands - execution
 from commands.run import run
-from commands.doe import doe
 
 # commands - collect
 from commands.collect_assets import collect_assets
@@ -36,20 +33,17 @@ app.command(
 )(reset_output)
 
 # checks
-app.command(name="checkOutput")(check_output)
 app.command(name="checkConfig")(check_config)
-app.command(name="checkResults")(check_results)
 app.command(name="checkPrepare")(check_prepare)
 app.command(name="checkGeometries")(check_geometries)
-app.command(name="checkCases")(check_cases)
 app.command(name="checkMeshes")(check_meshes)
+app.command(name="checkObjectives")(check_objectives)
 app.command(name="checkRun")(check_run)
-app.command(name="checkExtract")(check_extraction)
-app.command(name="checkSetup")(check_setup)
+app.command(name="checkResults")(check_results)
+app.command(name="checkOutput")(check_output)
 
 # execution
 app.command(name="run")(run)
-app.command(name="doe")(doe)
 
 # collect
 app.command(name="collectAssets")(collect_assets)

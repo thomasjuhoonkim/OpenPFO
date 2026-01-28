@@ -26,11 +26,11 @@ class OpenPFOProblem(Problem):
         parameters: list["Parameter"],
         objectives: list["Objective"],
         progress: "Progress",
-        should_execute_cleanup=True,
+        should_run_cleanup=True,
     ):
         self._search_count = 0
         self._progress = progress
-        self._should_execute_cleanup = should_execute_cleanup
+        self._should_run_cleanup = should_run_cleanup
 
         lower_bounds = np.array(object=[], dtype=np.float64)
         upper_bounds = np.array(object=[], dtype=np.float64)
@@ -66,7 +66,7 @@ class OpenPFOProblem(Problem):
 
         search = Search(id=search_id, points=points, progress=self._progress)
         search.create_jobs()
-        search.run_all(should_execute_cleanup=self._should_execute_cleanup)
+        search.run_all(should_run_cleanup=self._should_run_cleanup)
 
         # convert objectives into pymoo objectives
         objectives_per_job = search.get_objectives_per_job()

@@ -27,7 +27,7 @@ def extract_objectives(
 
     """ ======================= YOUR CODE BELOW HERE ======================= """
 
-    case_directory = extract_objectives_parameters.output_case_directory
+    assets_directory = extract_objectives_parameters.output_assets_directory
     objectives = extract_objectives_parameters.objectives
     logger = extract_objectives_parameters.logger
 

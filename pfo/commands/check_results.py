@@ -8,8 +8,8 @@ import json
 from constants.path import OUTPUT_RESULTS_JSON
 
 # util
-from util.get_logger import get_logger
 from util.validate_results import validate_results
+from util.get_logger import get_logger
 
 logger = get_logger()
 
@@ -20,7 +20,7 @@ def check_results():
 
     results = None
     with open(OUTPUT_RESULTS_JSON, "r") as json_file:
-        results = json.load(json_file)  # noqa: F821
+        results = json.load(json_file)
 
     # validate_results simply exists rather than returning a boolean
     validate_results(results=results)

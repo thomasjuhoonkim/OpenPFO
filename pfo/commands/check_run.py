@@ -32,12 +32,7 @@ def check_run(
     random: Annotated[
         bool, typer.Option(help="Randomize points in the design space")
     ] = True,
-    objectives: Annotated[
-        bool, typer.Option(help="Extract objectives after each job")
-    ] = True,
-    assets: Annotated[
-        bool, typer.Option(help="Run asset extraction after each job")
-    ] = True,
+    objectives: Annotated[bool, typer.Option(help="Run objectives()")] = True,
     cleanup: Annotated[bool, typer.Option(help="Run cleanup after each job")] = True,
     resume: Annotated[
         bool, typer.Option(help="Resume progress from an existing run")
@@ -55,19 +50,14 @@ def check_run(
         sys.exit(1)
 
     # progress
-    progress = Progress(resume=resume)
+    progress = Progress()
+    progress.recover_progress()
+    progress.validate_command_match()
 
-    # start time and/or resume time
-    start_time = None
-    if resume:
-        start_time = progress.get_start_time()
-        resume_time = datetime.now()
-        logger.info(f"Original start time: {start_time}")
-        logger.info(f"Resume time: {resume_time}")
-    else:
-        start_time = datetime.now()
-        logger.info(f"Start time: {start_time}")
-        progress.save_start_time(start_time=start_time)
+    # start time
+    start_time = datetime.now()
+    logger.info(f"Start time: {start_time}")
+    progress.save_start_time(start_time=start_time)
 
     # points
     points: list["Point"] = []
@@ -83,13 +73,12 @@ def check_run(
     search.create_jobs()
     search.run_all(
         should_run_checks=True,
-        should_create_geometry=True,
-        should_modify_case=True,
-        should_create_mesh=True,
-        should_execute_solver=True,
-        should_extract_objectives=objectives,
-        should_extract_assets=assets,
-        should_execute_cleanup=cleanup,
+        should_run_prepare=True,
+        should_run_geometry=True,
+        should_run_mesh=True,
+        should_run_solve=True,
+        should_run_objectives=objectives,
+        should_run_cleanup=cleanup,
     )
 
     # end time

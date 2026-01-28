@@ -18,12 +18,11 @@ def extract_assets(
     provided assets output directory.
     """
 
-    case_foam_filepath = extract_assets_parameters.output_case_foam_filepath
-    case_directory = extract_assets_parameters.output_case_directory
     output_directory = extract_assets_parameters.output_assets_directory
     processors_per_job = extract_assets_parameters.processors_per_job
     logger = extract_assets_parameters.logger
     job_id = extract_assets_parameters.job_id
+    point = extract_assets_parameters.point
 
     """ ======================= YOUR CODE BELOW HERE ======================= """
 

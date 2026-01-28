@@ -19,13 +19,12 @@ from constants.step import StepId
 if TYPE_CHECKING:
     from classes.progress import Progress
 from classes.functions import (
-    CreateGeometryParameters,
-    CreateMeshParameters,
-    ExecuteCleanupParameters,
-    ExecuteSolverParameters,
-    ExtractAssetsParameters,
-    ExtractObjectivesParameters,
-    ModifyCaseParameters,
+    PrepareParameters,
+    GeometryParameters,
+    MeshParameters,
+    SolveParameters,
+    ObjectivesParameters,
+    CleanupParameters,
 )
 from classes.objective import Objective
 from classes.variable import Variable
@@ -38,13 +37,12 @@ from util.get_config import get_config
 from util.get_logger import get_logger
 
 # input
-create_geometry = __import__("0_create_geometry")
-modify_case = __import__("1_modify_case")
-create_mesh = __import__("2_create_mesh")
-execute_solver = __import__("3_execute_solver")
-extract_objectives = __import__("4_extract_objectives")
-extract_assets = __import__("5_extract_assets")
-execute_cleanup = __import__("6_execute_cleanup")
+prepare = __import__("0_prepare")
+geometry = __import__("1_geometry")
+mesh = __import__("2_mesh")
+solve = __import__("3_solve")
+objectives = __import__("4_objectives")
+cleanup = __import__("5_cleanup")
 
 config = get_config()
 logger = get_logger()
@@ -71,7 +69,6 @@ class Job:
         output_geometry_filepath="",
         output_assets_directory="",
         objectives: list["Objective"] | None = None,
-        extra_variables: list["Variable"] | None = None,
     ):
         self._id = id
         self._point = point
@@ -89,7 +86,10 @@ class Job:
             else f"{OUTPUT_ASSETS_DIRECTORY}/{id}"
         )
         self._objectives = objectives if objectives is not None else []
-        self._extra_variables = extra_variables if extra_variables is not None else []
+
+        if not os.path.isdir(self._output_assets_directory):
+            os.makedirs(self._output_assets_directory)
+            logger.info(f"Created assets directory {self._output_assets_directory}")
 
         self._progress.save_job(self)
 
@@ -111,9 +111,6 @@ class Job:
     def get_end_time(self):
         return self._end_time
 
-    def get_output_geometry_filepath(self):
-        return self._output_geometry_filepath
-
     def get_output_assets_directory(self):
         return self._output_assets_directory
 
@@ -132,35 +129,15 @@ class Job:
                 "config.compute.hpc is set true, geometry visualization with PyVista is unavailable."
             )
 
-    def prepare_job(self, should_create_assets_directory=True):
-        if should_create_assets_directory:
-            # create job assets directory
-            os.makedirs(self._output_assets_directory)
-            logger.info(f"Created assets directory {self._output_assets_directory}")
-
-            # # decomposeParDict subdomains
-            # decompose_par_dict_filepath = (
-            #     f"{self._output_case_directory}/system/decomposeParDict"
-            # )
-            # decompose_par_dict = ParsedParameterFile(decompose_par_dict_filepath)
-            # decompose_par_dict["numberOfSubdomains"] = config["compute"][
-            #     "processors_per_job"
-            # ]
-            # decompose_par_dict.writeFile()
-
-        self._status = JobStatus.READY
-        self._progress.save_job(self)
-
     def dispatch(
         self,
         should_run_checks=True,
-        should_create_geometry=True,
-        should_modify_case=True,
-        should_create_mesh=True,
-        should_execute_solver=True,
-        should_extract_objectives=True,
-        should_extract_assets=True,
-        should_execute_cleanup=True,
+        should_run_prepare=True,
+        should_run_geometry=True,
+        should_run_mesh=True,
+        should_run_solve=True,
+        should_run_objectives=True,
+        should_run_cleanup=True,
         lock=threading.Lock(),
     ):
         if should_run_checks:
@@ -198,31 +175,29 @@ class Job:
 
         dispatch_ok = True
 
-        # CREATE GEOMETRY ======================================================
-        if should_create_geometry and dispatch_ok:
+        # PREPARE ==============================================================
+        if should_run_prepare and dispatch_ok:
             start_time = datetime.now()
             try:
-                logger.info(
-                    f"Running create_geometry to generate a geometry for grid point {self._point.get_representation()}"
-                )
-                create_geometry_parameters = CreateGeometryParameters(
+                logger.info(f"Running prepare() for {self._id}")
+                prepare_parameters = PrepareParameters(
                     point=self._point,
                     job_id=self._id,
                     logger=logger,
                 )
-                create_geometry_return = create_geometry.create_geometry(
-                    create_geometry_parameters=create_geometry_parameters
-                )
-                dispatch_ok = create_geometry_return.run_ok
-                logger.info("Successfully ran create_geometry")
+                prepare_return = prepare.prepare(prepare_parameters=prepare_parameters)
+                dispatch_ok = prepare_return.run_ok
+                logger.info(f"Successfully ran prepare() for job {self._id}")
             except BaseException:
                 dispatch_ok = False
-                logger.exception("An error occured in create_geometry")
+                logger.exception(
+                    f"An error occured while running prepare() for job {self._id}"
+                )
             finally:
                 end_time = datetime.now()
                 self._steps.append(
                     Step(
-                        id=StepId.CREATE_GEOMETRY,
+                        id=StepId.PREPARE,
                         run_ok=dispatch_ok,
                         start_time=start_time,
                         end_time=end_time,
@@ -231,31 +206,33 @@ class Job:
                 with lock:
                     self._progress.save_job(self)
         else:
-            logger.warning("Skipping create_geometry")
+            logger.warning(f"Skipping prepare() for job {self._id}")
 
-        # MODIFY CASE ==========================================================
-        if should_modify_case and dispatch_ok:
+        # GEOMETRY =============================================================
+        if should_run_geometry and dispatch_ok:
             start_time = datetime.now()
             try:
-                logger.info("Running modify_case to customize OpenFOAM case")
-                modify_case_parameters = ModifyCaseParameters(
+                logger.info(f"Running geometry() for job {self._id}")
+                geometry_parameters = GeometryParameters(
                     point=self._point,
                     job_id=self._id,
                     logger=logger,
                 )
-                modify_case_return = modify_case.modify_case(
-                    modify_case_parameters=modify_case_parameters
+                geometry_return = geometry.geometry(
+                    geometry_parameters=geometry_parameters
                 )
-                dispatch_ok = modify_case_return.run_ok
-                logger.info("Successfully ran modify_case")
+                dispatch_ok = geometry_return.run_ok
+                logger.info(f"Successfully ran geometry() for job {self._id}")
             except BaseException:
                 dispatch_ok = False
-                logger.exception("An error occured in modify_case")
+                logger.exception(
+                    f"An error occured while running geometry() for job {self._id}"
+                )
             finally:
                 end_time = datetime.now()
                 self._steps.append(
                     Step(
-                        id=StepId.MODIFY_CASE,
+                        id=StepId.GEOMETRY,
                         run_ok=dispatch_ok,
                         start_time=start_time,
                         end_time=end_time,
@@ -264,31 +241,31 @@ class Job:
                 with lock:
                     self._progress.save_job(self)
         else:
-            logger.warning("Skipping modify_case")
+            logger.warning(f"Skipping geometry() for job {self._id}")
 
-        # CREATE MESH ==========================================================
-        if should_create_mesh and dispatch_ok:
+        # MESH =================================================================
+        if should_run_mesh and dispatch_ok:
             start_time = datetime.now()
             try:
-                logger.info("Running create_mesh to generate a mesh for geometry")
-                create_mesh_parameters = CreateMeshParameters(
+                logger.info(f"Running mesh() for {self._id}")
+                mesh_parameters = MeshParameters(
                     point=self._point,
                     job_id=self._id,
                     logger=logger,
                 )
-                create_mesh_return = create_mesh.create_mesh(
-                    create_mesh_parameters=create_mesh_parameters
-                )
-                dispatch_ok = create_mesh_return.run_ok
-                logger.info("Successfully ran create_mesh")
+                mesh_return = mesh.mesh(mesh_parameters=mesh_parameters)
+                dispatch_ok = mesh_return.run_ok
+                logger.info(f"Successfully ran mesh() for job {self._id}")
             except BaseException:
                 dispatch_ok = False
-                logger.exception("An error occured in create_mesh")
+                logger.exception(
+                    f"An error occured while running mesh() for job {self._id}"
+                )
             finally:
                 end_time = datetime.now()
                 self._steps.append(
                     Step(
-                        id=StepId.CREATE_MESH,
+                        id=StepId.MESH,
                         run_ok=dispatch_ok,
                         start_time=start_time,
                         end_time=end_time,
@@ -297,31 +274,31 @@ class Job:
                 with lock:
                     self._progress.save_job(self)
         else:
-            logger.warning("Skipping create_mesh")
+            logger.warning(f"Skipping mesh() for job {self._id}")
 
-        # EXECUTE SOLVER =======================================================
-        if should_execute_solver and dispatch_ok:
+        # SOLVE ================================================================
+        if should_run_solve and dispatch_ok:
             start_time = datetime.now()
             try:
-                logger.info("Running execute_solver to obtain simulation results")
-                execute_solver_parameters = ExecuteSolverParameters(
+                logger.info(f"Running solve() for job {self._id}")
+                solve_parameters = SolveParameters(
                     point=self._point,
                     job_id=self._id,
                     logger=logger,
                 )
-                execute_solver_return = execute_solver.execute_solver(
-                    execute_solver_parameters
-                )
-                dispatch_ok = execute_solver_return.run_ok
-                logger.info("Successfully ran execute_solver")
+                solve_return = solve.solve(solve_parameters=solve_parameters)
+                dispatch_ok = solve_return.run_ok
+                logger.info(f"Running solve() for job {self._id}")
             except BaseException:
                 dispatch_ok = False
-                logger.exception("An error occured in execute_solver")
+                logger.exception(
+                    f"An error occured while running solve() for job {self._id}"
+                )
             finally:
                 end_time = datetime.now()
                 self._steps.append(
                     Step(
-                        id=StepId.EXECUTE_SOLVER,
+                        id=StepId.SOLVE,
                         run_ok=dispatch_ok,
                         start_time=start_time,
                         end_time=end_time,
@@ -330,35 +307,35 @@ class Job:
                 with lock:
                     self._progress.save_job(self)
         else:
-            logger.warning("Skipping execute_solver")
+            logger.warning(f"Skipping solve() for job {self._id}")
 
-        # EXTRACT OBJECTIVES ===================================================
-        if should_extract_objectives and dispatch_ok:
+        # OBJECTIVES ===========================================================
+        if should_run_objectives and dispatch_ok:
             start_time = datetime.now()
             try:
-                logger.info(
-                    "Running extract_objectives for objective values extraction"
-                )
-                extract_objectives_parameters = ExtractObjectivesParameters(
+                logger.info(f"Running objectives() for {self._id}")
+                objectives_parameters = ObjectivesParameters(
                     objectives=get_config_objectives(),
                     point=self._point,
                     job_id=self._id,
                     logger=logger,
                 )
-                extract_objectives_return = extract_objectives.extract_objectives(
-                    extract_objectives_parameters=extract_objectives_parameters
+                objectives_return = objectives.objectives(
+                    objectives_parameters=objectives_parameters
                 )
-                dispatch_ok = extract_objectives_return.run_ok
-                self._objectives = extract_objectives_return.objectives
-                logger.info("Successfully ran extract_objectives")
+                dispatch_ok = objectives_return.run_ok
+                self._objectives = objectives_return.objectives
+                logger.info(f"Successfully ran objectives() for job {self._id}")
             except BaseException:
                 dispatch_ok = False
-                logger.exception("An error occured in extract_objectives")
+                logger.exception(
+                    f"An error occured while running objectives() for job {self._id}"
+                )
             finally:
                 end_time = datetime.now()
                 self._steps.append(
                     Step(
-                        id=StepId.EXTRACT_OBJECTIVES,
+                        id=StepId.OBJECTIVES,
                         run_ok=dispatch_ok,
                         start_time=start_time,
                         end_time=end_time,
@@ -367,48 +344,15 @@ class Job:
                 with lock:
                     self._progress.save_job(self)
         else:
-            logger.warning("Skipping extract_objectives")
+            logger.warning(f"Skipping objectives() for job {self._id}")
 
-        # EXTRACT ASSETS =======================================================
-        if should_extract_assets and dispatch_ok:
-            start_time = datetime.now()
-            try:
-                logger.info("Running extract_assets for asset extraction")
-                extract_assets_parameters = ExtractAssetsParameters(
-                    point=self._point,
-                    job_id=self._id,
-                    logger=logger,
-                )
-                extract_assets_return = extract_assets.extract_assets(
-                    extract_assets_parameters=extract_assets_parameters
-                )
-                dispatch_ok = extract_assets_return.run_ok
-                logger.info("Successfully ran extract_assets")
-            except BaseException:
-                logger.exception("An error occured in extract_assets")
-                dispatch_ok = False
-            finally:
-                end_time = datetime.now()
-                self._steps.append(
-                    Step(
-                        id=StepId.EXTRACT_ASSETS,
-                        run_ok=dispatch_ok,
-                        start_time=start_time,
-                        end_time=end_time,
-                    )
-                )
-                with lock:
-                    self._progress.save_job(self)
-        else:
-            logger.warning("Skipping extract_assets")
-
-        # EXECUTE CLEANUP ======================================================
+        # CLEANUP ==============================================================
         # don't care about run_ok here, always cleanup regardless of whether run was ok or not
         # we create a separate clean_ok here to check the status of cleanup specifically
-        if should_execute_cleanup:
+        if should_run_cleanup:
             self.cleanup(lock=lock)
         else:
-            logger.warning("Skipping execute_cleanup")
+            logger.warning(f"Skipping cleanup() for job {self._id}")
 
         self._run_ok = dispatch_ok
         self._end_time = datetime.now()
@@ -428,25 +372,25 @@ class Job:
         start_time = datetime.now()
         cleanup_ok = True
         try:
-            logger.info("Running execute_cleanup for job cleanup")
-            execute_cleanup_parameters = ExecuteCleanupParameters(
+            logger.info(f"Running cleanup() for job {self._id}")
+            cleanup_parameters = CleanupParameters(
                 point=self._point,
                 job_id=self._id,
                 logger=logger,
             )
-            execute_cleanup_return = execute_cleanup.execute_cleanup(
-                execute_cleanup_parameters=execute_cleanup_parameters
-            )
-            cleanup_ok = execute_cleanup_return.run_ok
-            logger.info("Successfully ran execute_cleanup")
+            cleanup_return = cleanup.cleanup(cleanup_parameters=cleanup_parameters)
+            cleanup_ok = cleanup_return.run_ok
+            logger.info(f"Successfully ran cleanup() for job {self._id}")
         except BaseException:
             cleanup_ok = False
-            logger.exception("An error occured in execute_cleanup")
+            logger.exception(
+                f"An error occured while running cleanup() for job {self._id}"
+            )
         finally:
             end_time = datetime.now()
             self._steps.append(
                 Step(
-                    id=StepId.EXECUTE_CLEANUP,
+                    id=StepId.CLEANUP,
                     run_ok=cleanup_ok,
                     start_time=start_time,
                     end_time=end_time,

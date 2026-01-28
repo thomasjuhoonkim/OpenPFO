@@ -11,10 +11,11 @@ def execute_cleanup(
     """
     The execute_cleanup function used to clean up solver artifacts after each job.
     """
-    case_directory = execute_cleanup_parameters.output_case_directory
-    logger = execute_cleanup_parameters.logger
+    assets_directory = execute_cleanup_parameters.output_assets_directory
     processors_per_job = execute_cleanup_parameters.processors_per_job
+    logger = execute_cleanup_parameters.logger
     job_id = execute_cleanup_parameters.job_id
+    point = execute_cleanup_parameters.point
 
     """ ======================= YOUR CODE BELOW HERE ======================= """
 

@@ -13,8 +13,8 @@ from datetime import datetime
 
 # classes
 if TYPE_CHECKING:
-    from classes.search import Search
     from classes.solution import Solution
+    from classes.search import Search
 from classes.job import Job
 
 # constants
@@ -31,61 +31,19 @@ logger = get_logger()
 
 
 class Progress:
-    def __init__(self, resume=False):
-        can_resume = False
-        if resume:
-            if os.path.isfile(OUTPUT_RESULTS_JSON):
-                with open(OUTPUT_RESULTS_JSON, "r") as json_file:
-                    self._results = json.load(json_file)
-
-                # validate_results simply exists rather than returning a boolean
-                validate_results(self._results)
-
-                # ensure the command is the same
-                current_command_set = set(sys.argv)
-                if "--resume" in current_command_set:
-                    current_command_set.remove("--resume")
-                results_command = self._results["command"]
-                if current_command_set != set(results_command.split(" ")):
-                    logger.error(
-                        f"Command used in current progress ({results_command}) does not match current command ({get_pfo_command(sys.argv)})"
-                    )
-                    sys.exit(1)
-
-                # otherwise, you can assume
-                can_resume = True
-            else:
-                logger.info(
-                    f"Could not find {OUTPUT_RESULTS_JSON}, no progress to resume from, starting from the beginning"
-                )
-
-        if resume and can_resume:
-            logger.info(f"{OUTPUT_RESULTS_JSON} found!")
-
-            self._start_time = (
-                datetime.fromisoformat(self._results["startTime"])
-                if self._results["startTime"]
-                else None
-            )
-            self._end_time = (
-                datetime.fromisoformat(self._results["endTime"])
-                if self._results["endTime"]
-                else None
-            )
-            self._existing_results = True
-        else:
-            self._results = {
-                "config": config,
-                "workflow": {"jobs": [], "searches": []},
-                "solutions": [],
-                "startTime": "",
-                "endTime": "",
-                "command": get_pfo_command(sys.argv),
-            }
-            self.attempts = []
-            self._start_time = datetime.now()
-            self._end_time = datetime.now()
-            self._existing_results = False
+    def __init__(self):
+        self._results = {
+            "config": config,
+            "workflow": {"jobs": [], "searches": []},
+            "solutions": [],
+            "startTime": "",
+            "endTime": "",
+            "command": get_pfo_command(sys.argv),
+        }
+        self.attempts = []
+        self._start_time = datetime.now()
+        self._end_time = datetime.now()
+        self._existing_results = False
 
         # internal lookup cache
         self._jobs_by_id: dict[str, dict] = {
@@ -94,6 +52,38 @@ class Progress:
         self._searches_by_id: dict[str, dict] = {
             search["id"]: search for search in self._results["workflow"]["searches"]
         }
+
+    def validate_command_match(self):
+        logger.info("Checking if original command matches current command")
+        current_command_set = set(sys.argv)
+        if "--resume" in current_command_set:
+            current_command_set.remove("--resume")
+        results_command = self._results["command"]
+        if current_command_set != set(results_command.split(" ")):
+            logger.error(
+                f"Command used in previous progress ({results_command}) does not match current command ({get_pfo_command(sys.argv)})"
+            )
+            sys.exit(1)
+
+    def _can_recover_progress(self):
+        logger.info("Checking if progress can be recovered")
+        validate_results(self._results)
+        logger.info("Progress OK")
+
+    def recover_progress(self):
+        self._can_recover_progress()
+
+        if os.path.isfile(OUTPUT_RESULTS_JSON):
+            with open(OUTPUT_RESULTS_JSON, "r") as json_file:
+                self._results = json.load(json_file)
+
+            logger.info(f"{OUTPUT_RESULTS_JSON} found!")
+
+            self._start_time = datetime.fromisoformat(self._results["startTime"])
+            self._end_time = datetime.fromisoformat(self._results["endTime"])
+            self._existing_results = True
+
+        logger.info("Progress recovered successfully")
 
     def _save(self):
         with open(OUTPUT_RESULTS_JSON, "w") as results_json:
@@ -153,10 +143,6 @@ class Progress:
         if self._existing_results:
             return None
 
-        if start_time is None:
-            start_time = datetime.now()
-            self._start_time = start_time
-
         self._results["startTime"] = start_time.isoformat()
 
         self._save()
@@ -166,10 +152,6 @@ class Progress:
         return None
 
     def save_end_time(self, end_time: datetime = None):
-        if end_time is None:
-            end_time = datetime.now()
-            self._end_time = end_time
-
         self._results["endTime"] = end_time.isoformat()
 
         self._save()
@@ -192,3 +174,7 @@ class Progress:
         if job is None:
             return None
         return Job.from_dict(job=job, progress=self)
+
+    def get_jobs(self):
+        jobs = list(self._jobs_by_id.values())
+        return [Job.from_dict(job=job, progress=self) for job in jobs]

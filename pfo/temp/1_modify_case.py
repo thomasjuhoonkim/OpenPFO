@@ -19,7 +19,7 @@ def modify_case(modify_case_parameters: ModifyCaseParameters):
 
     """ ======================= YOUR CODE BELOW HERE ======================= """
 
-    case_directory = modify_case_parameters.output_case_directory
+    assets_directory = modify_case_parameters.output_assets_directory
     logger = modify_case_parameters.logger
     point = modify_case_parameters.point
 

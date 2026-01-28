@@ -47,13 +47,16 @@ class Search:
 
     def create_jobs(self):
         for i, point in enumerate(self._points):
-            # because pymoo is fully reproducible, ceteris paribus, each job id yields the same grid point
             job_id = self._generate_job_id()
 
             # recover or create job
             job = None
             cached_job = self._progress.get_job(job_id=job_id)
-            if cached_job is not None:
+            if (
+                cached_job is not None
+                and point.get_representation()
+                == cached_job.get_point().get_representation()
+            ):
                 job = cached_job
             else:
                 job = Job(
@@ -62,7 +65,6 @@ class Search:
                     point=point,
                     progress=self._progress,
                 )
-                job.prepare_job()
 
             self._jobs.append(job)
             self._indices_by_job_id[job.get_id()] = i
@@ -72,13 +74,12 @@ class Search:
     def run_all(
         self,
         should_run_checks=True,
-        should_create_geometry=True,
-        should_modify_case=True,
-        should_create_mesh=True,
-        should_execute_solver=True,
-        should_extract_objectives=True,
-        should_extract_assets=True,
-        should_execute_cleanup=True,
+        should_run_prepare=True,
+        should_run_geometry=True,
+        should_run_mesh=True,
+        should_run_solve=True,
+        should_run_objectives=True,
+        should_run_cleanup=True,
     ):
         lock = threading.Lock()
         with concurrent.futures.ThreadPoolExecutor(
@@ -88,13 +89,12 @@ class Search:
                 executor.submit(
                     job.dispatch,
                     should_run_checks=should_run_checks,
-                    should_create_geometry=should_create_geometry,
-                    should_modify_case=should_modify_case,
-                    should_create_mesh=should_create_mesh,
-                    should_execute_solver=should_execute_solver,
-                    should_extract_objectives=should_extract_objectives,
-                    should_extract_assets=should_extract_assets,
-                    should_execute_cleanup=should_execute_cleanup,
+                    should_run_prepare=should_run_prepare,
+                    should_run_geometry=should_run_geometry,
+                    should_run_mesh=should_run_mesh,
+                    should_run_solve=should_run_solve,
+                    should_run_objectives=should_run_objectives,
+                    should_run_cleanup=should_run_cleanup,
                     lock=lock,
                 ): job
                 for job in self._jobs

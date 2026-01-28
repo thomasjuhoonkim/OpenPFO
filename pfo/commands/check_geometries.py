@@ -13,14 +13,14 @@ from commands.check_output import check_output
 from commands.check_config import check_config
 
 # classes
-from classes.point import Point
-from classes.search import Search
 from classes.progress import Progress
+from classes.search import Search
+from classes.point import Point
 
 # util
 from util.get_linear_points import get_linear_points
-from util.get_logger import get_logger
 from util.get_random_points import get_random_points
+from util.get_logger import get_logger
 
 logger = get_logger()
 
@@ -35,6 +35,7 @@ def check_geometries(
     visualize: Annotated[
         bool, typer.Option(help="Whether to visualize the geometry using pyvista")
     ] = False,
+    cleanup: Annotated[bool, typer.Option(help="Run cleanup after each job")] = False,
 ):
     # pre-run checks
     check_output()
@@ -68,13 +69,12 @@ def check_geometries(
     search.create_jobs()
     search.run_all(
         should_run_checks=True,
-        should_create_geometry=True,
-        should_modify_case=False,
-        should_create_mesh=False,
-        should_execute_solver=False,
-        should_extract_objectives=False,
-        should_extract_assets=False,
-        should_execute_cleanup=False,
+        should_run_prepare=True,
+        should_run_geometry=True,
+        should_run_mesh=False,
+        should_run_solve=False,
+        should_run_objectives=False,
+        should_run_cleanup=cleanup,
     )
 
     # end time

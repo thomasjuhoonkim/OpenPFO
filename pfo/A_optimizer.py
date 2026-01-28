@@ -5,9 +5,7 @@ from typing import Any
 from pymoo.algorithms.moo.nsga2 import NSGA2
 
 
-def create_algorithm(problem: Any):
-    algorithm = None
-
+def optimizer(problem: Any):
     algorithm = NSGA2(pop_size=12)
     algorithm.setup(
         problem=problem,

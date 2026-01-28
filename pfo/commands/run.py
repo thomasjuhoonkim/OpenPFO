@@ -21,7 +21,7 @@ from util.get_logger import get_logger
 from datetime import datetime
 
 # algorithm
-from A_create_algorithm import create_algorithm
+from A_optimizer import optimizer
 
 logger = get_logger()
 
@@ -38,19 +38,14 @@ def run(
     check_config()
 
     # progress
-    progress = Progress(resume=resume)
+    progress = Progress()
+    progress.recover_progress()
+    progress.validate_command_match()
 
-    # start time and/or resume time
-    start_time = None
-    if resume:
-        start_time = progress.get_start_time()
-        resume_time = datetime.now()
-        logger.info(f"Original start time: {start_time}")
-        logger.info(f"Resume time: {resume_time}")
-    else:
-        start_time = datetime.now()
-        logger.info(f"Start time: {start_time}")
-        progress.save_start_time(start_time=start_time)
+    # start time
+    start_time = datetime.now()
+    logger.info(f"Start time: {start_time}")
+    progress.save_start_time(start_time=start_time)
 
     # pymoo
     parameters = get_config_parameters()
@@ -61,7 +56,7 @@ def run(
         objectives=objectives,
         progress=progress,
     )
-    algorithm = create_algorithm(problem=problem)
+    algorithm = optimizer(problem=problem)
 
     # run
     result = algorithm.run()

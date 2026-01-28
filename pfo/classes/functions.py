@@ -30,15 +30,7 @@ class DefaultParameters:
         self.point = point
 
 
-class DefaultReturn:
-    def __init__(self, run_ok=True):
-        self.run_ok = run_ok
-
-
-# ==============================================================================
-
-
-class CreateGeometryParameters(DefaultParameters):
+class PrepareParameters(DefaultParameters):
     def __init__(
         self,
         logger: "Logger",
@@ -52,15 +44,7 @@ class CreateGeometryParameters(DefaultParameters):
         )
 
 
-class CreateGeometryReturn(DefaultReturn):
-    def __init__(self, run_ok=True):
-        super().__init__(run_ok=run_ok)
-
-
-# ==============================================================================
-
-
-class ModifyCaseParameters(DefaultParameters):
+class GeometryParameters(DefaultParameters):
     def __init__(
         self,
         logger: "Logger",
@@ -74,15 +58,7 @@ class ModifyCaseParameters(DefaultParameters):
         )
 
 
-class ModifyCaseReturn(DefaultReturn):
-    def __init__(self, run_ok=True):
-        super().__init__(run_ok=run_ok)
-
-
-# ==============================================================================
-
-
-class CreateMeshParameters(DefaultParameters):
+class MeshParameters(DefaultParameters):
     def __init__(
         self,
         logger: "Logger",
@@ -96,15 +72,7 @@ class CreateMeshParameters(DefaultParameters):
         )
 
 
-class CreateMeshReturn(DefaultReturn):
-    def __init__(self, run_ok=True):
-        super().__init__(run_ok=run_ok)
-
-
-# ==============================================================================
-
-
-class ExecuteSolverParameters(DefaultParameters):
+class SolveParameters(DefaultParameters):
     def __init__(
         self,
         logger: "Logger",
@@ -118,15 +86,7 @@ class ExecuteSolverParameters(DefaultParameters):
         )
 
 
-class ExecuteSolverReturn(DefaultReturn):
-    def __init__(self, run_ok=True):
-        super().__init__(run_ok=run_ok)
-
-
-# ==============================================================================
-
-
-class ExtractObjectivesParameters(DefaultParameters):
+class ObjectivesParameters(DefaultParameters):
     def __init__(
         self,
         objectives: list["Objective"],
@@ -142,51 +102,52 @@ class ExtractObjectivesParameters(DefaultParameters):
         self.objectives = objectives
 
 
-class ExtractObjectivesReturn(DefaultReturn):
+class CleanupParameters(DefaultParameters):
+    def __init__(
+        self,
+        job_id: str,
+        logger: "Logger",
+        point: "Point",
+    ):
+        super().__init__(
+            job_id=job_id,
+            logger=logger,
+            point=point,
+        )
+
+
+# ==============================================================================
+class DefaultReturn:
+    def __init__(self, run_ok=True):
+        self.run_ok = run_ok
+
+
+class PrepareReturn(DefaultReturn):
+    def __init__(self, run_ok=True):
+        super().__init__(run_ok=run_ok)
+
+
+class GeometryReturn(DefaultReturn):
+    def __init__(self, run_ok=True):
+        super().__init__(run_ok=run_ok)
+
+
+class MeshReturn(DefaultReturn):
+    def __init__(self, run_ok=True):
+        super().__init__(run_ok=run_ok)
+
+
+class SolveReturn(DefaultReturn):
+    def __init__(self, run_ok=True):
+        super().__init__(run_ok=run_ok)
+
+
+class ObjectivesReturn(DefaultReturn):
     def __init__(self, objectives: list["Objective"], run_ok=True):
         super().__init__(run_ok=run_ok)
         self.objectives = objectives
 
 
-# ==============================================================================
-
-
-class ExtractAssetsParameters(DefaultParameters):
-    def __init__(
-        self,
-        logger: "Logger",
-        point: "Point",
-        job_id: str,
-    ):
-        super().__init__(
-            job_id=job_id,
-            logger=logger,
-            point=point,
-        )
-
-
-class ExtractAssetsReturn(DefaultReturn):
-    def __init__(self, run_ok=True):
-        super().__init__(run_ok=run_ok)
-
-
-# ==============================================================================
-
-
-class ExecuteCleanupParameters(DefaultParameters):
-    def __init__(
-        self,
-        job_id: str,
-        logger: "Logger",
-        point: "Point",
-    ):
-        super().__init__(
-            job_id=job_id,
-            logger=logger,
-            point=point,
-        )
-
-
-class ExecuteCleanupReturn(DefaultReturn):
+class CleanupReturn(DefaultReturn):
     def __init__(self, run_ok=True):
         super().__init__(run_ok=run_ok)
