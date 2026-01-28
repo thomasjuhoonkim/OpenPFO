@@ -14,4 +14,4 @@ module load python 3.11
 module load openfoam/v2312
 module load paraview/6.0.0
 
-pfo checkRun --no-random --count=26
+pfo run
