@@ -18,6 +18,7 @@ def objectives(
     job_directory = objectives_parameters.job_directory
     processors_per_job = objectives_parameters.processors_per_job
     objectives = objectives_parameters.objectives
+    job_id = objectives_parameters.job_id
     logger = objectives_parameters.logger
     point = objectives_parameters.point
 

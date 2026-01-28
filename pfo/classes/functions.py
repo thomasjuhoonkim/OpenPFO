@@ -139,8 +139,9 @@ class PrepareReturn(DefaultReturn):
 
 
 class GeometryReturn(DefaultReturn):
-    def __init__(self, run_ok=True):
+    def __init__(self, visualize_filepath: str, run_ok=True):
         super().__init__(run_ok=run_ok)
+        self.visualize_filepath = visualize_filepath
 
 
 class MeshReturn(DefaultReturn):

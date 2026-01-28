@@ -46,6 +46,13 @@ runTimeModifiable true;
 
 allowSystemOperations 1;
 
+OptimisationSwitches
+{
+    fileHandler collated;
+    maxThreadFileBufferSize 2e9;
+    maxMasterFileBufferSize 2e9;
+}
+
 functions
 {
     forceCoeffs1
@@ -60,22 +67,30 @@ functions
         log             yes;
 
         patches         (solid);
-        rho             rhoInf;      // Indicates incompressible
-        rhoInf          1.225;           // Required when rho = rhoInf
+        rho             rhoInf;
+        rhoInf          1.225;
         liftDir         (0 0 1);
         dragDir         (1 0 0);
-        CofR            (0.4411 0 0);  // Axle midpoint on ground
+        CofR            (0.375 0 0);   // DYNAMIC
         pitchAxis       (0 1 0);
         magUInf         10;
-        lRef            0.6118;        // Wheelbase length
-        Aref            0.5594;        // Estimated
+        lRef            1.5;           // DYNAMIC
+        Aref            0.7125;        // DYNAMIC
     }
     
     yPlus
     {
         type            yPlus;
         libs            ("libfieldFunctionObjects.so");
-        writeControl    timeStep;   // or use 'timeStep' for every timestep
+        writeControl    timeStep;
+    }
+
+    wallShearStress1
+    {
+        type            wallShearStress;
+        libs            (fieldFunctionObjects);
+        patches         (solid);
+        writeToFile     true;
     }
 }
 

@@ -52,11 +52,7 @@ class Search:
             # recover or create job
             job = None
             cached_job = self._progress.get_job(job_id=job_id)
-            if (
-                cached_job is not None
-                and point.get_representation()
-                == cached_job.get_point().get_representation()
-            ):
+            if cached_job is not None:
                 job = cached_job
             else:
                 job = Job(

@@ -65,7 +65,6 @@ class Job:
         run_ok=True,
         start_time: datetime | None = None,
         end_time: datetime | None = None,
-        output_geometry_filepath="",
         job_directory="",
         objectives: list["Objective"] | None = None,
     ):
@@ -78,7 +77,7 @@ class Job:
         self._run_ok = run_ok
         self._start_time = start_time if start_time is not None else datetime.now()
         self._end_time = end_time if end_time is not None else datetime.now()
-        self._output_geometry_filepath = output_geometry_filepath
+        self._visualize_filepath = ""
         self._job_directory = (
             job_directory if job_directory else f"{OUTPUT_DIRECTORY}/{id}"
         )
@@ -118,13 +117,19 @@ class Job:
         return self._objectives
 
     def visualize_geometry(self):
-        if not IS_HPC:
-            mesh = pv.read(self._output_geometry_filepath)
-            mesh.plot(window_size=[1920, 1080])
-        else:
+        if IS_HPC:
             logger.warning(
                 "config.compute.hpc is set true, geometry visualization with PyVista is unavailable."
             )
+            return None
+        if not self._visualize_filepath:
+            logger.error(
+                "No visualize_filepath configured, double check that you return a geometry filepath in geometry()"
+            )
+            return None
+
+        mesh = pv.read(self._visualize_filepath)
+        mesh.plot(window_size=[1920, 1080])
 
     def dispatch(
         self,
@@ -214,6 +219,7 @@ class Job:
                     geometry_parameters=geometry_parameters
                 )
                 dispatch_ok = geometry_return.run_ok
+                self._visualize_filepath = geometry_return.visualize_filepath
                 logger.info(f"Successfully ran geometry() for job {self._id}")
             except BaseException:
                 dispatch_ok = False

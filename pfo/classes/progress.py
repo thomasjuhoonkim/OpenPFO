@@ -40,18 +40,13 @@ class Progress:
             "endTime": "",
             "command": get_pfo_command(sys.argv),
         }
-        self.attempts = []
         self._start_time = datetime.now()
         self._end_time = datetime.now()
         self._existing_results = False
 
-        # internal lookup cache
-        self._jobs_by_id: dict[str, dict] = {
-            job["id"]: job for job in self._results["workflow"]["jobs"]
-        }
-        self._searches_by_id: dict[str, dict] = {
-            search["id"]: search for search in self._results["workflow"]["searches"]
-        }
+        # internal cache
+        self._jobs_by_id: dict[str, dict] = {}
+        self._searches_by_id: dict[str, dict] = {}
 
     def validate_command_match(self):
         logger.info("Checking if original command matches current command")
@@ -78,6 +73,14 @@ class Progress:
                 self._results = json.load(json_file)
 
             logger.info(f"{OUTPUT_RESULTS_JSON} found!")
+
+            # internal cache
+            self._jobs_by_id: dict[str, dict] = {
+                job["id"]: job for job in self._results["workflow"]["jobs"]
+            }
+            self._searches_by_id: dict[str, dict] = {
+                search["id"]: search for search in self._results["workflow"]["searches"]
+            }
 
             self._start_time = datetime.fromisoformat(self._results["startTime"])
             self._end_time = datetime.fromisoformat(self._results["endTime"])

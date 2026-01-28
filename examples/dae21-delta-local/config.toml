@@ -1,20 +1,28 @@
+# COMPUTE
+# hpc (bool):                whether the compute environment is local or hpc (disables certain GUI features)
+# processors_per_job (int):  how many processors to allocate for each job (job step parallelization)
+# max_job_workers (int):     how many maximum job workers at any time (job parallelization)
 [compute]
 hpc=false
 processors_per_job=1
 max_job_workers=1
 
+# PARAMETERS
+# name (name):  user-friendly name for the parameter
+# id (str):     identifier for the parameter, cell for FreeCAD, paramater ID for OpenVSP (
+# min (float):  minimum value for the parameter
+# max (float):  maximum value for the parameter
 [model]
-# DESIGN SPACE PARAMETERS
-# name: user-friendly name for the parameter
-# id: identifier for the parameter, cell for FreeCAD, paramater ID for OpenVSP
-# min: minimum value for the parameter
-# max: maximum value for the parameter
 [[model.parameters]]
 name="Root Chord"
 id="GFXAORPLFWH:WingGeom:XSec_1:Root_Chord"
 min=0.8
 max=1.50
 
+# OBJECTIVES
+# name:  user-friendly name for the parameter
+# id:    identifier for the objective, used during objective extraction 
+# type:  whether the objective is to minimize or maximize its value
 [optimizer]
 [[optimizer.objectives]]
 id="cd"
