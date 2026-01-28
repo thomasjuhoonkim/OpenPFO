@@ -12,6 +12,12 @@ def create_geometry(
     NOTE: This function returns the geometry filepath.
     """
 
+    output_assets_directory = create_geometry_parameters.output_assets_directory
+    processors_per_job = create_geometry_parameters.processors_per_job
+    job_id = create_geometry_parameters.job_id
+    logger = create_geometry_parameters.logger
+    point = create_geometry_parameters.point
+
     """ ======================= YOUR CODE BELOW HERE ======================= """
 
     CREATE_GEOMETRY_RETURN = CreateGeometryReturn(

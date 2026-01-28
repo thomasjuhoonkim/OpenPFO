@@ -1,8 +1,6 @@
 OUTPUT_DIRECTORY = "output"
-OUTPUT_CASES_DIRECTORY = "output/cases"
 OUTPUT_ASSETS_DIRECTORY = "output/assets"
 OUTPUT_RESULTS_JSON = "output/results.json"
-OUTPUT_ALGORITHM_PICKLE = "output/algorithm.pkl"
 
 INPUT_DIRECTORY = "input"
 INPUT_CASE_TEMPLATE = "input/case_template"

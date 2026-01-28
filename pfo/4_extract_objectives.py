@@ -31,21 +31,6 @@ def extract_objectives(
     objectives = extract_objectives_parameters.objectives
     logger = extract_objectives_parameters.logger
 
-    force = fluidfoam.readforce(
-        path=case_directory,
-        namepatch="forceCoeffs1",
-        time_name="0",
-        name="coefficient",
-    )
-
-    c_d = get_objective_by_id(objectives=objectives, id="cd")
-    c_d.set_value(force[-1][1])  # latest time & second index (Cd - maximize)
-
-    c_l = get_objective_by_id(objectives=objectives, id="cl")
-    c_l.set_value(force[-1][4])  # latest time & fourth index (Cl - minimize)
-
-    logger.info("Successfully extracted objectives")
-
     EXTRACT_OBJECTIVES_RETURN = ExtractObjectivesReturn(objectives=objectives)
 
     """ ======================= YOUR CODE ABOVE HERE ======================= """

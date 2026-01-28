@@ -116,8 +116,6 @@ def validate_job(job: dict):
         ("steps", list),
         ("startTime", str),
         ("endTime", str),
-        ("outputGeometryFilepath", str),
-        ("outputCaseDirectory", str),
         ("outputAssetsDirectory", str),
         ("objectives", list),
     ]

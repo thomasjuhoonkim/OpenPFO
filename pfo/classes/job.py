@@ -11,13 +11,9 @@ import threading
 from typing import TYPE_CHECKING
 
 # constants
+from constants.path import OUTPUT_ASSETS_DIRECTORY
 from constants.job import JobStatus
 from constants.step import StepId
-from constants.path import (
-    INPUT_CASE_TEMPLATE,
-    OUTPUT_ASSETS_DIRECTORY,
-    OUTPUT_CASES_DIRECTORY,
-)
 
 # classes
 if TYPE_CHECKING:
@@ -35,10 +31,6 @@ from classes.objective import Objective
 from classes.variable import Variable
 from classes.point import Point
 from classes.step import Step
-
-# PyFoam
-from PyFoam.RunDictionary.SolutionDirectory import SolutionDirectory
-from PyFoam.RunDictionary.ParsedParameterFile import ParsedParameterFile
 
 # util
 from util.get_config_objectives import get_config_objectives
@@ -77,7 +69,6 @@ class Job:
         start_time: datetime | None = None,
         end_time: datetime | None = None,
         output_geometry_filepath="",
-        output_case_directory="",
         output_assets_directory="",
         objectives: list["Objective"] | None = None,
         extra_variables: list["Variable"] | None = None,
@@ -92,11 +83,6 @@ class Job:
         self._start_time = start_time if start_time is not None else datetime.now()
         self._end_time = end_time if end_time is not None else datetime.now()
         self._output_geometry_filepath = output_geometry_filepath
-        self._output_case_directory = (
-            output_case_directory
-            if output_case_directory
-            else f"{OUTPUT_CASES_DIRECTORY}/{id}"
-        )
         self._output_assets_directory = (
             output_assets_directory
             if output_assets_directory
@@ -128,9 +114,6 @@ class Job:
     def get_output_geometry_filepath(self):
         return self._output_geometry_filepath
 
-    def get_output_case_directory(self):
-        return self._output_case_directory
-
     def get_output_assets_directory(self):
         return self._output_assets_directory
 
@@ -149,30 +132,21 @@ class Job:
                 "config.compute.hpc is set true, geometry visualization with PyVista is unavailable."
             )
 
-    def prepare_job(
-        self, should_create_assets_directory=True, should_create_case_directory=True
-    ):
+    def prepare_job(self, should_create_assets_directory=True):
         if should_create_assets_directory:
             # create job assets directory
             os.makedirs(self._output_assets_directory)
             logger.info(f"Created assets directory {self._output_assets_directory}")
 
-        if should_create_case_directory:
-            # copy case
-            os.makedirs(self._output_case_directory)
-            base_case = SolutionDirectory(INPUT_CASE_TEMPLATE)
-            copy_case = base_case.cloneCase(self._output_case_directory)
-            logger.info(f"Generated case directory {copy_case.name}")
-
-            # decomposeParDict subdomains
-            decompose_par_dict_filepath = (
-                f"{self._output_case_directory}/system/decomposeParDict"
-            )
-            decompose_par_dict = ParsedParameterFile(decompose_par_dict_filepath)
-            decompose_par_dict["numberOfSubdomains"] = config["compute"][
-                "processors_per_job"
-            ]
-            decompose_par_dict.writeFile()
+            # # decomposeParDict subdomains
+            # decompose_par_dict_filepath = (
+            #     f"{self._output_case_directory}/system/decomposeParDict"
+            # )
+            # decompose_par_dict = ParsedParameterFile(decompose_par_dict_filepath)
+            # decompose_par_dict["numberOfSubdomains"] = config["compute"][
+            #     "processors_per_job"
+            # ]
+            # decompose_par_dict.writeFile()
 
         self._status = JobStatus.READY
         self._progress.save_job(self)
@@ -233,7 +207,6 @@ class Job:
                 )
                 create_geometry_parameters = CreateGeometryParameters(
                     point=self._point,
-                    output_assets_directory=self._output_assets_directory,
                     job_id=self._id,
                     logger=logger,
                 )
@@ -241,10 +214,6 @@ class Job:
                     create_geometry_parameters=create_geometry_parameters
                 )
                 dispatch_ok = create_geometry_return.run_ok
-                self._output_geometry_filepath = (
-                    create_geometry_return.output_geometry_filepath
-                )
-                self._extra_variables = create_geometry_return.extra_variables
                 logger.info("Successfully ran create_geometry")
             except BaseException:
                 dispatch_ok = False
@@ -270,12 +239,9 @@ class Job:
             try:
                 logger.info("Running modify_case to customize OpenFOAM case")
                 modify_case_parameters = ModifyCaseParameters(
-                    output_case_directory=self._output_case_directory,
-                    job_id=self._id,
-                    output_geometry_filepath=self._output_geometry_filepath,
-                    logger=logger,
                     point=self._point,
-                    extra_variables=self._extra_variables,
+                    job_id=self._id,
+                    logger=logger,
                 )
                 modify_case_return = modify_case.modify_case(
                     modify_case_parameters=modify_case_parameters
@@ -306,8 +272,6 @@ class Job:
             try:
                 logger.info("Running create_mesh to generate a mesh for geometry")
                 create_mesh_parameters = CreateMeshParameters(
-                    output_case_directory=self._output_case_directory,
-                    output_geometry_filepath=self._output_geometry_filepath,
                     point=self._point,
                     job_id=self._id,
                     logger=logger,
@@ -341,7 +305,7 @@ class Job:
             try:
                 logger.info("Running execute_solver to obtain simulation results")
                 execute_solver_parameters = ExecuteSolverParameters(
-                    output_case_directory=self._output_case_directory,
+                    point=self._point,
                     job_id=self._id,
                     logger=logger,
                 )
@@ -376,10 +340,10 @@ class Job:
                     "Running extract_objectives for objective values extraction"
                 )
                 extract_objectives_parameters = ExtractObjectivesParameters(
-                    output_case_directory=self._output_case_directory,
+                    objectives=get_config_objectives(),
+                    point=self._point,
                     job_id=self._id,
                     logger=logger,
-                    objectives=get_config_objectives(),
                 )
                 extract_objectives_return = extract_objectives.extract_objectives(
                     extract_objectives_parameters=extract_objectives_parameters
@@ -411,10 +375,7 @@ class Job:
             try:
                 logger.info("Running extract_assets for asset extraction")
                 extract_assets_parameters = ExtractAssetsParameters(
-                    output_case_directory=self._output_case_directory,
-                    output_case_foam_filepath=f"{self._output_case_directory}/{self._id}.foam",
-                    output_assets_directory=self._output_assets_directory,
-                    output_geometry_filepath=self._output_geometry_filepath,
+                    point=self._point,
                     job_id=self._id,
                     logger=logger,
                 )
@@ -469,7 +430,7 @@ class Job:
         try:
             logger.info("Running execute_cleanup for job cleanup")
             execute_cleanup_parameters = ExecuteCleanupParameters(
-                output_case_directory=self._output_case_directory,
+                point=self._point,
                 job_id=self._id,
                 logger=logger,
             )
@@ -503,8 +464,6 @@ class Job:
             "steps": [step.serialize() for step in self._steps],
             "startTime": self._start_time.isoformat(),
             "endTime": self._end_time.isoformat(),
-            "outputGeometryFilepath": self._output_geometry_filepath,
-            "outputCaseDirectory": self._output_case_directory,
             "outputAssetsDirectory": self._output_assets_directory,
             "point": self._point.serialize(),
             "objectives": [objective.serialize() for objective in self._objectives],
@@ -522,8 +481,6 @@ class Job:
             run_ok=job["runOk"],
             start_time=datetime.fromisoformat(job["startTime"]),
             end_time=datetime.fromisoformat(job["endTime"]),
-            output_geometry_filepath=job["outputGeometryFilepath"],
-            output_case_directory=job["outputCaseDirectory"],
             output_assets_directory=job["outputAssetsDirectory"],
             objectives=[
                 Objective.from_dict(objective=objective)

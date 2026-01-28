@@ -11,55 +11,12 @@ def execute_cleanup(
     """
     The execute_cleanup function used to clean up solver artifacts after each job.
     """
-
-    """ ======================= YOUR CODE BELOW HERE ======================= """
-
     case_directory = execute_cleanup_parameters.output_case_directory
     logger = execute_cleanup_parameters.logger
     processors_per_job = execute_cleanup_parameters.processors_per_job
     job_id = execute_cleanup_parameters.job_id
 
-    slurm1 = Slurm(
-        job_name=f"{job_id}-cleanProcessors",
-        account="def-jphickey",
-        time="00:01:00",
-        nodes=1,
-        ntasks_per_node=1,
-        cpus_per_task={processors_per_job},
-        mem_per_cpu="1G",
-        output=f"{case_directory}/cleanProcessors.log",
-        open_mode="append",
-    )
-    slurm1.set_wait(True)
-
-    command = f"parallel rm -rf {case_directory}/processor{{}} ::: $(seq 0 {processors_per_job - 1})"
-    slurm1.add_cmd(command)
-
-    slurm1.sbatch()
-    logger.info("Successfully ran cleanupProcessors.")
-
-    # ==========================================================================
-
-    slurm2 = Slurm(
-        job_name=f"{job_id}-cleanCase",
-        account="def-jphickey",
-        time="00:01:00",
-        nodes=1,
-        ntasks_per_node=1,
-        cpus_per_task=1,
-        mem_per_cpu="100M",
-        output=f"{case_directory}/cleanCase.log",
-        open_mode="append",
-    )
-    slurm2.set_wait(True)
-
-    slurm2.add_cmd(
-        f"pyFoamClearCase.py {case_directory} --keep-postprocessing --processors-remove"
-    )
-    slurm2.add_cmd(f"rm -rf {case_directory}/constant/polyMesh")
-
-    slurm2.sbatch()
-    logger.info("Successfully ran cleancCase")
+    """ ======================= YOUR CODE BELOW HERE ======================= """
 
     EXECUTE_CLEANUP_RETURN = ExecuteCleanupReturn()
 

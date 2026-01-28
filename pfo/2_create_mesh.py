@@ -15,51 +15,15 @@ def create_mesh(
     The create_mesh function is used to create the geometry for each grid
     point in the design space.
     """
-
-    """ ======================= YOUR CODE BELOW HERE ======================= """
-
     case_directory = create_mesh_parameters.output_case_directory
     logger = create_mesh_parameters.logger
     processors_per_job = create_mesh_parameters.processors_per_job
     job_id = create_mesh_parameters.job_id
     point = create_mesh_parameters.point
 
-    aoa = point.get_variables()[0].get_value()
+    """ ======================= YOUR CODE BELOW HERE ======================= """
 
-    slurm = Slurm(
-        job_name=f"{job_id}-cartesianMesh",
-        account="def-jphickey",
-        time="00:15:00",
-        nodes=1,
-        ntasks_per_node=1,
-        cpus_per_task=processors_per_job,
-        mem="48G",
-        output=f"{case_directory}/cartesianMesh.log",
-        open_mode="append",
-    )
-    slurm.set_wait(True)
-
-    slurm.add_cmd(
-        f"surfaceTransformPoints -case {case_directory}  -rotate-angle '((0 1 0) {aoa})' {case_directory}/original.stl {case_directory}/aoa.stl"
-    )
-    slurm.add_cmd(
-        f"surfaceGenerateBoundingBox -case {case_directory} {case_directory}/aoa.stl {case_directory}/combined.stl 50 50 25 25 10 10"
-    )
-    slurm.add_cmd(
-        f"surfaceFeatureEdges {case_directory}/combined.stl {case_directory}/combined.fms -angle 5 -case {case_directory}"
-    )
-    slurm.add_cmd(f"cartesianMesh -case {case_directory}")
-
-    slurm.sbatch()
-    logger.info("Successfully ran cartesianMesh.")
-
-    # VALIDATION ===============================================================
-
-    run_ok = True
-    if not os.path.isdir(f"{case_directory}/constant/polyMesh"):
-        run_ok = False
-
-    CREATE_MESH_RETURN = CreateMeshReturn(run_ok=run_ok)
+    CREATE_MESH_RETURN = CreateMeshReturn()
 
     """ ======================= YOUR CODE ABOVE HERE ======================= """
 
