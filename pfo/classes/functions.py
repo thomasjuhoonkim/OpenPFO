@@ -93,14 +93,16 @@ class ModifyCaseReturn(DefaultReturn):
 class CreateMeshParameters(DefaultParameters):
     def __init__(
         self,
+        output_geometry_filepath: str,
         output_case_directory: str,
         job_id: str,
-        output_geometry_filepath: str,
+        point: Point,
         logger: Logger,
     ):
         super().__init__(
             output_case_directory=output_case_directory, job_id=job_id, logger=logger
         )
+        self.point = point
         self.output_geometry_filepath = output_geometry_filepath
 
 

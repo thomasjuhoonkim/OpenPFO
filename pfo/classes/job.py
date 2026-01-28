@@ -307,8 +307,9 @@ class Job:
                 logger.info("Running create_mesh to generate a mesh for geometry")
                 create_mesh_parameters = CreateMeshParameters(
                     output_case_directory=self._output_case_directory,
-                    job_id=self._id,
                     output_geometry_filepath=self._output_geometry_filepath,
+                    point=self._point,
+                    job_id=self._id,
                     logger=logger,
                 )
                 create_mesh_return = create_mesh.create_mesh(

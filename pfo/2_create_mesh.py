@@ -22,6 +22,9 @@ def create_mesh(
     logger = create_mesh_parameters.logger
     processors_per_job = create_mesh_parameters.processors_per_job
     job_id = create_mesh_parameters.job_id
+    point = create_mesh_parameters.point
+
+    aoa = point.get_variables()[0].get_value()
 
     slurm = Slurm(
         job_name=f"{job_id}-cartesianMesh",
@@ -37,7 +40,10 @@ def create_mesh(
     slurm.set_wait(True)
 
     slurm.add_cmd(
-        f"surfaceGenerateBoundingBox -case {case_directory} {case_directory}/original.stl {case_directory}/combined.stl 50 50 25 25 10 10"
+        f"surfaceTransformPoints -case {case_directory}  -rotate-angle '((0 1 0) {aoa})' {case_directory}/original.stl {case_directory}/aoa.stl"
+    )
+    slurm.add_cmd(
+        f"surfaceGenerateBoundingBox -case {case_directory} {case_directory}/aoa.stl {case_directory}/combined.stl 50 50 25 25 10 10"
     )
     slurm.add_cmd(
         f"surfaceFeatureEdges {case_directory}/combined.stl {case_directory}/combined.fms -angle 5 -case {case_directory}"

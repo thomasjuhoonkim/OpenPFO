@@ -75,8 +75,8 @@ objectRefinements
         centre (0.5 0 0);
         p0 (-2 0 0);
         p1 (8 0 0);
-        radius0 3.5;
-        radius1 3.5;
+        radius0 3;
+        radius1 3;
     }
     refinement2
     {
@@ -85,8 +85,8 @@ objectRefinements
         centre (0.5 0 0);
         p0 (-1 0 0);
         p1 (5 0 0);
-        radius0 3.25;
-        radius1 3.25;
+        radius0 2;
+        radius1 2;
     }
     refinement3
     {
@@ -94,8 +94,8 @@ objectRefinements
         cellSize 0.05;
         centre (1.75 0 0);
         lengthX 4.5;
-        lengthY 6;
-        lengthZ 1;
+        lengthY 3;
+        lengthZ 1.25;
     }
     refinement4
     {
@@ -103,8 +103,8 @@ objectRefinements
         cellSize 0.01;
         centre (1.5 0 0);
         lengthX 3.25;
-        lengthY 5.5;
-        lengthZ 0.5;
+        lengthY 1.5;
+        lengthZ 1;
     }
     
 }
@@ -115,6 +115,11 @@ renameBoundary
     
     newPatchNames
     {
+        solid
+        {
+            newName solid;
+            type wall;
+        }
         xMin
         {
             // newName inlet; - should be the actual name, need to modfy 0/ directory tho, too much work, just using previous conventions

@@ -1,7 +1,7 @@
 [compute]
 hpc=true
-processors_per_job=128
-max_job_workers=1
+processors_per_job=64
+max_job_workers=6
 
 [model]
 # DESIGN SPACE PARAMETERS
@@ -11,9 +11,9 @@ max_job_workers=1
 # max: maximum value for the parameter
 [[model.parameters]]
 name="AoA"
-id="VQYINKCPHJD:WingGeom:XForm:Y_Rel_Rotation"
+id="GFXAORPLFWH:WingGeom:XSec_1:Root_Chord"
 min=-5
-max=15
+max=20
 
 [optimizer]
 [[optimizer.objectives]]
