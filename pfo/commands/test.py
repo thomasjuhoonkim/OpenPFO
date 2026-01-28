@@ -1,2 +1,2 @@
 def test():
-    print("Hello this is a test.")
+    print("This is a test")

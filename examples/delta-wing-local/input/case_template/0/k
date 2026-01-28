@@ -52,7 +52,7 @@ boundaryField
     {
         type            slip;
     }
-    jobGeometry
+    solid
     {
         type            kqRWallFunction;
         value           uniform 0;

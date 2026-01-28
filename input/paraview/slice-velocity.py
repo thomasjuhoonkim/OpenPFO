@@ -7,12 +7,12 @@ paraview.simple._DisableFirstRenderCameraReset()
 if __name__ == "__main__":
     # validate inputs
     if len(sys.argv) < 3:
-        print("Usage: pvbatch -- script.py <input_filepath> <assets_directory>")
+        print("Usage: pvbatch -- script.py <input_filepath> <job_directory>")
         sys.exit(1)
 
     # parse inputs
     input_filepath = sys.argv[1]
-    assets_directory = sys.argv[2]
+    job_directory = sys.argv[2]
 
     # load data
     reader = OpenDataFile(input_filepath)
@@ -34,7 +34,12 @@ if __name__ == "__main__":
     slice.SliceType.Normal = [0, 1, 0]
     # slice.Crinkleslice = True
 
+    uLUT = GetColorTransferFunction("U")
+    HideScalarBarIfNotNeeded(uLUT, renderView)
+
     display1 = Show(slice, renderView)
+    display1.RescaleTransferFunctionToDataRange(True, False)
+    display1.SetScalarBarVisibility(renderView, True)
     # display1.Representation = "Surface With Edges"
 
     ColorBy(display1, ("CELLS", "U", "Magnitude"))
@@ -42,7 +47,7 @@ if __name__ == "__main__":
     Render()
 
     SaveScreenshot(
-        f"{assets_directory}/slice-velocity.png",
+        f"{job_directory}/slice-velocity.png",
         renderView,
         ImageResolution=renderView.ViewSize,
     )

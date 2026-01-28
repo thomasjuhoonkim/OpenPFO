@@ -19,7 +19,7 @@ def create_geometry(
 
     # destructure parameters
     job_id = create_geometry_parameters.job_id
-    point = create_geometry_parameters.grid_point
+    point = create_geometry_parameters.point
     output_assets_directory = create_geometry_parameters.output_assets_directory
 
     # OpenVSP
@@ -40,7 +40,7 @@ def create_geometry(
         name="Sweep", id="DFMNISRTXAJ:WingGeom:XSec_1:Sweep", value=sweep
     )
     updated_variables = [*point.get_variables(), sweep_variable]
-    updated_point = Point(updated_variables)
+    updated_point = Point(variables=updated_variables)
 
     output_geometry_filepath = openvsp_modeler.generate_geometry(
         job_id=job_id,

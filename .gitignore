@@ -2,6 +2,7 @@
 output/
 PyFoam*
 collect/
+*.tar.gz
 
 # MacOS
 .DS_Store
@@ -22,8 +23,6 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
-lib64/
 parts/
 sdist/
 var/

@@ -1,0 +1,8 @@
+pyvista==0.46.3
+coloredlogs==15.0.1
+PyFoam==2023.7
+typer==0.20.0
+fluidfoam==0.2.9
+pymoo==0.6.1.5
+numpy==2.3.4
+pyDOE3==1.6.1

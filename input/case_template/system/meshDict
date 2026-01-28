@@ -18,11 +18,7 @@ FoamFile
 
 surfaceFile "combined.fms";
 
-// minCellSize 0.01; - don't use this, it causes refinment around the walls
-
 maxCellSize 0.5;
-
-// boundaryCellSize 0.5; - don't use this, is causes refinment around the walls
 
 localRefinement
 {
@@ -32,16 +28,6 @@ localRefinement
         refinementThickness 0.05;
     }
 }
-
-// surfaceMeshRefinement - equivalent to localRefinment on "solid", probably best to use localRefinment
-// {
-//     plane
-//     {
-//         surfaceFile "plane.stl";
-//         additionalRefinementLevels 6;
-//         refinementThickness 0.1;
-//     }
-// }
 
 boundaryLayers
 {
@@ -95,7 +81,7 @@ objectRefinements
         centre (1.75 0 0);
         lengthX 4.5;
         lengthY 3;
-        lengthZ 1;
+        lengthZ 1.25;
     }
     refinement4
     {
@@ -104,9 +90,8 @@ objectRefinements
         centre (1.5 0 0);
         lengthX 3.25;
         lengthY 1.5;
-        lengthZ 0.5;
+        lengthZ 1;
     }
-    
 }
 
 renameBoundary
@@ -117,7 +102,7 @@ renameBoundary
     {
         solid
         {
-            newName jobGeometry;
+            newName solid;
             type wall;
         }
         xMin

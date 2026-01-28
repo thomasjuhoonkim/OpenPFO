@@ -2,9 +2,8 @@
 from logging import Logger
 
 # classes
-from classes.point import Point
-from classes.variable import Variable
 from classes.objective import Objective
+from classes.point import Point
 
 # util
 from util.get_config import get_config
@@ -15,138 +14,152 @@ config = get_config()
 
 
 class DefaultParameters:
-    def __init__(self, output_case_directory: str, job_id: str, logger: Logger):
-        self.output_case_directory = output_case_directory
+    def __init__(
+        self,
+        job_id: str,
+        point: "Point",
+        logger: "Logger",
+        job_directory: str,
+        processors_per_job=config["compute"]["processors_per_job"],
+    ):
+        self.processors_per_job = processors_per_job
+        self.job_directory = job_directory
         self.job_id = job_id
         self.logger = logger
+        self.point = point
 
 
-# ==============================================================================
-
-
-class CreateGeometryParameters:
-    """
-    NOTE: This does not inherit from DefaultParameters. This is an intentional design choice, we want to avoid modifications to the case directory from this function.
-    """
-
+class PrepareParameters(DefaultParameters):
     def __init__(
         self,
-        grid_point: Point,
-        output_assets_directory: str,
+        job_directory: str,
+        logger: "Logger",
+        point: "Point",
         job_id: str,
-        logger: Logger,
-    ):
-        self.job_id = job_id
-        self.grid_point = grid_point
-        self.logger = logger
-        self.output_assets_directory = output_assets_directory
-
-
-class CreateGeometryReturn:
-    def __init__(
-        self,
-        output_geometry_filepath: str,
-        extra_variables: list[Variable] = [],
-    ):
-        self.output_geometry_filepath = output_geometry_filepath
-        self.extra_variables = extra_variables
-
-
-# ==============================================================================
-
-
-class ModifyCaseParameters(DefaultParameters):
-    def __init__(
-        self,
-        output_case_directory: str,
-        job_id: str,
-        output_geometry_filepath: str,
-        logger: Logger,
-        grid_point: Point,
-        extra_variables: list[Variable],
     ):
         super().__init__(
-            output_case_directory=output_case_directory, job_id=job_id, logger=logger
-        )
-        self.output_geometry_filepath = output_geometry_filepath
-        self.grid_point = grid_point
-        self.extra_variables = extra_variables
-
-
-# ==============================================================================
-
-
-class CreateMeshParameters(DefaultParameters):
-    def __init__(
-        self,
-        output_case_directory: str,
-        job_id: str,
-        output_geometry_filepath: str,
-        logger: Logger,
-    ):
-        super().__init__(
-            output_case_directory=output_case_directory, job_id=job_id, logger=logger
-        )
-        self.output_geometry_filepath = output_geometry_filepath
-
-
-# ==============================================================================
-
-
-class ExecuteSolverParameters(DefaultParameters):
-    def __init__(self, output_case_directory: str, job_id: str, logger: Logger):
-        super().__init__(
-            output_case_directory=output_case_directory, job_id=job_id, logger=logger
+            job_directory=job_directory,
+            job_id=job_id,
+            logger=logger,
+            point=point,
         )
 
 
-# ==============================================================================
-
-
-class ExtractObjectivesParameters(DefaultParameters):
+class GeometryParameters(DefaultParameters):
     def __init__(
         self,
-        output_case_directory: str,
+        job_directory: str,
+        logger: "Logger",
+        point: "Point",
         job_id: str,
-        logger: Logger,
-        objectives: list[Objective],
     ):
         super().__init__(
-            output_case_directory=output_case_directory, job_id=job_id, logger=logger
+            job_directory=job_directory,
+            job_id=job_id,
+            logger=logger,
+            point=point,
+        )
+
+
+class MeshParameters(DefaultParameters):
+    def __init__(
+        self,
+        job_directory: str,
+        logger: "Logger",
+        point: "Point",
+        job_id: str,
+    ):
+        super().__init__(
+            job_directory=job_directory,
+            logger=logger,
+            job_id=job_id,
+            point=point,
+        )
+
+
+class SolveParameters(DefaultParameters):
+    def __init__(
+        self,
+        job_directory: str,
+        logger: "Logger",
+        point: "Point",
+        job_id: str,
+    ):
+        super().__init__(
+            job_directory=job_directory,
+            logger=logger,
+            job_id=job_id,
+            point=point,
+        )
+
+
+class ObjectivesParameters(DefaultParameters):
+    def __init__(
+        self,
+        objectives: list["Objective"],
+        job_directory: str,
+        logger: "Logger",
+        point: "Point",
+        job_id: str,
+    ):
+        super().__init__(
+            job_directory=job_directory,
+            job_id=job_id,
+            logger=logger,
+            point=point,
         )
         self.objectives = objectives
 
 
-class ExtractObjectivesReturn:
-    def __init__(self, objectives: list[Objective]):
+class CleanupParameters(DefaultParameters):
+    def __init__(
+        self,
+        job_directory: str,
+        logger: "Logger",
+        point: "Point",
+        job_id: str,
+    ):
+        super().__init__(
+            job_directory=job_directory,
+            job_id=job_id,
+            logger=logger,
+            point=point,
+        )
+
+
+# ==============================================================================
+class DefaultReturn:
+    def __init__(self, run_ok=True):
+        self.run_ok = run_ok
+
+
+class PrepareReturn(DefaultReturn):
+    def __init__(self, run_ok=True):
+        super().__init__(run_ok=run_ok)
+
+
+class GeometryReturn(DefaultReturn):
+    def __init__(self, visualize_filepath: str, run_ok=True):
+        super().__init__(run_ok=run_ok)
+        self.visualize_filepath = visualize_filepath
+
+
+class MeshReturn(DefaultReturn):
+    def __init__(self, run_ok=True):
+        super().__init__(run_ok=run_ok)
+
+
+class SolveReturn(DefaultReturn):
+    def __init__(self, run_ok=True):
+        super().__init__(run_ok=run_ok)
+
+
+class ObjectivesReturn(DefaultReturn):
+    def __init__(self, objectives: list["Objective"], run_ok=True):
+        super().__init__(run_ok=run_ok)
         self.objectives = objectives
 
 
-# ==============================================================================
-
-
-class ExtractAssetsParameters(DefaultParameters):
-    def __init__(
-        self,
-        output_case_directory: str,
-        output_case_foam_filepath: str,
-        output_assets_directory: str,
-        output_geometry_filepath: str,
-        job_id: str,
-        logger: Logger,
-    ):
-        super().__init__(
-            output_case_directory=output_case_directory, job_id=job_id, logger=logger
-        )
-        self.output_case_foam_filepath = output_case_foam_filepath
-        self.output_assets_directory = output_assets_directory
-        self.output_geometry_filepath = output_geometry_filepath
-        self.processors = config["compute"]["processors"]
-
-
-# ==============================================================================
-
-
-class ExecuteCleanupParameters(DefaultParameters):
-    def __init__(self, output_case_directory: str, job_id: str, logger: Logger):
-        super().__init__(output_case_directory, job_id, logger)
+class CleanupReturn(DefaultReturn):
+    def __init__(self, run_ok=True):
+        super().__init__(run_ok=run_ok)

@@ -7,12 +7,12 @@ paraview.simple._DisableFirstRenderCameraReset()
 if __name__ == "__main__":
     # validate inputs
     if len(sys.argv) < 3:
-        print("Usage: pvbatch -- pvbatch.py <input_filepath> <assets_directory>")
+        print("Usage: pvbatch -- pvbatch.py <input_filepath> <job_directory>")
         sys.exit(1)
 
     # parse inputs
     input_filepath = sys.argv[1]
-    assets_directory = sys.argv[2]
+    job_directory = sys.argv[2]
 
     # load data
     reader1 = OpenDataFile(input_filepath)
@@ -41,7 +41,7 @@ if __name__ == "__main__":
     display1.Representation = "Surface With Edges"
     ColorBy(display1, ("CELLS", ""))
 
-    reader2.MeshRegions = ["patch/jobGeometry"]
+    reader2.MeshRegions = ["patch/solid"]
 
     display2 = Show(reader2, renderView)
     display2.Representation = "Surface With Edges"
@@ -50,7 +50,7 @@ if __name__ == "__main__":
     Render()
 
     SaveScreenshot(
-        f"{assets_directory}/mesh.png",
+        f"{job_directory}/mesh.png",
         renderView,
         ImageResolution=renderView.ViewSize,
     )

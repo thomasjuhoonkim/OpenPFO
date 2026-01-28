@@ -1,4 +1,11 @@
+# system
+import sys
+
+# datetime
+from datetime import datetime
+
 # typer
+from classes.search import Search
 from typing_extensions import Annotated
 import typer
 
@@ -7,40 +14,75 @@ from commands.check_output import check_output
 from commands.check_config import check_config
 
 # classes
-from classes.job import Job
+from classes.point import Point
+from classes.progress import Progress
 
 # util
+from util.get_logger import get_logger
+from util.get_linear_points import get_linear_points
 from util.get_random_points import get_random_points
+
+logger = get_logger()
 
 
 def check_run(
     count: Annotated[
         int, typer.Option(help="The number of random points to generate")
     ] = 1,
-    objectives: Annotated[
-        bool, typer.Option(help="Extract objectives after each job")
+    random: Annotated[
+        bool, typer.Option(help="Randomize points in the design space")
     ] = True,
-    assets: Annotated[
-        bool, typer.Option(help="Run asset extraction after each job")
-    ] = True,
+    objectives: Annotated[bool, typer.Option(help="Run objectives()")] = True,
     cleanup: Annotated[bool, typer.Option(help="Run cleanup after each job")] = True,
+    resume: Annotated[
+        bool, typer.Option(help="Resume progress from an existing run")
+    ] = False,
 ):
     # pre-run checks
-    check_output()
+    if not resume:
+        check_output()
     check_config()
 
-    grid_points = get_random_points(count=count)
-    for i, point in enumerate(grid_points):
-        job_id = f"check-run-{i}"
-        job = Job(job_id=job_id, point=point)
-
-        job.prepare_job()
-        job.dispatch(
-            should_create_geometry=True,
-            should_modify_case=True,
-            should_create_mesh=True,
-            should_execute_solver=True,
-            should_extract_objectives=objectives,
-            should_extract_assets=assets,
-            should_execute_cleanup=cleanup,
+    if not random and count < 2:
+        logger.warning(
+            "To run with linear separation, you must ask for 2 or more points of separation"
         )
+        sys.exit(1)
+
+    # progress
+    progress = Progress()
+    progress.recover_progress()
+    if resume:
+        progress.validate_command_match()
+
+    # start time
+    start_time = datetime.now()
+    logger.info(f"Start time: {start_time}")
+    progress.save_start_time(start_time=start_time)
+
+    # points
+    points: list["Point"] = []
+    if random:
+        points = get_random_points(count=count)
+    else:
+        points = get_linear_points(count=count)
+    logger.info("Running points:")
+    for point in points:
+        logger.info(point.get_representation())
+
+    search = Search(id="check-run", points=points, progress=progress)
+    search.create_jobs()
+    search.run_all(
+        should_run_checks=True,
+        should_run_prepare=True,
+        should_run_geometry=True,
+        should_run_mesh=True,
+        should_run_solve=True,
+        should_run_objectives=objectives,
+        should_run_cleanup=cleanup,
+    )
+
+    # end time
+    end_time = datetime.now()
+    logger.info(f"End time: {end_time}")
+    progress.save_end_time(end_time=end_time)

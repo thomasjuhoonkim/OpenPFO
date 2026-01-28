@@ -6,13 +6,13 @@ from classes.point import Point
 from classes.variable import Variable
 
 # util
-from util.get_initial_parameters import get_initial_parameters
+from util.get_config_parameters import get_config_parameters
 
 
 def get_random_points(count: int):
-    parameters = get_initial_parameters()
+    parameters = get_config_parameters()
 
-    grid_points = []
+    points = []
     for _ in range(count):
         variables = []
         for parameter in parameters:
@@ -25,7 +25,7 @@ def get_random_points(count: int):
             )
             variables.append(variable)
 
-        grid_point = Point(variables)
-        grid_points.append(grid_point)
+        point = Point(variables)
+        points.append(point)
 
-    return grid_points
+    return points

@@ -7,12 +7,12 @@ paraview.simple._DisableFirstRenderCameraReset()
 if __name__ == "__main__":
     # validate inputs
     if len(sys.argv) < 3:
-        print("Usage: pvbatch -- script.py <input_filepath> <assets_directory>")
+        print("Usage: pvbatch -- script.py <input_filepath> <job_directory>")
         sys.exit(1)
 
     # parse inputs
     input_filepath = sys.argv[1]
-    assets_directory = sys.argv[2]
+    job_directory = sys.argv[2]
 
     # load data
     reader1 = OpenDataFile(input_filepath)
@@ -34,14 +34,14 @@ if __name__ == "__main__":
     display1 = Show(reader1, renderView)
     ColorBy(display1, ("CELLS", ""))
 
-    reader2.MeshRegions = ["patch/jobGeometry"]
+    reader2.MeshRegions = ["patch/solid"]
     display2 = Show(reader2, renderView)
     ColorBy(display2, ("CELLS", ""))
 
     streamTracer = StreamTracer(Input=reader1, SeedType="Line")
     streamTracer.SeedType.Point1 = [-10, -0.5, 0]
     streamTracer.SeedType.Point2 = [-10, 0, 0]
-    streamTracer.SeedType.Resolution = 100
+    streamTracer.SeedType.Resolution = 50
     streamTracer.Vectors = ["POINTS", "U"]
 
     streamTracerDisplay = Show(streamTracer, renderView)
@@ -54,9 +54,10 @@ if __name__ == "__main__":
     tubeDisplay.RescaleTransferFunctionToDataRange(True, False)
 
     ColorBy(tubeDisplay, ("POINTS", "U", "Magnitude"))
-    # uLUT = GetColorTransferFunction("U")
-    # uPWF = GetOpacityTransferFunction("U")
-    # uTF2D = GetTransferFunction2D("U")
+    uLUT = GetColorTransferFunction("U")
+    HideScalarBarIfNotNeeded(uLUT, renderView)
+    tubeDisplay.RescaleTransferFunctionToDataRange(True, False)
+    tubeDisplay.SetScalarBarVisibility(renderView, True)
 
     Hide(reader1, renderView)
     Hide(streamTracer, renderView)
@@ -64,7 +65,7 @@ if __name__ == "__main__":
     Render()
 
     SaveScreenshot(
-        f"{assets_directory}/streamline-half.png",
+        f"{job_directory}/streamline-half.png",
         renderView,
         ImageResolution=renderView.ViewSize,
     )

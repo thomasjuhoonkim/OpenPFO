@@ -50,7 +50,7 @@ boundaryField
     {
         type            zeroGradient;
     }
-    jobGeometry
+    solid
     {
         type            zeroGradient;
     }

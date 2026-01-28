@@ -12,3 +12,14 @@ class Variable:
 
     def get_value(self):
         return self._value
+
+    def serialize(self):
+        return {
+            "id": self._id,
+            "name": self._name,
+            "value": self._value,
+        }
+
+    @classmethod
+    def from_dict(cls, variable: dict):
+        return cls(name=variable["name"], id=variable["id"], value=variable["value"])
