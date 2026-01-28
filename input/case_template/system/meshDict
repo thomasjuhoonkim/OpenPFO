@@ -18,11 +18,7 @@ FoamFile
 
 surfaceFile "combined.fms";
 
-// minCellSize 0.01; - don't use this, it causes refinment around the walls
-
 maxCellSize 0.5;
-
-// boundaryCellSize 0.5; - don't use this, is causes refinment around the walls
 
 localRefinement
 {
@@ -33,79 +29,69 @@ localRefinement
     }
 }
 
-// surfaceMeshRefinement - equivalent to localRefinment on "solid", probably best to use localRefinment
-// {
-//     plane
-//     {
-//         surfaceFile "plane.stl";
-//         additionalRefinementLevels 6;
-//         refinementThickness 0.1;
-//     }
-// }
-
 boundaryLayers
 {
-    // patchBoundaryLayers
-    // {
-    //     solid
-    //     {
-    //         nLayers 10;
-    //         thicknessRatio 1.2;
-    //         maxFirstLayerThickness 0.002; //- defines the overall thickness
-    //         allowDiscontinuity 0; 
-    //     }
-    // }
-    // optimiseLayer 1;
-    // optimisationParameters
-    // {
-    //     nSmoothNormals 15;            // More smoothing iterations
-    //     nSmoothSurfaceNormals 10;
-    //     nSmoothThickness 10;
-    //     reCalculateNormals 1;
-    //     maxNumIterations 10;
-    // }
+    patchBoundaryLayers
+    {
+        solid
+        {
+            nLayers 10;
+            thicknessRatio 1.2;
+            maxFirstLayerThickness 0.002; //- defines the overall thickness
+            allowDiscontinuity 0; 
+        }
+    }
+    optimiseLayer 1;
+    optimisationParameters
+    {
+        nSmoothNormals 15;            // More smoothing iterations
+        nSmoothSurfaceNormals 10;
+        nSmoothThickness 10;
+        reCalculateNormals 1;
+        maxNumIterations 10;
+    }
 }
 
 objectRefinements
 {
-    // refinement1
-    // {
-    //     type cone;
-    //     cellSize 0.25;
-    //     centre (0.5 0 0);
-    //     p0 (-2 0 0);
-    //     p1 (8 0 0);
-    //     radius0 3;
-    //     radius1 3;
-    // }
-    // refinement2
-    // {
-    //     type cone;
-    //     cellSize 0.1;
-    //     centre (0.5 0 0);
-    //     p0 (-1 0 0);
-    //     p1 (5 0 0);
-    //     radius0 2;
-    //     radius1 2;
-    // }
-    // refinement3
-    // {
-    //     type box;
-    //     cellSize 0.05;
-    //     centre (1.75 0 0);
-    //     lengthX 4.5;
-    //     lengthY 3;
-    //     lengthZ 1.25;
-    // }
-    // refinement4
-    // {
-    //     type box;
-    //     cellSize 0.01;
-    //     centre (1.5 0 0);
-    //     lengthX 3.25;
-    //     lengthY 1.5;
-    //     lengthZ 1;
-    // }
+    refinement1
+    {
+        type cone;
+        cellSize 0.25;
+        centre (0.5 0 0);
+        p0 (-2 0 0);
+        p1 (8 0 0);
+        radius0 3;
+        radius1 3;
+    }
+    refinement2
+    {
+        type cone;
+        cellSize 0.1;
+        centre (0.5 0 0);
+        p0 (-1 0 0);
+        p1 (5 0 0);
+        radius0 2;
+        radius1 2;
+    }
+    refinement3
+    {
+        type box;
+        cellSize 0.05;
+        centre (1.75 0 0);
+        lengthX 4.5;
+        lengthY 3;
+        lengthZ 1.25;
+    }
+    refinement4
+    {
+        type box;
+        cellSize 0.01;
+        centre (1.5 0 0);
+        lengthX 3.25;
+        lengthY 1.5;
+        lengthZ 1;
+    }
 }
 
 renameBoundary
