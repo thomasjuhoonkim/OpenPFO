@@ -33,30 +33,30 @@ def mesh(
         f"cartesianMesh -case {job_directory}",
     ]
 
-    for command in COMMANDS:
-        runner = BasicRunner(argv=command.split(" "))
-        runner.start()
-        if not runner.runOK():
-            logger.error(f"{command} failed")
-            raise Exception(f"{command} failed")
-
-    # slurm = Slurm(
-    #     job_name=f"{job_id}-cartesianMesh",
-    #     account="def-jphickey",
-    #     time="00:05:00",
-    #     nodes=1,
-    #     ntasks_per_node=1,
-    #     cpus_per_task=processors_per_job,
-    #     mem="16G",
-    #     output=f"{job_directory}/cartesianMesh.log",
-    #     open_mode="append",
-    # )
-    # slurm.set_wait(True)
-
     # for command in COMMANDS:
-    #     slurm.add_cmd(command)
+    #     runner = BasicRunner(argv=command.split(" "))
+    #     runner.start()
+    #     if not runner.runOK():
+    #         logger.error(f"{command} failed")
+    #         raise Exception(f"{command} failed")
 
-    # slurm.sbatch()
+    slurm = Slurm(
+        job_name=f"{job_id}-cartesianMesh",
+        account="def-jphickey",
+        time="00:05:00",
+        nodes=1,
+        ntasks_per_node=1,
+        cpus_per_task=processors_per_job,
+        mem="16G",
+        output=f"{job_directory}/cartesianMesh.log",
+        open_mode="append",
+    )
+    slurm.set_wait(True)
+
+    for command in COMMANDS:
+        slurm.add_cmd(command)
+
+    slurm.sbatch()
 
     # VALIDATION ===============================================================
 
