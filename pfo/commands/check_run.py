@@ -52,7 +52,8 @@ def check_run(
     # progress
     progress = Progress()
     progress.recover_progress()
-    progress.validate_command_match()
+    if resume:
+        progress.validate_command_match()
 
     # start time
     start_time = datetime.now()

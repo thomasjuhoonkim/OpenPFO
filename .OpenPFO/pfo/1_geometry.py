@@ -9,7 +9,7 @@ def geometry(
     This function is used to generate the geometry for each point in the design space.
     """
 
-    assets_directory = create_geometry_parameters.output_assets_directory
+    job_directory = create_geometry_parameters.job_directory
     processors_per_job = create_geometry_parameters.processors_per_job
     job_id = create_geometry_parameters.job_id
     logger = create_geometry_parameters.logger

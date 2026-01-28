@@ -7,12 +7,12 @@ paraview.simple._DisableFirstRenderCameraReset()
 if __name__ == "__main__":
     # validate inputs
     if len(sys.argv) < 3:
-        print("Usage: pvbatch -- script.py <input_filepath> <assets_directory>")
+        print("Usage: pvbatch -- script.py <input_filepath> <job_directory>")
         sys.exit(1)
 
     # parse inputs
     input_filepath = sys.argv[1]
-    assets_directory = sys.argv[2]
+    job_directory = sys.argv[2]
 
     # load data
     reader1 = OpenDataFile(input_filepath)
@@ -65,7 +65,7 @@ if __name__ == "__main__":
     Render()
 
     SaveScreenshot(
-        f"{assets_directory}/streamline-half.png",
+        f"{job_directory}/streamline-half.png",
         renderView,
         ImageResolution=renderView.ViewSize,
     )

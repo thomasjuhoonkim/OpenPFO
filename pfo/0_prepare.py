@@ -7,7 +7,7 @@ def prepare(prepare_parameters: PrepareParameters):
     This function is used to prepare each job.
     """
 
-    assets_directory = prepare_parameters.output_assets_directory
+    job_directory = prepare_parameters.job_directory
     processors_per_job = prepare_parameters.processors_per_job
     job_id = prepare_parameters.job_id
     logger = prepare_parameters.logger

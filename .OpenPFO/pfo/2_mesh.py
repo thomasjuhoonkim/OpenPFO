@@ -9,7 +9,7 @@ def mesh(
     The function is used to generate a mesh for each point in the design space.
     """
 
-    assets_directory = mesh_parameters.output_assets_directory
+    job_directory = mesh_parameters.job_directory
     processors_per_job = mesh_parameters.processors_per_job
     logger = mesh_parameters.logger
     job_id = mesh_parameters.job_id

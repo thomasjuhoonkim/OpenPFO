@@ -81,6 +81,8 @@ class Search:
         should_run_objectives=True,
         should_run_cleanup=True,
     ):
+        logger.info(f"Starting search {self._id}")
+
         lock = threading.Lock()
         with concurrent.futures.ThreadPoolExecutor(
             max_workers=config["compute"]["max_job_workers"]

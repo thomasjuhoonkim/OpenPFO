@@ -6,7 +6,6 @@ from classes.objective import Objective
 from classes.point import Point
 
 # util
-from constants.path import OUTPUT_ASSETS_DIRECTORY
 from util.get_config import get_config
 
 config = get_config()
@@ -20,11 +19,11 @@ class DefaultParameters:
         job_id: str,
         point: "Point",
         logger: "Logger",
-        output_assets_directory=OUTPUT_ASSETS_DIRECTORY,
+        job_directory: str,
         processors_per_job=config["compute"]["processors_per_job"],
     ):
-        self.output_assets_directory = output_assets_directory
         self.processors_per_job = processors_per_job
+        self.job_directory = job_directory
         self.job_id = job_id
         self.logger = logger
         self.point = point
@@ -33,11 +32,13 @@ class DefaultParameters:
 class PrepareParameters(DefaultParameters):
     def __init__(
         self,
+        job_directory: str,
         logger: "Logger",
         point: "Point",
         job_id: str,
     ):
         super().__init__(
+            job_directory=job_directory,
             job_id=job_id,
             logger=logger,
             point=point,
@@ -47,11 +48,13 @@ class PrepareParameters(DefaultParameters):
 class GeometryParameters(DefaultParameters):
     def __init__(
         self,
+        job_directory: str,
         logger: "Logger",
         point: "Point",
         job_id: str,
     ):
         super().__init__(
+            job_directory=job_directory,
             job_id=job_id,
             logger=logger,
             point=point,
@@ -61,11 +64,13 @@ class GeometryParameters(DefaultParameters):
 class MeshParameters(DefaultParameters):
     def __init__(
         self,
+        job_directory: str,
         logger: "Logger",
         point: "Point",
         job_id: str,
     ):
         super().__init__(
+            job_directory=job_directory,
             logger=logger,
             job_id=job_id,
             point=point,
@@ -75,11 +80,13 @@ class MeshParameters(DefaultParameters):
 class SolveParameters(DefaultParameters):
     def __init__(
         self,
+        job_directory: str,
         logger: "Logger",
         point: "Point",
         job_id: str,
     ):
         super().__init__(
+            job_directory=job_directory,
             logger=logger,
             job_id=job_id,
             point=point,
@@ -90,11 +97,13 @@ class ObjectivesParameters(DefaultParameters):
     def __init__(
         self,
         objectives: list["Objective"],
+        job_directory: str,
         logger: "Logger",
         point: "Point",
         job_id: str,
     ):
         super().__init__(
+            job_directory=job_directory,
             job_id=job_id,
             logger=logger,
             point=point,
@@ -105,11 +114,13 @@ class ObjectivesParameters(DefaultParameters):
 class CleanupParameters(DefaultParameters):
     def __init__(
         self,
-        job_id: str,
+        job_directory: str,
         logger: "Logger",
         point: "Point",
+        job_id: str,
     ):
         super().__init__(
+            job_directory=job_directory,
             job_id=job_id,
             logger=logger,
             point=point,

@@ -7,7 +7,7 @@ import typer
 from typing_extensions import Annotated
 
 # constants
-from constants.path import COLLECT_ASSETS_DIRECTORY, OUTPUT_ASSETS_DIRECTORY
+from constants.path import COLLECT_ASSETS_DIRECTORY, OUTPUT_DIRECTORY
 
 
 def collect_assets(
@@ -21,18 +21,18 @@ def collect_assets(
     if len(split) != 2 or not asset_name or not asset_ext:
         print("Invalid asset")
 
-    cases = os.listdir(OUTPUT_ASSETS_DIRECTORY)
-    cases.sort()
+    jobs = os.listdir(OUTPUT_DIRECTORY)
+    jobs.sort()
 
-    if ".DS_Store" in cases:
-        cases.remove(".DS_Store")
+    if ".DS_Store" in jobs:
+        jobs.remove(".DS_Store")
 
     os.makedirs(f"{COLLECT_ASSETS_DIRECTORY}/{asset_name}", exist_ok=True)
 
-    for case in cases:
-        original = f"{OUTPUT_ASSETS_DIRECTORY}/{case}/{asset_name}.{asset_ext}"
+    for job in jobs:
+        original = f"{OUTPUT_DIRECTORY}/{job}/{asset_name}.{asset_ext}"
         if os.path.isfile(original):
             dest = shutil.copy(
-                original, f"{COLLECT_ASSETS_DIRECTORY}/{asset_name}/{case}.{asset_ext}"
+                original, f"{COLLECT_ASSETS_DIRECTORY}/{asset_name}/{job}.{asset_ext}"
             )
             print(dest)

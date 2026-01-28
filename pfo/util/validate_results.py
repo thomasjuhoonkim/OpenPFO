@@ -116,7 +116,7 @@ def validate_job(job: dict):
         ("steps", list),
         ("startTime", str),
         ("endTime", str),
-        ("outputAssetsDirectory", str),
+        ("jobDirectory", str),
         ("objectives", list),
     ]
 

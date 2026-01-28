@@ -53,7 +53,7 @@ class FreeCADModeler(AbstractModeler):
         self,
         job_id: str,
         point: Point,
-        output_assets_directory: str,
+        job_directory: str,
     ):
         import FreeCAD  # type: ignore  # noqa: E402
         import Mesh  # type: ignore # noqa: E402
@@ -74,8 +74,8 @@ class FreeCADModeler(AbstractModeler):
         document.recompute()
 
         # Export to AST
-        output_ast = f"{output_assets_directory}/{job_id}.ast"
-        output_stl = f"{output_assets_directory}/{job_id}.stl"
+        output_ast = f"{job_directory}/{job_id}.ast"
+        output_stl = f"{job_directory}/{job_id}.stl"
         Mesh.export([part], output_ast)
 
         # rename AST to STL
@@ -83,7 +83,7 @@ class FreeCADModeler(AbstractModeler):
         output_geometry_filepath = output_stl
 
         # export to FCStd
-        output_fcstd = f"{output_assets_directory}/{job_id}.FCStd"
+        output_fcstd = f"{job_directory}/{job_id}.FCStd"
         document.saveAs(output_fcstd)
 
         logger.info(
@@ -121,11 +121,9 @@ class OpenVSPModeler(AbstractModeler):
             )
             sys.exit(1)
 
-    def generate_geometry(
-        self, job_id: str, point: Point, output_assets_directory: str
-    ):
+    def generate_geometry(self, job_id: str, point: Point, job_directory: str):
         # design variables file for openvsp model variable definitions
-        design_variables_filepath = f"{output_assets_directory}/{job_id}.des"
+        design_variables_filepath = f"{job_directory}/{job_id}.des"
         variables = point.get_variables()
         variables_definitions = ""
 
@@ -139,8 +137,8 @@ class OpenVSPModeler(AbstractModeler):
             f.write(design_variables_content)
 
         # vspscript file for vsp model mutation
-        output_geometry_filepath = f"{output_assets_directory}/{job_id}.stl"
-        vspscript_filepath = f"{output_assets_directory}/{job_id}.vspscript"
+        output_geometry_filepath = f"{job_directory}/{job_id}.stl"
+        vspscript_filepath = f"{job_directory}/{job_id}.vspscript"
         vspscript_content = f"""
 void main()
 {{
@@ -181,17 +179,17 @@ void main()
 #         variable_name: str,
 #         variable_id: str,
 #         job_id: str,
-#         output_assets_directory: str,
+#         job_directory: str,
 #     ) -> list[Variable, bool]:
 #         # design variables file for openvsp model variable definitions
-#         design_variables_filepath_input = f"{output_assets_directory}/{job_id}.des"
+#         design_variables_filepath_input = f"{job_directory}/{job_id}.des"
 #         design_variables_filepath_output = (
-#             f"{output_assets_directory}/{job_id}-{variable_id}.des"
+#             f"{job_directory}/{job_id}-{variable_id}.des"
 #         )
 
 #         # vspscript file for vsp model variable extraction
 #         vspscript_filepath = (
-#             f"{output_assets_directory}/{job_id}-{variable_id}.vspscript"
+#             f"{job_directory}/{job_id}-{variable_id}.vspscript"
 #         )
 #         vspscript_content = f"""
 # void main()

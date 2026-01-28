@@ -8,7 +8,7 @@ def cleanup(
     """
     This function is used to clean up artifacts after each job.
     """
-    assets_directory = cleanup_parameters.output_assets_directory
+    job_directory = cleanup_parameters.job_directory
     processors_per_job = cleanup_parameters.processors_per_job
     logger = cleanup_parameters.logger
     job_id = cleanup_parameters.job_id

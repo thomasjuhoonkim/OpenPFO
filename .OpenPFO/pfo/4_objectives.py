@@ -15,7 +15,7 @@ def objectives(
     def get_objective_by_id(objectives: list[Objective], id: str):
         return next((o for o in objectives if o.get_id() == id), None)
 
-    assets_directory = objectives_parameters.output_assets_directory
+    job_directory = objectives_parameters.job_directory
     processors_per_job = objectives_parameters.processors_per_job
     objectives = objectives_parameters.objectives
     logger = objectives_parameters.logger

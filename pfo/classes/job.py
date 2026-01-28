@@ -11,7 +11,7 @@ import threading
 from typing import TYPE_CHECKING
 
 # constants
-from constants.path import OUTPUT_ASSETS_DIRECTORY
+from constants.path import OUTPUT_DIRECTORY
 from constants.job import JobStatus
 from constants.step import StepId
 
@@ -27,7 +27,6 @@ from classes.functions import (
     CleanupParameters,
 )
 from classes.objective import Objective
-from classes.variable import Variable
 from classes.point import Point
 from classes.step import Step
 
@@ -67,7 +66,7 @@ class Job:
         start_time: datetime | None = None,
         end_time: datetime | None = None,
         output_geometry_filepath="",
-        output_assets_directory="",
+        job_directory="",
         objectives: list["Objective"] | None = None,
     ):
         self._id = id
@@ -75,21 +74,19 @@ class Job:
         self._search_id = search_id
         self._progress = progress
         self._steps = steps if steps is not None else []
-        self._status = status if status is not None else JobStatus.INITIALIZED
+        self._status = status if status is not None else JobStatus.READY
         self._run_ok = run_ok
         self._start_time = start_time if start_time is not None else datetime.now()
         self._end_time = end_time if end_time is not None else datetime.now()
         self._output_geometry_filepath = output_geometry_filepath
-        self._output_assets_directory = (
-            output_assets_directory
-            if output_assets_directory
-            else f"{OUTPUT_ASSETS_DIRECTORY}/{id}"
+        self._job_directory = (
+            job_directory if job_directory else f"{OUTPUT_DIRECTORY}/{id}"
         )
         self._objectives = objectives if objectives is not None else []
 
-        if not os.path.isdir(self._output_assets_directory):
-            os.makedirs(self._output_assets_directory)
-            logger.info(f"Created assets directory {self._output_assets_directory}")
+        if not os.path.isdir(self._job_directory):
+            os.makedirs(self._job_directory)
+            logger.info(f"Created job directory {self._job_directory}")
 
         self._progress.save_job(self)
 
@@ -111,8 +108,8 @@ class Job:
     def get_end_time(self):
         return self._end_time
 
-    def get_output_assets_directory(self):
-        return self._output_assets_directory
+    def get_job_directory(self):
+        return self._job_directory
 
     def get_point(self):
         return self._point
@@ -141,13 +138,6 @@ class Job:
         lock=threading.Lock(),
     ):
         if should_run_checks:
-            if self._status == JobStatus.INITIALIZED:
-                logger.info(
-                    f"Job {self._id} was initialized but not prepared, preparing and starting..."
-                )
-                with lock:
-                    self.prepare_job()
-
             if self._status == JobStatus.READY:
                 logger.info(f"Job {self._id} is ready, starting...")
 
@@ -181,6 +171,7 @@ class Job:
             try:
                 logger.info(f"Running prepare() for {self._id}")
                 prepare_parameters = PrepareParameters(
+                    job_directory=self._job_directory,
                     point=self._point,
                     job_id=self._id,
                     logger=logger,
@@ -214,6 +205,7 @@ class Job:
             try:
                 logger.info(f"Running geometry() for job {self._id}")
                 geometry_parameters = GeometryParameters(
+                    job_directory=self._job_directory,
                     point=self._point,
                     job_id=self._id,
                     logger=logger,
@@ -249,6 +241,7 @@ class Job:
             try:
                 logger.info(f"Running mesh() for {self._id}")
                 mesh_parameters = MeshParameters(
+                    job_directory=self._job_directory,
                     point=self._point,
                     job_id=self._id,
                     logger=logger,
@@ -282,6 +275,7 @@ class Job:
             try:
                 logger.info(f"Running solve() for job {self._id}")
                 solve_parameters = SolveParameters(
+                    job_directory=self._job_directory,
                     point=self._point,
                     job_id=self._id,
                     logger=logger,
@@ -316,6 +310,7 @@ class Job:
                 logger.info(f"Running objectives() for {self._id}")
                 objectives_parameters = ObjectivesParameters(
                     objectives=get_config_objectives(),
+                    job_directory=self._job_directory,
                     point=self._point,
                     job_id=self._id,
                     logger=logger,
@@ -374,6 +369,7 @@ class Job:
         try:
             logger.info(f"Running cleanup() for job {self._id}")
             cleanup_parameters = CleanupParameters(
+                job_directory=self._job_directory,
                 point=self._point,
                 job_id=self._id,
                 logger=logger,
@@ -408,7 +404,7 @@ class Job:
             "steps": [step.serialize() for step in self._steps],
             "startTime": self._start_time.isoformat(),
             "endTime": self._end_time.isoformat(),
-            "outputAssetsDirectory": self._output_assets_directory,
+            "jobDirectory": self._job_directory,
             "point": self._point.serialize(),
             "objectives": [objective.serialize() for objective in self._objectives],
         }
@@ -425,7 +421,7 @@ class Job:
             run_ok=job["runOk"],
             start_time=datetime.fromisoformat(job["startTime"]),
             end_time=datetime.fromisoformat(job["endTime"]),
-            output_assets_directory=job["outputAssetsDirectory"],
+            job_directory=job["jobDirectory"],
             objectives=[
                 Objective.from_dict(objective=objective)
                 for objective in job["objectives"]
