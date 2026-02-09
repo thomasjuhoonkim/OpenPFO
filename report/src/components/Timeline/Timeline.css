@@ -1,0 +1,11 @@
+.rbs {
+  margin: 0;
+}
+
+.event-item {
+  border-radius: 0;
+}
+
+.round-all {
+  border-radius: 0 !important;
+}

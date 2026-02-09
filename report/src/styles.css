@@ -1,0 +1,39 @@
+body {
+  margin: 0;
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    "Roboto",
+    "Oxygen",
+    "Ubuntu",
+    "Cantarell",
+    "Fira Sans",
+    "Droid Sans",
+    "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family:
+    source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+@font-face {
+  font-family: "Avenir LT Pro 85 Heavy";
+  src: url("https://db.onlinewebfonts.com/t/79e4dc6a81171b1523795cb6b2bc7b2f.eot");
+  src:
+    url("https://db.onlinewebfonts.com/t/79e4dc6a81171b1523795cb6b2bc7b2f.eot?#iefix")
+      format("embedded-opentype"),
+    url("https://db.onlinewebfonts.com/t/79e4dc6a81171b1523795cb6b2bc7b2f.woff2")
+      format("woff2"),
+    url("https://db.onlinewebfonts.com/t/79e4dc6a81171b1523795cb6b2bc7b2f.woff")
+      format("woff"),
+    url("https://db.onlinewebfonts.com/t/79e4dc6a81171b1523795cb6b2bc7b2f.ttf")
+      format("truetype"),
+    url("https://db.onlinewebfonts.com/t/79e4dc6a81171b1523795cb6b2bc7b2f.svg#Avenir LT Pro 85 Heavy")
+      format("svg");
+}
