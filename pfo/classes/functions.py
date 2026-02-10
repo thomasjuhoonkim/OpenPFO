@@ -4,6 +4,7 @@ from logging import Logger
 # classes
 from classes.objective import Objective
 from classes.point import Point
+from classes.meta import Meta
 
 # util
 from util.get_config import get_config
@@ -17,6 +18,7 @@ class DefaultParameters:
     def __init__(
         self,
         job_id: str,
+        meta: "Meta",
         point: "Point",
         logger: "Logger",
         job_directory: str,
@@ -27,6 +29,7 @@ class DefaultParameters:
         self.job_id = job_id
         self.logger = logger
         self.point = point
+        self.meta = meta
 
 
 class PrepareParameters(DefaultParameters):
@@ -35,6 +38,7 @@ class PrepareParameters(DefaultParameters):
         job_directory: str,
         logger: "Logger",
         point: "Point",
+        meta: "Meta",
         job_id: str,
     ):
         super().__init__(
@@ -42,6 +46,7 @@ class PrepareParameters(DefaultParameters):
             job_id=job_id,
             logger=logger,
             point=point,
+            meta=meta,
         )
 
 
@@ -51,6 +56,7 @@ class GeometryParameters(DefaultParameters):
         job_directory: str,
         logger: "Logger",
         point: "Point",
+        meta: "Meta",
         job_id: str,
     ):
         super().__init__(
@@ -58,6 +64,7 @@ class GeometryParameters(DefaultParameters):
             job_id=job_id,
             logger=logger,
             point=point,
+            meta=meta,
         )
 
 
@@ -67,6 +74,7 @@ class MeshParameters(DefaultParameters):
         job_directory: str,
         logger: "Logger",
         point: "Point",
+        meta: "Meta",
         job_id: str,
     ):
         super().__init__(
@@ -74,6 +82,7 @@ class MeshParameters(DefaultParameters):
             logger=logger,
             job_id=job_id,
             point=point,
+            meta=meta,
         )
 
 
@@ -83,6 +92,7 @@ class SolveParameters(DefaultParameters):
         job_directory: str,
         logger: "Logger",
         point: "Point",
+        meta: "Meta",
         job_id: str,
     ):
         super().__init__(
@@ -90,6 +100,7 @@ class SolveParameters(DefaultParameters):
             logger=logger,
             job_id=job_id,
             point=point,
+            meta=meta,
         )
 
 
@@ -100,6 +111,7 @@ class ObjectivesParameters(DefaultParameters):
         job_directory: str,
         logger: "Logger",
         point: "Point",
+        meta: "Meta",
         job_id: str,
     ):
         super().__init__(
@@ -107,6 +119,7 @@ class ObjectivesParameters(DefaultParameters):
             job_id=job_id,
             logger=logger,
             point=point,
+            meta=meta,
         )
         self.objectives = objectives
 
@@ -117,6 +130,7 @@ class CleanupParameters(DefaultParameters):
         job_directory: str,
         logger: "Logger",
         point: "Point",
+        meta: "Meta",
         job_id: str,
     ):
         super().__init__(
@@ -124,6 +138,7 @@ class CleanupParameters(DefaultParameters):
             job_id=job_id,
             logger=logger,
             point=point,
+            meta=meta,
         )
 
 

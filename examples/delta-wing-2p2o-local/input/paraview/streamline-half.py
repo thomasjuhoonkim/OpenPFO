@@ -25,7 +25,11 @@ if __name__ == "__main__":
     renderView = CreateView("RenderView")
     renderView.ViewSize = VIEW_SIZE
 
-    # renderView.OrientationAxesVisibility = 0
+    renderView.CameraPosition = [-1.25, 1.25, 1]
+    renderView.CameraFocalPoint = [0.5, 0, 0]
+    renderView.CameraViewUp = [0, 0, 1]
+
+    renderView.OrientationAxesVisibility = 0
 
     display1 = Show(reader1, renderView)
     ColorBy(display1, ("CELLS", ""))
@@ -36,8 +40,8 @@ if __name__ == "__main__":
 
     streamTracer = StreamTracer(Input=reader1, SeedType="Line")
     streamTracer.SeedType.Point1 = [-10, -0.5, 0]
-    streamTracer.SeedType.Point2 = [-10, 0.5, 0]
-    streamTracer.SeedType.Resolution = 100
+    streamTracer.SeedType.Point2 = [-10, 0, 0]
+    streamTracer.SeedType.Resolution = 50
     streamTracer.Vectors = ["POINTS", "U"]
 
     streamTracerDisplay = Show(streamTracer, renderView)
@@ -58,57 +62,10 @@ if __name__ == "__main__":
     Hide(reader1, renderView)
     Hide(streamTracer, renderView)
 
-    # Angle 1 - Diagonal
-    renderView.CameraPosition = [-1, 1, 1]
-    renderView.CameraFocalPoint = [0.6, 0, 0]
-    renderView.CameraViewUp = [0, 0, 1]
     Render()
-    SaveScreenshot(
-        f"{job_directory}/streamline-diagonal.png",
-        renderView,
-        ImageResolution=renderView.ViewSize,
-    )
 
-    # Angle 2 - Front
-    renderView.CameraPosition = [-1, 0, 0]
-    renderView.CameraFocalPoint = [0.6, 0, 0]
-    renderView.CameraViewUp = [0, 0, 1]
-    Render()
     SaveScreenshot(
-        f"{job_directory}/streamline-front.png",
-        renderView,
-        ImageResolution=renderView.ViewSize,
-    )
-
-    # Angle 3 - Side
-    renderView.CameraPosition = [0, 2, 0]
-    renderView.CameraFocalPoint = [0.6, 0, 0]
-    renderView.CameraViewUp = [0, 0, 1]
-    Render()
-    SaveScreenshot(
-        f"{job_directory}/streamline-side.png",
-        renderView,
-        ImageResolution=renderView.ViewSize,
-    )
-
-    # Angle 4 - Top
-    renderView.CameraPosition = [0, 0, 3]
-    renderView.CameraFocalPoint = [0.6, 0, 0]
-    renderView.CameraViewUp = [0, 0, 1]
-    Render()
-    SaveScreenshot(
-        f"{job_directory}/streamline-top.png",
-        renderView,
-        ImageResolution=renderView.ViewSize,
-    )
-
-    # Angle 5 - Bottom
-    renderView.CameraPosition = [0, 0, -3]
-    renderView.CameraFocalPoint = [0.6, 0, 0]
-    renderView.CameraViewUp = [0, 0, -1]
-    Render()
-    SaveScreenshot(
-        f"{job_directory}/streamline-bottom.png",
+        f"{job_directory}/streamline-half.png",
         renderView,
         ImageResolution=renderView.ViewSize,
     )

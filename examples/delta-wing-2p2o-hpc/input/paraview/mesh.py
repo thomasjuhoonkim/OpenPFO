@@ -7,7 +7,7 @@ paraview.simple._DisableFirstRenderCameraReset()
 if __name__ == "__main__":
     # validate inputs
     if len(sys.argv) < 3:
-        print("Usage: pvbatch -- script.py <input_filepath> <job_directory>")
+        print("Usage: pvbatch -- pvbatch.py <input_filepath> <job_directory>")
         sys.exit(1)
 
     # parse inputs
@@ -15,7 +15,8 @@ if __name__ == "__main__":
     job_directory = sys.argv[2]
 
     # load data
-    reader = OpenDataFile(input_filepath)
+    reader1 = OpenDataFile(input_filepath)
+    reader2 = OpenDataFile(input_filepath)
 
     """ ======================= YOUR CODE BELOW HERE ======================= """
 
@@ -24,29 +25,32 @@ if __name__ == "__main__":
     renderView = CreateView("RenderView")
     renderView.ViewSize = VIEW_SIZE
 
-    renderView.CameraPosition = [0.75, 2, 0]
-    renderView.CameraFocalPoint = [0.75, 0, 0]
+    renderView.CameraPosition = [-0.5, 0.5, 0.25]
+    renderView.CameraFocalPoint = [0.6, 0, 0]
     renderView.CameraViewUp = [0, 0, 1]
 
-    slice = Slice(Input=reader)
+    renderView.OrientationAxesVisibility = 0
+
+    slice = Slice(Input=reader1)
     slice.SliceType = "Plane"
-    slice.SliceType.Origin = [0, 0, 0]
-    slice.SliceType.Normal = [0, 1, 0]
+    slice.SliceType.Origin = [0.5, 0, 0]
+    slice.SliceType.Normal = [1, 0, 0]
     # slice.Crinkleslice = True
 
-    pLUT = GetColorTransferFunction("p")
-    HideScalarBarIfNotNeeded(pLUT, renderView)
-
     display1 = Show(slice, renderView)
+    display1.Representation = "Surface With Edges"
+    ColorBy(display1, ("CELLS", ""))
 
-    ColorBy(display1, ("CELLS", "p", "Magnitude"))
-    display1.RescaleTransferFunctionToDataRange(True, False)
-    display1.SetScalarBarVisibility(renderView, True)
+    reader2.MeshRegions = ["patch/solid"]
+
+    display2 = Show(reader2, renderView)
+    display2.Representation = "Surface With Edges"
+    ColorBy(display2, ("CELLS", ""))
 
     Render()
 
     SaveScreenshot(
-        f"{job_directory}/slice-pressure.png",
+        f"{job_directory}/mesh.png",
         renderView,
         ImageResolution=renderView.ViewSize,
     )

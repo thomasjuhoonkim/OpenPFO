@@ -21,6 +21,7 @@ def objectives(
     job_id = objectives_parameters.job_id
     logger = objectives_parameters.logger
     point = objectives_parameters.point
+    meta = objectives_parameters.meta
 
     """ ======================= YOUR CODE BELOW HERE ======================= """
 

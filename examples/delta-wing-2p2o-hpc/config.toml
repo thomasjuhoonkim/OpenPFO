@@ -3,9 +3,9 @@
 # processors_per_job (int):  how many processors to allocate for each job (job step parallelization)
 # max_job_workers (int):     how many maximum job workers at any time (job parallelization)
 [compute]
-hpc=false
-processors_per_job=8
-max_job_workers=1
+hpc=true
+processors_per_job=64
+max_job_workers=6
 
 # PARAMETERS
 # name (name):  user-friendly name for the parameter

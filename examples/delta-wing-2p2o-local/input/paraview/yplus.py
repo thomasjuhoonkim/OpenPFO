@@ -24,28 +24,27 @@ if __name__ == "__main__":
     renderView = CreateView("RenderView")
     renderView.ViewSize = VIEW_SIZE
 
-    renderView.CameraPosition = [0.75, 2, 0]
-    renderView.CameraFocalPoint = [0.75, 0, 0]
+    renderView.CameraPosition = [-1.25, 1.25, 1]
+    renderView.CameraFocalPoint = [0.5, 0, 0]
     renderView.CameraViewUp = [0, 0, 1]
 
-    slice = Slice(Input=reader)
-    slice.SliceType = "Plane"
-    slice.SliceType.Origin = [0, 0, 0]
-    slice.SliceType.Normal = [0, 1, 0]
+    parafoam = GetActiveSource()
+    parafoam.MeshRegions = ["patch/solid"]
 
-    uLUT = GetColorTransferFunction("U")
-    HideScalarBarIfNotNeeded(uLUT, renderView)
+    yPlusLUT = GetColorTransferFunction("yPlus")
+    HideScalarBarIfNotNeeded(yPlusLUT, renderView)
 
-    display1 = Show(slice, renderView)
+    display1 = GetRepresentation(parafoam, renderView)
+    # display1.Representation = "Surface With Edges"
 
-    ColorBy(display1, ("CELLS", "U", "Magnitude"))
+    ColorBy(display1, ("CELLS", "yPlus"))
     display1.RescaleTransferFunctionToDataRange(True, False)
     display1.SetScalarBarVisibility(renderView, True)
 
     Render()
 
     SaveScreenshot(
-        f"{job_directory}/slice-velocity.png",
+        f"{job_directory}/yplus.png",
         renderView,
         ImageResolution=renderView.ViewSize,
     )

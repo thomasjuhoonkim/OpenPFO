@@ -32,15 +32,17 @@ if __name__ == "__main__":
     slice.SliceType = "Plane"
     slice.SliceType.Origin = [0, 0, 0]
     slice.SliceType.Normal = [0, 1, 0]
+    # slice.Crinkleslice = True
 
     uLUT = GetColorTransferFunction("U")
     HideScalarBarIfNotNeeded(uLUT, renderView)
 
     display1 = Show(slice, renderView)
-
-    ColorBy(display1, ("CELLS", "U", "Magnitude"))
     display1.RescaleTransferFunctionToDataRange(True, False)
     display1.SetScalarBarVisibility(renderView, True)
+    # display1.Representation = "Surface With Edges"
+
+    ColorBy(display1, ("CELLS", "U", "Magnitude"))
 
     Render()
 

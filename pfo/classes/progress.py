@@ -87,7 +87,9 @@ class Progress:
             self._start_time = (
                 datetime.fromisoformat(start_time) if start_time else datetime.now()
             )
-            self._end_time = datetime.fromisoformat() if end_time else datetime.now()
+            self._end_time = (
+                datetime.fromisoformat(end_time) if end_time else datetime.now()
+            )
             self._existing_results = True
 
         logger.info("Progress recovered successfully")

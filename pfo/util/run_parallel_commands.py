@@ -23,6 +23,7 @@ def run_parallel_commands(commands, max_workers=None):
                 logger.info(
                     f"Command '{' '.join(result.args)}' finished with return code: {result.returncode}"
                 )
+                logger.info(result.stderr)
                 results.append(result)
             except BaseException:
                 logger.exception(

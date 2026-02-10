@@ -14,6 +14,7 @@ def geometry(
     job_id = geometry_parameters.job_id
     logger = geometry_parameters.logger
     point = geometry_parameters.point
+    meta = geometry_parameters.meta
 
     """ ======================= YOUR CODE BELOW HERE ======================= """
 

@@ -19,7 +19,7 @@ if __name__ == "__main__":
 
     """ ======================= YOUR CODE BELOW HERE ======================= """
 
-    VIEW_SIZE = [3840, 2160]
+    VIEW_SIZE = [15360, 8640]
 
     renderView = CreateView("RenderView")
     renderView.ViewSize = VIEW_SIZE
@@ -32,20 +32,17 @@ if __name__ == "__main__":
     slice.SliceType = "Plane"
     slice.SliceType.Origin = [0, 0, 0]
     slice.SliceType.Normal = [0, 1, 0]
-
-    uLUT = GetColorTransferFunction("U")
-    HideScalarBarIfNotNeeded(uLUT, renderView)
+    # slice.Crinkleslice = True
 
     display1 = Show(slice, renderView)
+    display1.Representation = "Surface With Edges"
 
-    ColorBy(display1, ("CELLS", "U", "Magnitude"))
-    display1.RescaleTransferFunctionToDataRange(True, False)
-    display1.SetScalarBarVisibility(renderView, True)
+    ColorBy(display1, ("CELLS", ""))
 
     Render()
 
     SaveScreenshot(
-        f"{job_directory}/slice-velocity.png",
+        f"{job_directory}/slice.png",
         renderView,
         ImageResolution=renderView.ViewSize,
     )

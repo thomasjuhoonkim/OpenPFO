@@ -14,6 +14,7 @@ from typing import TYPE_CHECKING
 from constants.path import OUTPUT_DIRECTORY
 from constants.job import JobStatus
 from constants.step import StepId
+from classes.meta import Meta
 
 # classes
 if TYPE_CHECKING:
@@ -67,6 +68,7 @@ class Job:
         end_time: datetime | None = None,
         job_directory="",
         objectives: list["Objective"] | None = None,
+        meta: "Meta" = None,
     ):
         self._id = id
         self._point = point
@@ -82,6 +84,7 @@ class Job:
             job_directory if job_directory else f"{OUTPUT_DIRECTORY}/{id}"
         )
         self._objectives = objectives if objectives is not None else []
+        self._meta = Meta() if meta is None else meta
 
         if not os.path.isdir(self._job_directory):
             os.makedirs(self._job_directory)
@@ -115,6 +118,9 @@ class Job:
 
     def get_objectives(self):
         return self._objectives
+
+    def get_meta(self):
+        return self._meta
 
     def visualize_geometry(self):
         if IS_HPC:
@@ -178,6 +184,7 @@ class Job:
                 prepare_parameters = PrepareParameters(
                     job_directory=self._job_directory,
                     point=self._point,
+                    meta=self._meta,
                     job_id=self._id,
                     logger=logger,
                 )
@@ -212,6 +219,7 @@ class Job:
                 geometry_parameters = GeometryParameters(
                     job_directory=self._job_directory,
                     point=self._point,
+                    meta=self._meta,
                     job_id=self._id,
                     logger=logger,
                 )
@@ -249,6 +257,7 @@ class Job:
                 mesh_parameters = MeshParameters(
                     job_directory=self._job_directory,
                     point=self._point,
+                    meta=self._meta,
                     job_id=self._id,
                     logger=logger,
                 )
@@ -283,6 +292,7 @@ class Job:
                 solve_parameters = SolveParameters(
                     job_directory=self._job_directory,
                     point=self._point,
+                    meta=self._meta,
                     job_id=self._id,
                     logger=logger,
                 )
@@ -318,6 +328,7 @@ class Job:
                     objectives=get_config_objectives(),
                     job_directory=self._job_directory,
                     point=self._point,
+                    meta=self._meta,
                     job_id=self._id,
                     logger=logger,
                 )
@@ -377,6 +388,7 @@ class Job:
             cleanup_parameters = CleanupParameters(
                 job_directory=self._job_directory,
                 point=self._point,
+                meta=self._meta,
                 job_id=self._id,
                 logger=logger,
             )
@@ -413,6 +425,7 @@ class Job:
             "jobDirectory": self._job_directory,
             "point": self._point.serialize(),
             "objectives": [objective.serialize() for objective in self._objectives],
+            "meta": self._meta.serialize(),
         }
 
     @classmethod
@@ -432,4 +445,5 @@ class Job:
                 Objective.from_dict(objective=objective)
                 for objective in job["objectives"]
             ],
+            meta=Meta.from_dict(job["meta"]),
         )

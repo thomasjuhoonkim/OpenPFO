@@ -37,7 +37,7 @@ def geometry(
     # ==========================================================================
 
     # OpenVSP
-    OPENVSP_FILEPATH = "/Users/thomaskim/Downloads/OpenVSP-3.46.0-MacOS/vspscript"
+    OPENVSP_FILEPATH = "/home/tkim/scratch/OpenVSP/build/vsp/vspscript"
     MODEL_FILEPATH = "input/model.vsp3"
     STL_FILEPATH = f"{job_directory}/{job_id}.stl"
     VSPSCRIPT_FILEPATH = f"{job_directory}/{job_id}.vspscript"
@@ -85,9 +85,6 @@ void main()
     logger.info(
         f"Generated {STL_FILEPATH}, design variables: {point.get_representation()}"
     )
-
-    # meta
-    meta.add_meta("geometry", f"{job_id}.stl")
 
     GEOMETRY_RETURN = GeometryReturn(visualize_filepath=STL_FILEPATH)
 

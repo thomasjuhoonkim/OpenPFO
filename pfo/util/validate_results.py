@@ -118,6 +118,7 @@ def validate_job(job: dict):
         ("endTime", str),
         ("jobDirectory", str),
         ("objectives", list),
+        ("meta", dict),
     ]
 
     for field, expected_type in attributes:

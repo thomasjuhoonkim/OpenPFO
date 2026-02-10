@@ -12,6 +12,7 @@ def prepare(prepare_parameters: PrepareParameters):
     job_id = prepare_parameters.job_id
     logger = prepare_parameters.logger
     point = prepare_parameters.point
+    meta = prepare_parameters.meta
 
     """ ======================= YOUR CODE BELOW HERE ======================= """
 

@@ -58,9 +58,6 @@ def prepare(prepare_parameters: PrepareParameters):
     # write
     control_dict_file.writeFile()
 
-    # meta
-    meta.add_meta("case", job_id)
-
     PREPARE_RETURN = PrepareReturn()
 
     """ ======================= YOUR CODE ABOVE HERE ======================= """
