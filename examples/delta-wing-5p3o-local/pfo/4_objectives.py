@@ -5,8 +5,8 @@ import fluidfoam
 from classes.functions import ObjectivesParameters, ObjectivesReturn
 from classes.objective import Objective
 
-# simple-slurm
-from simple_slurm import Slurm
+# util
+from util.run_parallel_commands import run_parallel_commands
 
 
 def objectives(
@@ -65,23 +65,7 @@ def objectives(
         f"{SHARED} input/paraview/wall-shear.py {FOAM_FILEPATH} {job_directory}",
     ]
 
-    slurm1 = Slurm(
-        job_name=f"{job_id}-paraview",
-        account="def-jphickey",
-        time="00:05:00",
-        nodes=1,
-        ntasks_per_node=1,
-        cpus_per_task=16,
-        mem_per_cpu="4G",
-        output=f"{job_directory}/paraview.log",
-        open_mode="append",
-    )
-    slurm1.set_wait(True)
-
-    for command in COMMANDS:
-        slurm1.add_cmd(command)
-
-    slurm1.sbatch()
+    run_parallel_commands(commands=COMMANDS, max_workers=processors_per_job)
 
     # slice
     meta.add_meta("pv-slice", "slice.png")

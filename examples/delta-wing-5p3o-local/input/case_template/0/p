@@ -9,51 +9,50 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       volVectorField;
-    object      U;
+    class       volScalarField;
+    object      p;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #include        "include/initialConditions"
 
-dimensions      [0 1 -1 0 0 0 0];
+dimensions      [0 2 -2 0 0 0 0];
 
-internalField   uniform $flowVelocity;
+internalField   uniform $pressure;
 
 boundaryField
 {
     #includeEtc "caseDicts/setConstraintTypes"
     minX // inlet
     {
-        type            freestreamVelocity;
+        type            freestreamPressure;
         freestreamValue $internalField;
     }
     maxX // outlet
     {
-        type            freestreamVelocity;
+        type            freestreamPressure;
         freestreamValue $internalField;
     }
 
     minY // right side
     {
-        type            slip;
+        type            zeroGradient;
     }
     maxY // left side
     {
-        type            slip;
+        type            zeroGradient;
     }
     minZ // bottom
     {
-        type            movingWallVelocity;
-        value           uniform (10 0 0);
+        type            zeroGradient;
     }
     maxZ // top
     {
-        type            slip;
+        type            zeroGradient;
     }
     solid
     {
-        type            noSlip;
+        type            zeroGradient;
     }
 
 }
