@@ -68,7 +68,7 @@ def objectives(
     slurm1 = Slurm(
         job_name=f"{job_id}-paraview",
         account="def-jphickey",
-        time="00:05:00",
+        time="00:10:00",
         nodes=1,
         ntasks_per_node=1,
         cpus_per_task=16,
