@@ -50,7 +50,7 @@ def objectives(
 
     # ==========================================================================
 
-    SHARED = "/Applications/ParaView-6.0.1.app/Contents/bin/pvbatch"
+    SHARED = "pvbatch --force-offscreen-rendering --opengl-window-backend OSMesa"
     FOAM_FILEPATH = f"{job_directory}/{job_id}.foam"
     COMMANDS = [
         f"{SHARED} input/paraview/slice.py {FOAM_FILEPATH} {job_directory}",

@@ -28,8 +28,7 @@ def mesh(
     ground_height = ground_height_variable.get_value()
 
     COMMANDS = [
-        f"surfaceTransformPoints -case {job_directory} -rotate-angle '((0 1 0) 5)' {job_directory}/{job_id}.stl {job_directory}/aoa.stl",
-        f"surfaceGenerateBoundingBox -case {job_directory} {job_directory}/aoa.stl {job_directory}/combined.stl 50 50 25 25 {ground_height} 10",
+        f"surfaceGenerateBoundingBox -case {job_directory} {job_directory}/{job_id}.stl {job_directory}/combined.stl 50 50 25 25 {ground_height} 10",
         f"surfaceFeatureEdges {job_directory}/combined.stl {job_directory}/combined.fms -angle 5 -case {job_directory}",
         f"cartesianMesh -case {job_directory}",
     ]
