@@ -40,7 +40,7 @@ def mesh(
         nodes=1,
         ntasks_per_node=1,
         cpus_per_task=processors_per_job,
-        mem="16G",
+        mem="32G",
         output=f"{job_directory}/cartesianMesh.log",
         open_mode="append",
     )
