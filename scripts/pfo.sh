@@ -2,11 +2,11 @@
 
 #SBATCH --job-name=pfo
 #SBATCH --account=def-jphickey
-#SBATCH --time=100:00:00
+#SBATCH --time=160:00:00
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=16G
+#SBATCH --mem=32G
 #SBATCH --output=OpenPFO.log
 #SBATCH --open-mode=append
 
