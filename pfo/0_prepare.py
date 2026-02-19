@@ -42,7 +42,7 @@ def prepare(prepare_parameters: PrepareParameters):
     sweep_variable = point.get_variables()[2]
     sweep = sweep_variable.get_value()
     root_chord = 0.000298 * (sweep**2) + 0.0308 * (sweep) + 0.143
-    tip_chord = 0.10  # metres
+    tip_chord = 0.135  # metres
     taper_ratio = tip_chord / root_chord
     l_ref = (
         root_chord * (2 / 3) * ((1 + taper_ratio + taper_ratio**2) / (1 + taper_ratio))
