@@ -14,6 +14,7 @@ def solve(
     job_id = solve_parameters.job_id
     logger = solve_parameters.logger
     point = solve_parameters.point
+    meta = solve_parameters.meta
 
     """ ======================= YOUR CODE BELOW HERE ======================= """
 

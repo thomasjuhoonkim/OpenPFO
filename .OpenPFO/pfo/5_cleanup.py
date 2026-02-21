@@ -13,6 +13,7 @@ def cleanup(
     logger = cleanup_parameters.logger
     job_id = cleanup_parameters.job_id
     point = cleanup_parameters.point
+    meta = cleanup_parameters.meta
 
     """ ======================= YOUR CODE BELOW HERE ======================= """
 

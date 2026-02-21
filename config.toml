@@ -5,7 +5,7 @@
 [compute]
 hpc=true
 processors_per_job=64
-max_job_workers=6
+max_job_workers=15
 
 # PARAMETERS
 # name (name):  user-friendly name for the parameter
@@ -14,10 +14,30 @@ max_job_workers=6
 # max (float):  maximum value for the parameter
 [model]
 [[model.parameters]]
-name="Root Chord"
-id="GFXAORPLFWH:WingGeom:XSec_1:Root_Chord"
-min=0.8
-max=1.50
+name="Washout"
+id="RCQFCVTUPMK:WingGeom:XSec_1:Twist"
+min=-40
+max=0
+[[model.parameters]]
+name="Angle of Attack"
+id="AESEYMMNJRI:WingGeom:XForm:Y_Rel_Rotation"
+min=-2
+max=10
+[[model.parameters]]
+name="Sweep"
+id="DFMNISRTXAJ:WingGeom:XSec_1:Sweep"
+min=10
+max=33
+[[model.parameters]]
+name="Airfoil Thickness"
+id="BBGOGUGRFBF:WingGeom:XSecCurve_0:ThickChord"
+min=0.07
+max=0.3
+[[model.parameters]]
+name="Ground Height"
+id="ground-height"
+min=0.05
+max=0.2
 
 # OBJECTIVES
 # name:  user-friendly name for the parameter
@@ -32,3 +52,7 @@ type="minimize"
 id="cl"
 name="Cl"
 type="maximize"
+[[optimizer.objectives]]
+id="volume"
+name="Volume"
+type="minimize"

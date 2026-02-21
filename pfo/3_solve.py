@@ -7,9 +7,6 @@ from classes.functions import SolveParameters, SolveReturn
 # simple-slurm
 from simple_slurm import Slurm
 
-# PyFoam
-from PyFoam.Execution.BasicRunner import BasicRunner
-
 
 def solve(
     solve_parameters: SolveParameters,
@@ -23,6 +20,7 @@ def solve(
     job_id = solve_parameters.job_id
     logger = solve_parameters.logger
     point = solve_parameters.point
+    meta = solve_parameters.meta
 
     """ ======================= YOUR CODE BELOW HERE ======================= """
 
@@ -32,17 +30,10 @@ def solve(
         f"mpirun -np {processors_per_job} redistributePar -parallel -reconstruct -latestTime -case {job_directory}",
     ]
 
-    # for command in COMMANDS:
-    #     runner = BasicRunner(argv=command.split(" "))
-    #     runner.start()
-    #     if not runner.runOK():
-    #         logger.exception(f"{command} failed")
-    #         raise Exception(f"{command} failed")
-
     slurm = Slurm(
         job_name=f"{job_id}-simpleFoam",
         account="def-jphickey",
-        time="00:40:00",
+        time="02:15:00",
         nodes=1,
         ntasks_per_node=processors_per_job,
         mem_per_cpu="4G",
@@ -59,7 +50,7 @@ def solve(
     # VALIDATION ===============================================================
 
     run_ok = True
-    if not os.path.isdir(f"{job_directory}/20"):
+    if not os.path.isdir(f"{job_directory}/40"):
         run_ok = False
 
     SOLVE_RETURN = SolveReturn(run_ok=run_ok)

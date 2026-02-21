@@ -14,6 +14,7 @@ def mesh(
     logger = mesh_parameters.logger
     job_id = mesh_parameters.job_id
     point = mesh_parameters.point
+    meta = mesh_parameters.meta
 
     """ ======================= YOUR CODE BELOW HERE ======================= """
 

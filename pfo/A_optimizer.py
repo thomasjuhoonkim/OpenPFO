@@ -6,10 +6,10 @@ from pymoo.algorithms.moo.nsga2 import NSGA2
 
 
 def optimizer(problem: Any):
-    algorithm = NSGA2(pop_size=12)
+    algorithm = NSGA2(pop_size=30)
     algorithm.setup(
         problem=problem,
-        termination=("n_gen", 10),
+        termination=("n_gen", 30),
         seed=1,
         verbose=True,
         save_history=True,

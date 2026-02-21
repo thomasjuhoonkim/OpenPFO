@@ -82,8 +82,14 @@ class Progress:
                 search["id"]: search for search in self._results["workflow"]["searches"]
             }
 
-            self._start_time = datetime.fromisoformat(self._results["startTime"])
-            self._end_time = datetime.fromisoformat(self._results["endTime"])
+            start_time = self._results["startTime"]
+            end_time = self._results["endTime"]
+            self._start_time = (
+                datetime.fromisoformat(start_time) if start_time else datetime.now()
+            )
+            self._end_time = (
+                datetime.fromisoformat(end_time) if end_time else datetime.now()
+            )
             self._existing_results = True
 
         logger.info("Progress recovered successfully")
@@ -142,7 +148,7 @@ class Progress:
 
         return None
 
-    def save_start_time(self, start_time: datetime = None):
+    def save_start_time(self, start_time: datetime):
         if self._existing_results:
             return None
 
@@ -154,7 +160,7 @@ class Progress:
 
         return None
 
-    def save_end_time(self, end_time: datetime = None):
+    def save_end_time(self, end_time: datetime):
         self._results["endTime"] = end_time.isoformat()
 
         self._save()

@@ -19,29 +19,31 @@ def geometry(
     job_id = geometry_parameters.job_id
     logger = geometry_parameters.logger
     point = geometry_parameters.point
+    meta = geometry_parameters.meta
 
     """ ======================= YOUR CODE BELOW HERE ======================= """
-
-    root_chord_variable = point.get_variables()[0]
-    root_chord = root_chord_variable.get_value()
-    tip_chord = 0.10  # metres
-    taper_ratio = tip_chord / root_chord
-    sweep = 2274.36 * taper_ratio**2 - 687.62 * taper_ratio + 68.69
-    sweep_variable = Variable(
-        name="Sweep", id="DFMNISRTXAJ:WingGeom:XSec_1:Sweep", value=sweep
+    root_chord = meta.get_meta("root-chord")
+    root_chord_variable = Variable(
+        name="Root Chord", id="GFXAORPLFWH:WingGeom:XSec_1:Root_Chord", value=root_chord
     )
-    updated_variables = [*point.get_variables(), sweep_variable]
-    updated_point = Point(variables=updated_variables)
+
+    geometry_variables_excluding_ground_height = [*point.get_variables()]
+    geometry_variables_excluding_ground_height.pop(-1)
+    updated_geometry_variables = [
+        *geometry_variables_excluding_ground_height,
+        root_chord_variable,
+    ]
+    updated_point = Point(variables=updated_geometry_variables)
 
     # ==========================================================================
 
     # OpenVSP
-    # OPENVSP_FILEPATH = "/Users/thomaskim/Downloads/OpenVSP-3.46.0-MacOS/vspscript"
     OPENVSP_FILEPATH = "/home/tkim/scratch/OpenVSP/build/vsp/vspscript"
     MODEL_FILEPATH = "input/model.vsp3"
     STL_FILEPATH = f"{job_directory}/{job_id}.stl"
     VSPSCRIPT_FILEPATH = f"{job_directory}/{job_id}.vspscript"
-    DES_FILEPATH = f"{job_directory}/{job_id}.des"
+    INPUT_DES_FILEPATH = f"{job_directory}/{job_id}-input.des"
+    OUTPUT_DES_FILEPATH = f"{job_directory}/{job_id}-output.des"
     POINT = updated_point
 
     # design variables file for openvsp model variable definitions
@@ -54,7 +56,7 @@ def geometry(
         variables_definitions += f"{id}: {value}\n"
     design_variables_content = f"""{len(variables)}\n{variables_definitions}"""
 
-    with open(DES_FILEPATH, "w") as f:
+    with open(INPUT_DES_FILEPATH, "w") as f:
         f.write(design_variables_content)
 
     # vspscript file for vsp model mutation
@@ -62,11 +64,23 @@ def geometry(
 void main()
 {{
     ClearVSPModel();
+
     ReadVSPFile("{MODEL_FILEPATH}");
     Update();
-    ReadApplyDESFile("{DES_FILEPATH}");
+    ReadApplyDESFile("{INPUT_DES_FILEPATH}");
     Update();
     ExportFile("{STL_FILEPATH}", SET_ALL, EXPORT_STL);
+
+    DeleteAllDesignVars();
+    string compGeomID = ComputeCompGeom(SET_ALL, false, 0);
+    string resultID = FindLatestResultsID("Comp_Geom");
+    double volume = GetDoubleResults(resultID, "Theo_Vol")[0];
+    string volumeParameterID = AddUserParm(PARM_DOUBLE_TYPE, "Volume", "Design");
+    SetParmVal(volumeParameterID, volume);
+    AddDesignVar(volumeParameterID, 0);
+    Update();
+    WriteDESFile("{OUTPUT_DES_FILEPATH}");
+
     VSPExit(0);
 }}
 """
@@ -85,6 +99,22 @@ void main()
     logger.info(
         f"Generated {STL_FILEPATH}, design variables: {point.get_representation()}"
     )
+
+    # ==========================================================================
+
+    # volume extraction
+    volume_value = None
+    with open(OUTPUT_DES_FILEPATH, "r") as f:
+        lines = f.readlines()
+        line = lines[1]
+        part = line.split(" ")[1]
+        volume_value = float(part)
+
+    # ==========================================================================
+
+    # meta
+    meta.add_meta("volume", volume_value)
+    meta.add_meta("geometry", f"{job_id}.stl")
 
     GEOMETRY_RETURN = GeometryReturn(visualize_filepath=STL_FILEPATH)
 
