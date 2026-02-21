@@ -27,7 +27,7 @@ logger = get_logger()
 
 
 def run(
-    cleanup: Annotated[bool, typer.Option(help="Run cleanup after each job")] = True,
+    cleanup: Annotated[bool, typer.Option(help="Whether to run the clean step")] = True,
     resume: Annotated[
         bool, typer.Option(help="Resume progress from an existing run")
     ] = False,

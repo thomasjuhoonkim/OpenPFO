@@ -108,33 +108,117 @@ An optimization typically involves the exploration of the design space of a para
 
 ### Commands
 
-OpenPFO comes with a collection of commands to help set up, test, and run your optimizations.
+OpenPFO comes with a collection of commands to help set up, test, and run your optimizations. Every command comes with a `--help` flag.
 
 #### `pfo hello`
 
+Say hello to OpenPFO.
+
 #### `pfo version`
+
+Get the version of OpenPFO.
 
 #### `pfo resetOutput`
 
+Deletes the output directory `output/`.
+
+> [!NOTE]
+> Make sure you save any important your work before running this command.
+
 #### `pfo checkConfig`
+
+Checks the validity of the configuration file `config.toml` against the schema.
 
 #### `pfo checkPrepare`
 
+Checks the preparation job step function `0_prepare.py`.
+
+##### Options
+
+| Option  | Type    | Description                                       |
+| ------- | ------- | ------------------------------------------------- |
+| count   | Integer | The number of points to generate                  |
+| random  | Boolean | Whether to randomize the points or linearize them |
+| cleanup | Boolean | Whether to run the cleanup step                   |
+
 #### `pfo checkGeometries`
+
+Checks the geometry generation job step function `1_geometry.py`.
+
+##### Options
+
+| Option    | Type    | Description                                                                                                                                                          |
+| --------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| count     | Integer | The number of points to generate                                                                                                                                     |
+| random    | Boolean | Whether to randomize the points or linearize them                                                                                                                    |
+| visualize | Boolean | Whether to visualize the geometries using `pyvista` (HPC mode must be disabled and a `visualize_filepath` must be returned in the `1_geometry.py` job step function) |
+| cleanup   | Boolean | Whether to run the cleanup step                                                                                                                                      |
 
 #### `pfo checkMeshes`
 
+Checks the mesh generation job step function `2_mesh.py`.
+
+| Option  | Type    | Description                                       |
+| ------- | ------- | ------------------------------------------------- |
+| count   | Integer | The number of points to generate                  |
+| random  | Boolean | Whether to randomize the points or linearize them |
+| cleanup | Boolean | Whether to run the cleanup step                   |
+
+#### `pfo checkSolver`
+
+Checks the solving job step function `3_solve.py`.
+
+| Option  | Type    | Description                                       |
+| ------- | ------- | ------------------------------------------------- |
+| count   | Integer | The number of points to generate                  |
+| random  | Boolean | Whether to randomize the points or linearize them |
+| cleanup | Boolean | Whether to run the cleanup step                   |
+
 #### `pfo checkObjectives`
+
+Checks the objective extraction job step function `4_objectives.py`.
+
+> [!NOTE]
+> This command always retrieves existing outputs inside `output/` and executes the `4_objectives.py` job step function on them.
+
+#### `pfo checkCleanup`
+
+Checks the cleanup job step function `5_cleanup.py`.
+
+> [!NOTE]
+> This command always retrieves existing outputs inside `output/` and executes the `5_cleanup.py` job step function on them.
 
 #### `pfo checkRun`
 
+Checks all job step functions as though they would run in the optimizer.
+
+| Option     | Type    | Description                                       |
+| ---------- | ------- | ------------------------------------------------- |
+| count      | Integer | The number of points to generate                  |
+| random     | Boolean | Whether to randomize the points or linearize them |
+| objectives | Boolean | Whether to run the objectives step                |
+| cleanup    | Boolean | Whether to run the cleanup step                   |
+| resume     | Boolean | Resume progress from an existing run              |
+
 #### `pfo checkResults`
+
+Checks the validity of the `results.json` file against a schema.
 
 #### `pfo checkOutput`
 
+Checks and warns the presence of the `output` directory.
+
+> [!NOTE]
+> This check function is ran before any workflows begin to ensure a user does not accidentally overwrite their existing outputs.
+
 #### `pfo run`
 
-#### `pfo collectAssets`
+Runs the optimizer using the optimization algorithm defined in `A_optimizer.py`, the configuration defined in `config.toml` and all user-defined job step functions defined in `pfo/`.
+
+| Option  | Type    | Description                          |
+| ------- | ------- | ------------------------------------ |
+| cleanup | Boolean | Whether to run the cleanup step      |
+| resume  | Boolean | Resume progress from an existing run |
 
 ### Configuration
 
@@ -514,11 +598,19 @@ def optimizer(problem: Any):
 
 ### Local Usage
 
-...
+To be filled...
 
 ### SLURM Usage
 
+To be filled...
+
 If you are using `simple-slurm`, make sure your `SQUEUE_FORMAT` environment variable is valid. If you are unsure about its validity, `simple-slurm` will raise an error. You can also set the variable to `"%i","%j","%t","%M","%L","%D","%C","%m","%b","%R"`, `simple-slurm`'s default value.
+
+### Progress Recovery
+
+To be filled...
+
+// `pymoo`, reproducibility requirement.
 
 ## Outputs
 
@@ -612,11 +704,15 @@ The OpenPFO report plugin is a tool to help visualize the progress and/or result
 
 ### Asset Collection
 
+To be filled...
+
 ### Output Compression
+
+To be filled...
 
 ### Surrogate Modeling
 
-...
+To be filled...
 
 ## Acknowledgements
 
