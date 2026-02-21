@@ -596,6 +596,18 @@ def optimizer(problem: Any):
     return algorithm
 ```
 
+#### Error Handling
+
+To be filled...
+
+##### Automatic Exception Capturing
+
+To be filled...
+
+##### Job Step Function Validation
+
+To be filled...
+
 ### Local Usage
 
 To be filled...
