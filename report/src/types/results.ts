@@ -69,6 +69,7 @@ const job = z.object({
   jobDirectory: z.string(),
   point,
   objectives: z.array(objective),
+  meta: z.record(z.string(), z.any()),
 });
 export type Job = z.infer<typeof job>;
 

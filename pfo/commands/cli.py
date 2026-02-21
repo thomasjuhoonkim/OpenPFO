@@ -24,7 +24,7 @@ from commands.collect_assets import collect_assets
 from commands.test import test
 from commands.hello import hello
 
-app = typer.Typer(name="pfo", help="Opensource Parametric Flow Optimizer")
+app = typer.Typer(name="pfo", help="Open Parametric Flow Optimizer")
 
 # reset
 app.command(
@@ -57,7 +57,7 @@ app.command(name="hello")(hello)
 
 @app.command()
 def version():
-    typer.echo("OpenPFO v0.1.0")
+    typer.echo("OpenPFO v1.0.0")
 
 
 if __name__ == "__main__":

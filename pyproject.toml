@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "OpenPFO"
-version = "0.1.0"
-description = "Opensource Parametric Flow Optimizer"
+version = "1.0.0"
+description = "Open Parametric Flow Optimizer"
 authors = [
   { name = "Thomas Kim", email = "thomas.kim@uwaterloo.ca" },
   { name = "Emma-Lee Keeping", email = "ekeeping@uwaterloo.ca" },
