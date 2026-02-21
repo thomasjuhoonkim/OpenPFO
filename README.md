@@ -1,6 +1,12 @@
 # OpenPFO
 
+To be filled...
+
+The Open Parametric Flow Optimizer is an open-source design space exploration and optimization tool for computational fluid dynamics based optimizations.
+
 ## Getting Started
+
+Quickstart instructions are provided below; however, if you prefer to set up the environment yourself, step-by-step instructions are provided in the subsequent sections.
 
 ### Quickstart
 
@@ -13,8 +19,6 @@ source scripts/init-local.sh
 # HPC
 source scripts/init-hpc.sh
 ```
-
-However, if you prefer to set up the environment yourself, step-by-step instructions are provided below.
 
 ### Python
 
@@ -39,6 +43,8 @@ source .venv/bin/activate
 ```
 
 ### Dependencies
+
+To be filled...
 
 #### Python
 
@@ -75,19 +81,21 @@ pip install -e .
 
 ## Usage
 
+To be filled...
+
 ### Overview
 
 OpenPFO requires configuration in several locations.
 
 1. `input/`: The input directory where any input files and directories are located.
 2. `pfo/`: OpenPFO source directory and user-defined job step functions and the optimization algorithm.
-   1. `pfo/0_prepare.py`: Job preparation user-defined step function.
-   2. `pfo/1_geometry.py`: Job geometry generation user-defined step function.
-   3. `pfo/2_mesh.py`: Job mesh generation user-defined step function.
-   4. `pfo/3_solve.py`: Job solving user-defined step function.
-   5. `pfo/4_objectives.py`: Job objective extraction user-defined step function.
-   6. `pfo/5_cleanup.py`: Job cleanup user-defined step function.
-   7. `pfo/A_optimizer.py`: Configure optimization step algorithm.
+   1. `0_prepare.py`: Job preparation user-defined step function.
+   2. `1_geometry.py`: Job geometry generation user-defined step function.
+   3. `2_mesh.py`: Job mesh generation user-defined step function.
+   4. `3_solve.py`: Job solving user-defined step function.
+   5. `4_objectives.py`: Job objective extraction user-defined step function.
+   6. `5_cleanup.py`: Job cleanup user-defined step function.
+   7. `A_optimizer.py`: Configure optimization step algorithm.
 3. `config.toml`: OpenPFO configuration.
 
 ### Inputs
@@ -96,7 +104,10 @@ Inputs for the optimization can be placed anywhere; however, for tidiness, it is
 
 #### Case Template (OpenFOAM)
 
-If you are running OpenPFO with OpenFOAM as the solver and/or mesher, it is generally a good idea to keep a case template in the `input/` directory. For example, `input/case_template/`. The case template is a single template that all points in the design space can inherit. This means your template mesh and solver settings should be compatible with all points in the design space [^1].
+If you are running OpenPFO with OpenFOAM as the solver and/or mesher, it is generally a good idea to keep a case template in the `input/` directory. For example, `input/case_template/`. The case template is a single template that all points in the design space can inherit. This means your template mesh and solver settings should be compatible with all points in the design space.
+
+> [!NOTE]
+> This is not a strict requirement. OpenPFO will run reasonably well as long as your template mesh and solver settings are compatible with _most_ points in the design space. Localized errors in the design space are simply avoided by the optimization algorithm through infinite objective values and user-defined constraint violations.
 
 #### Post-processing (ParaView)
 
@@ -608,21 +619,21 @@ To be filled...
 
 To be filled...
 
-### Local Usage
-
-To be filled...
-
-### SLURM Usage
-
-To be filled...
-
-If you are using `simple-slurm`, make sure your `SQUEUE_FORMAT` environment variable is valid. If you are unsure about its validity, `simple-slurm` will raise an error. You can also set the variable to `"%i","%j","%t","%M","%L","%D","%C","%m","%b","%R"`, `simple-slurm`'s default value.
-
 ### Progress Recovery
 
 To be filled...
 
 // `pymoo`, reproducibility requirement.
+
+### Notes on Local Usage
+
+To be filled...
+
+### Notes on SLURM Usage
+
+To be filled...
+
+If you are using `simple-slurm`, make sure your `SQUEUE_FORMAT` environment variable is valid. If you are unsure about its validity, `simple-slurm` will raise an error. You can also set the variable to `"%i","%j","%t","%M","%L","%D","%C","%m","%b","%R"`, `simple-slurm`'s default value.
 
 ## Outputs
 
@@ -828,5 +839,3 @@ type Result = {
   command: string;
 };
 ```
-
-[^1]: This is not a strict requirement. OpenPFO will run reasonably well as long as your template mesh and solver settings are compatible with _most_ points in the design space. Localized errors in the design space are simply avoided by the optimization algorithm through infinite objective values and user-defined constraint violations.
