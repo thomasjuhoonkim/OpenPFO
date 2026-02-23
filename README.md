@@ -815,7 +815,7 @@ Once progress is successfully recovered, jobs that were previously running are f
 For example, if the workflow is paused while a job was mid-execution in the solving step, there is not enough granularity in the saved progress data to know at what point in time to resume solving. It is much easier to cleanup all job artifacts and start again from the first step.
 
 > [!WARNING]
-> Progress recovery REQUIRES a reproducible optimization algorithm. If you are using `pymoo` algorithms, the `seed` argument must be deterministic. If you are implementing your own `pymoo` algorithm, you must ensure your algorithm is deterministic.
+> Progress recovery **requires** a reproducible optimization algorithm. If you are using `pymoo` algorithms, the `seed` argument must be deterministic. If you are implementing your own `pymoo` algorithm, you must ensure your algorithm is deterministic.
 
 ### Notes on Local Usage
 
@@ -957,8 +957,6 @@ This project was made possible through the Faculty of Engineering at the Univers
 - [Kate Armstrong](https://www.linkedin.com/in/katelarmstrong/) - [katelarmstrong](https://github.com/katelarmstrong) - [k24armstrong@uwaterloo.ca](mailto:k24armstrong@uwaterloo.ca)
 - [Emma Keeping](https://www.linkedin.com/in/emmaleekeeping/) - [emmaleekeeping](https://github.com/emmaleekeeping) - [ekeeping@uwaterloo.ca](mailto:ekeeping@uwaterloo.ca)
 
----
-
 ### Advisors
 
 - [Dr. Jean-Pierre Hickey](https://uwaterloo.ca/mechanical-mechatronics-engineering/profile/j6hickey)
@@ -967,6 +965,8 @@ This project was made possible through the Faculty of Engineering at the Univers
 ### Disclaimer
 
 OpenPFO is part of the University of Waterloo's engineering capstone project courses. Future maintenence of this repository is subject to contributor availability. Contributors are welcome, please reach out to project owners regarding contributing.
+
+---
 
 ### Appendix
 
