@@ -1,8 +1,151 @@
 # OpenPFO
 
-To be filled...
+Add image...
 
-The Open Parametric Flow Optimizer is an open-source design space exploration and optimization tool for computational fluid dynamics based optimizations.
+The Open Parametric Flow Optimizer is an open-source design space exploration and optimization tool for computational fluid dynamics based design optimizations.
+
+## Table of Contents
+
+1. [Introduction](#introduction)
+   1. [Computation Fluid Dynamics Optimization Lifecycle](#computation-fluid-dynamics-optimization-lifecycle)
+   2. [What does OpenPFO do?](#what-does-openpfo-do)
+   3. [What doesn't OpenPFO do?](#what-doesnt-openpfo-do)
+2. [Concepts](#concepts)
+   1. [Job](#job)
+   2. [Search](#search)
+   3. [Problem & Algorithm](#problem-and-algorithm)
+3. [Getting Started](#getting-started)
+   1. [Quickstart](#quickstart)
+   2. [Python](#python)
+   3. [Virtual Environment](#virtual-environment)
+   4. [Dependencies](#dependencies)
+      1. [Python](#python-1)
+      2. [OpenVSP (Optional)](#openvsp-optional)
+      3. [FreeCAD (Optional)](#freecad-optional)
+   5. [Install](#install)
+4. [Usage](#usage)
+   1. [Overview](#overview)
+   2. [Inputs](#inputs)
+      1. [Case Template (OpenFOAM)](#case-template-openfoam)
+      2. [Post-processing (ParaView)](#post-processing-paraview)
+      3. [Geometry Model (FreeCAD/OpenVSP)](#geometry-model-freecadopenvsp)
+   3. [Commands](#commands)
+      1. [pfo hello](#pfo-hello)
+      2. [pfo version](#pfo-version)
+      3. [pfo resetOutput](#pfo-resetoutput)
+      4. [pfo checkConfig](#pfo-checkconfig)
+      5. [pfo checkPrepare](#pfo-checkprepare)
+         - [Options](#options)
+      6. [pfo checkGeometries](#pfo-checkgeometries)
+         - [Options](#options-1)
+      7. [pfo checkMeshes](#pfo-checkmeshes)
+      8. [pfo checkSolver](#pfo-checksolver)
+      9. [pfo checkObjectives](#pfo-checkobjectives)
+      10. [pfo checkCleanup](#pfo-checkcleanup)
+      11. [pfo checkRun](#pfo-checkrun)
+      12. [pfo checkResults](#pfo-checkresults)
+      13. [pfo checkOutput](#pfo-checkoutput)
+      14. [pfo run](#pfo-run)
+5. [Configuration](#configuration)
+   1. [Compute Settings](#compute-settings)
+      - [Example](#example)
+      - [High Performance Computing (HPC) Flag](#high-performance-computing-hpc-flag)
+      - [Processors per Job](#processors-per-job)
+      - [Max Job Workers](#max-job-workers)
+   2. [Design Parameters](#design-parameters)
+      - [Example](#example-1)
+      - [Name](#name)
+      - [ID](#id)
+      - [Minimum](#minimum)
+      - [Maximum](#maximum)
+   3. [Optimization Objectives](#optimization-objectives)
+      - [Example](#example-2)
+      - [Name](#name-1)
+      - [ID](#id-1)
+      - [Type](#type)
+   4. [Job Step Functions](#job-step-functions)
+      - [`0_prepare.py`](#0_preparepy)
+      - [`1_geometry.py`](#1_geometrypy)
+      - [`2_mesh.py`](#2_meshpy)
+      - [`3_solve.py`](#3_solvepy)
+      - [`4_objectives.py`](#4_objectivespy)
+      - [`5_cleanup.py`](#5_cleanuppy)
+      - [`A_optimizer.py`](#a_optimizerpy)
+   5. [Error Handling](#error-handling)
+      - [Automatic Exception Catching](#automatic-exception-catching)
+      - [Job Step Function Validation](#job-step-function-validation)
+      - [Default Penalty](#default-penalty)
+   6. [Progress Recovery](#progress-recovery)
+   7. [Notes on Local Usage](#notes-on-local-usage)
+   8. [Notes on HPC Usage](#notes-on-hpc-usage)
+6. [Outputs](#outputs)
+   1. [Structured Output](#structured-output)
+      1. [`results.json`](#resultsjson)
+      2. [meta](#meta)
+   2. [Unstructured Output](#unstructured-output)
+      1. [Filesystem](#filesystem)
+      2. [Logs](#logs)
+7. [Plugins](#plugins)
+
+## Introduction
+
+OpenPFO is a collection of abstractions, tools, and plugins that help automate computational fluid dynamics (CFD) based design space exploration and optimization.
+
+### Computation Fluid Dynamics Optimization Lifecycle
+
+![A diagram of the computational fluid dynamics optimization lifecycle](docs/cfd-optimization-lifecycle.png)
+
+The CFD optimization lifecycle involves the optimizer, typically an engineer, to define the constraints of a design problem through the bounds of parameters in a geometry model.
+
+The parameters are used to generate geometries, the geometries are used to generate meshes, the meshes are used to run the CFD solvers, and the results are used to extract performance objectives which are analyzed by the engineer who continues this optimization process.
+
+Every intermediate step in this process is time-consuming, tedious, and error-prone.
+
+### What does OpenPFO do?
+
+![A diagram of what OpenPFO does in the CFD optimization lifecycle](docs/what-does-openpfo-do.png)
+
+OpenPFO attempts to simplify the CFD optimization lifecycle by reducing the amount of time-consuming, tedious, and error-prone steps by constructing abstractions, provide quality of life tools, and programmatically automating intermediate processes.
+
+A programmatic implementation of optimization algorithms generate a set of parameter combinations to evaluate, the parameters are used to generate geometries through modeling software, the geometries are meshed using meshing software, the meshes are solved using solving software, the objectives are extracted from the solver results, and objectives are used by the optimization algorithm to continue this optimization process.
+
+### What doesn't OpenPFO do?
+
+![A diagram of what OpenPFO does not do in the CFD optimization lifecycle](docs/what-does-not-openpfo-do.png)
+
+OpenPFO was designed to be extensible with any geometry generator, any mesher, any solver, and any post-processor. Rather than providing opinionated abstractions over each of these steps, OpenPFO provides templates for [user-defined functions (UDF)](#job-step-functions) with opinionated parameters and return values.
+
+Shown in blue above are user-defined functions. These functions provide the extensibiilty required for custom behaviour while providing the necessary robustness for reliable automation.
+
+## Concepts
+
+OpenPFO has four main abstractions that are used in the workflow.
+
+### Job
+
+![A diagram of a OpenPFO job](docs/job.png)
+
+A job is one sequence of the CFD process (geometry, mesh, solve, post-process) for one combination of design parameters.
+
+Jobs can be in one of the following states:
+
+![A diagram of various OpenPFO job states](docs/job-states.png)
+
+### Search
+
+![A diagram of an OpenPFO search](docs/search.png)
+
+A search is a collection of jobs that evaluate one set of parameter combinations.
+
+### Problem & Algorithm
+
+![A diagram including both a problem and an algorithm](docs/problem-and-algorithm.png)
+
+The problem provides the bounds of each design parameter as well as the objective types.
+
+The algorithm is the programmatic implementation of the optimization algorithm and uses the objectives evaluated from each search iteration to generate new sets of parameter combinations to evaluate.
+
+After the algorithm's termination criterion is reaches, a final set of solution(s) are provided.
 
 ## Getting Started
 
@@ -16,7 +159,7 @@ Quick setup scripts are provided in `scripts/`.
 # Local
 source scripts/init-local.sh
 
-# HPC
+# High performance computing (HPC)
 source scripts/init-hpc.sh
 ```
 
@@ -44,7 +187,7 @@ source .venv/bin/activate
 
 ### Dependencies
 
-To be filled...
+OpenPFO only requires a handful of dependencies to operate. Some optional dependencies that may be required for the user-defined functions, installation steps for them are provided below.
 
 #### Python
 
@@ -73,7 +216,7 @@ To be filled...
 
 ### Install
 
-To start using OpenPFO, install the package in editable mode. This is important as OpenPFO is a framework, you design your own implementation.
+To start using OpenPFO, install the package in editable mode. This is important as OpenPFO is a framework, you implement your own user-defined functions.
 
 ```
 pip install -e .
@@ -133,7 +276,7 @@ Get the version of OpenPFO.
 
 Deletes the output directory `output/`.
 
-> [!NOTE]
+> [!WARNING]
 > Make sure you save any important your work before running this command.
 
 #### `pfo checkConfig`
@@ -248,7 +391,7 @@ processors_per_job=64
 max_job_workers=15
 ```
 
-##### HPC Flag
+##### High Performance Computing (HPC) Flag
 
 Due to the more restrictive nature of command-line interfaces of most HPC platforms, a flag is provided to turn OpenPFO GUI features off.
 
@@ -609,31 +752,82 @@ def optimizer(problem: Any):
 
 #### Error Handling
 
-To be filled...
+![A diagram of error handling at the job-level](docs/error-handling.png)
 
-##### Automatic Exception Capturing
+Errors happen during automated workflow runs for a variety of reasons.
 
-To be filled...
+- The user-defined functions contain bugs.
+- The geometry fails to generate.
+- The mesh fails to generate.
+- The solver encounters numerical instabilities.
+- The objectives fail to be extracted.
+- Etc.
+
+Regardless, errors should be expected and gracefully handled in order for the workflow to run end-to-end with no user intervention unless they are desired (pausing the workflow).
+
+OpenPFO handles errors using two methods: automatic exception catching and job step function validation.
+
+##### Automatic Exception Catching
+
+![A diagram of the automatic exception catching logic](docs/try-except.png)
+
+Every job step function catches all exceptions at the job class implementation (using `try ... except`) so the error handling logic is hidden from the user. Should a job step encounter a runtime exception, errors all future job step functions are skipped and the job immedietly executes the cleanup step before terminating.
 
 ##### Job Step Function Validation
 
-To be filled...
+Sometimes, a successful execution of an external tool may not always signal correct job artifact outputs. For example, the `cfMesh` mesher executing successfully may not always indicate that the output mesh's quality is satisfactory. Another example is when the solver successfully executes but does not complete the full timespan for the required residuals.
+
+In such cases, user-defined functions should allow for user-defined validation mechanisms to ensure the artifacts of the job step are satisfactory, in other words, whether or not an error occured during the execution of the job steps.
+
+OpenPFO provides validation capabilities through the return value constructor of user-defined job step functions. An example implementation of validation logic for the OpenFOAM solver is provided below.
+
+```python
+run_ok = True
+if not os.path.isdir(f"{job_directory}/40"):
+   run_ok = False
+
+SOLVE_RETURN = SolveReturn(run_ok=run_ok)
+
+""" ======================= YOUR CODE ABOVE HERE ======================= """
+
+return SOLVE_RETURN
+```
+
+##### Default Penalty
+
+Whether each job successfully evaluates or not, this information must be propagated back up to the optimizer. While successful jobs will contain objective values, failed jobs will have empty values. To ensure the optimizer has the required evaluations to iterate through the optimization automatically, OpenPFO utilizes default penalties.
+
+All jobs are defaulted to maximum penalty unless the `4_objectives.py` user-defined function adds an objective value to each corresponding objective. When objective values are empty, the maximum penalty values are provided to the optimizer dependingo on the type of each objective.
+
+- A minimization objective will have a default penalty of the largest possible floating-point value on the execution machine.
+- A maximization objective will have a default penalty of the smallest possible floating-point value on the execution machine.
 
 ### Progress Recovery
 
-To be filled...
+![A diagram of progress recovery at the job level](docs/progress-recovery.png)
 
-// `pymoo`, reproducibility requirement.
+Often times, optimization runs may need to be paused due to context switches or due to running out of allocated SLURM time in an HPC environment. In such cases, it is a necessity that the workflow continues progress from where it left off.
+
+OpenPFO achieves progress recovery by reading the state of the workflow from the output `results.json`. **Given that the optimization algorithm is deterministic**, OpenPFO will pick up the evaluated objectives from previously ran jobs and reproduce the state from where the process was killed.
+
+Once progress is successfully recovered, jobs that were previously running are first cleaned up, and then restarted from the first step, not the last successful step. This design choice is intentional.
+
+For example, if the workflow is paused while a job was mid-execution in the solving step, there is not enough granularity in the saved progress data to know at what point in time to resume solving. It is much easier to cleanup all job artifacts and start again from the first step.
+
+> [!WARNING]
+> Progress recovery REQUIRES a reproducible optimization algorithm. If you are using `pymoo` algorithms, the `seed` argument must be deterministic. If you are implementing your own `pymoo` algorithm, you must ensure your algorithm is deterministic.
 
 ### Notes on Local Usage
 
-To be filled...
+Due to the compute-heavy nature of many geometry modelers, meshers and solvers, it is recommended to have ample compute capacity when using OpenPFO on personal devices.
 
-### Notes on SLURM Usage
-
-To be filled...
+### Notes on HPC Usage
 
 If you are using `simple-slurm`, make sure your `SQUEUE_FORMAT` environment variable is valid. If you are unsure about its validity, `simple-slurm` will raise an error. You can also set the variable to `"%i","%j","%t","%M","%L","%D","%C","%m","%b","%R"`, `simple-slurm`'s default value.
+
+While OpenPFO with job parallelization allows for jobs to be executed when workers are available, SLURM jobs utilize their own queue for job execution based on a multi-level priority queue. As such, OpenPFO cannot guarantee similar job runtimes when it is being run in SLURM.
+
+HPC platforms typically do not come with a GUI. As such, it is up to the user to ensure the tools being called for each user-defined function only call UI-less software tools.
 
 ## Outputs
 
@@ -648,6 +842,8 @@ output/
 ```
 
 ### Structured Output
+
+Structured outputs are data that is programmatically processable in a deterministic manner.
 
 #### `results.json`
 
@@ -701,6 +897,10 @@ meta.add_meta("computed-root-chord")
 
 ### Unstructured Output
 
+Unstructured outputs are not deterministic and usually not programmatically accessible.
+
+#### Filesystem
+
 OpenPFO outputs job artifacts and job assets into each job's job output directory. Each job's directory lives under the root output directory, `output/` as a named directory of the job ID, `output/[Job ID]/`.
 
 Users can save unstructured outputs such as ParaView screenshots, model standard files, OpenFOAM binned data, etc.
@@ -717,6 +917,10 @@ output/
                forceBin.dat
 ```
 
+#### Logs
+
+Every OpenPFO command outputs all runtime logs in `OpenPFO.log`.
+
 ## Plugins
 
 OpenPFO comes with plugins to support enhanced optimization and results visualization.
@@ -724,6 +928,8 @@ OpenPFO comes with plugins to support enhanced optimization and results visualiz
 ### Report
 
 The OpenPFO report plugin is a tool to help visualize the progress and/or results of the optimiztaion.
+
+To be filled...
 
 ### Asset Collection
 
@@ -737,9 +943,11 @@ To be filled...
 
 To be filled...
 
-## Acknowledgements
+## Examples
 
-### Funding
+To be filled...
+
+## Acknowledgements
 
 This project was made possible through the Faculty of Engineering at the University of Waterloo.
 
@@ -748,6 +956,8 @@ This project was made possible through the Faculty of Engineering at the Univers
 - [Thomas Kim](https://www.linkedin.com/in/thomasjuhoonkim) - [thomasjuhoonkim](https://github.com/thomasjuhoonkim) - [thomas.kim@uwaterloo.ca](mailto:thomas.kim@uwaterloo.ca)
 - [Kate Armstrong](https://www.linkedin.com/in/katelarmstrong/) - [katelarmstrong](https://github.com/katelarmstrong) - [k24armstrong@uwaterloo.ca](mailto:k24armstrong@uwaterloo.ca)
 - [Emma Keeping](https://www.linkedin.com/in/emmaleekeeping/) - [emmaleekeeping](https://github.com/emmaleekeeping) - [ekeeping@uwaterloo.ca](mailto:ekeeping@uwaterloo.ca)
+
+---
 
 ### Advisors
 
