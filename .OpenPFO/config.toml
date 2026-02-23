@@ -3,9 +3,9 @@
 # processors_per_job (int):  how many processors to allocate for each job (job step parallelization)
 # max_job_workers (int):     how many maximum job workers at any time (job parallelization)
 [compute]
-hpc=true
-processors_per_job=64
-max_job_workers=15
+hpc=false
+processors_per_job=0
+max_job_workers=0
 
 # PARAMETERS
 # name (name):  user-friendly name for the parameter
@@ -14,30 +14,15 @@ max_job_workers=15
 # max (float):  maximum value for the parameter
 [model]
 [[model.parameters]]
-name="Washout"
-id="RCQFCVTUPMK:WingGeom:XSec_1:Twist"
-min=-40
+name=""
+id=""
+min=0
 max=0
 [[model.parameters]]
-name="Angle of Attack"
-id="AESEYMMNJRI:WingGeom:XForm:Y_Rel_Rotation"
-min=-2
-max=10
-[[model.parameters]]
-name="Sweep"
-id="DFMNISRTXAJ:WingGeom:XSec_1:Sweep"
-min=10
-max=33
-[[model.parameters]]
-name="Airfoil Thickness"
-id="BBGOGUGRFBF:WingGeom:XSecCurve_0:ThickChord"
-min=0.07
-max=0.3
-[[model.parameters]]
-name="Ground Height"
-id="ground-height"
-min=0.05
-max=0.2
+name=""
+id=""
+min=0
+max=0
 
 # OBJECTIVES
 # name:  user-friendly name for the objective
@@ -45,14 +30,10 @@ max=0.2
 # type:  whether the goal is to minimize or maximize the objective
 [optimizer]
 [[optimizer.objectives]]
-name="Cd"
-id="cd"
-type="minimize"
+name=""
+id=""
+type=""
 [[optimizer.objectives]]
-name="Cl"
-id="cl"
-type="maximize"
-[[optimizer.objectives]]
-name="Volume"
-id="volume"
-type="minimize"
+name=""
+id=""
+type=""

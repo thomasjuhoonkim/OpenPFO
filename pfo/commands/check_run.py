@@ -26,14 +26,16 @@ logger = get_logger()
 
 
 def check_run(
-    count: Annotated[
-        int, typer.Option(help="The number of random points to generate")
-    ] = 1,
+    count: Annotated[int, typer.Option(help="The number of points to generate")] = 1,
     random: Annotated[
         bool, typer.Option(help="Randomize points in the design space")
     ] = True,
-    objectives: Annotated[bool, typer.Option(help="Run objectives()")] = True,
-    cleanup: Annotated[bool, typer.Option(help="Run cleanup after each job")] = True,
+    objectives: Annotated[
+        bool, typer.Option(help="Whether to run the objectives step")
+    ] = True,
+    cleanup: Annotated[
+        bool, typer.Option(help="Whether to run the cleanup step")
+    ] = True,
     resume: Annotated[
         bool, typer.Option(help="Resume progress from an existing run")
     ] = False,

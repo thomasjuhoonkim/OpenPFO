@@ -22,7 +22,7 @@ from util.get_random_points import get_random_points
 logger = get_logger()
 
 
-def check_meshes(
+def check_solver(
     count: Annotated[int, typer.Option(help="The number of points to generate")] = 1,
     random: Annotated[
         bool, typer.Option(help="Randomize points in the design space")
@@ -54,14 +54,14 @@ def check_meshes(
         logger.info(point.get_representation())
 
     # search
-    search = Search(id="check-meshes", points=points, progress=progress)
+    search = Search(id="check-solver", points=points, progress=progress)
     search.create_jobs()
     search.run_all(
         should_run_checks=True,
         should_run_prepare=True,
         should_run_geometry=True,
         should_run_mesh=True,
-        should_run_solve=False,
+        should_run_solve=True,
         should_run_objectives=False,
         should_run_cleanup=cleanup,
     )

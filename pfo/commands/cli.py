@@ -7,8 +7,10 @@ from commands.reset_output import reset_output
 # commands - check
 from commands.check_objectives import check_objectives
 from commands.check_geometries import check_geometries
+from commands.check_cleanup import check_cleanup
 from commands.check_results import check_results
 from commands.check_prepare import check_prepare
+from commands.check_solver import check_solver
 from commands.check_output import check_output
 from commands.check_config import check_config
 from commands.check_meshes import check_meshes
@@ -24,7 +26,7 @@ from commands.collect_assets import collect_assets
 from commands.test import test
 from commands.hello import hello
 
-app = typer.Typer(name="pfo", help="Opensource Parametric Flow Optimizer")
+app = typer.Typer(name="pfo", help="Open Parametric Flow Optimizer")
 
 # reset
 app.command(
@@ -37,7 +39,9 @@ app.command(name="checkConfig")(check_config)
 app.command(name="checkPrepare")(check_prepare)
 app.command(name="checkGeometries")(check_geometries)
 app.command(name="checkMeshes")(check_meshes)
+app.command(name="checkSolver")(check_solver)
 app.command(name="checkObjectives")(check_objectives)
+app.command(name="checkCleanup")(check_cleanup)
 app.command(name="checkRun")(check_run)
 app.command(name="checkResults")(check_results)
 app.command(name="checkOutput")(check_output)
@@ -57,7 +61,7 @@ app.command(name="hello")(hello)
 
 @app.command()
 def version():
-    typer.echo("OpenPFO v0.1.0")
+    typer.echo("OpenPFO v1.0.0")
 
 
 if __name__ == "__main__":

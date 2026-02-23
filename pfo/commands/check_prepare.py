@@ -23,13 +23,13 @@ logger = get_logger()
 
 
 def check_prepare(
-    count: Annotated[
-        int, typer.Option(help="The number of random points to generate")
-    ] = 1,
+    count: Annotated[int, typer.Option(help="The number of points to generate")] = 1,
     random: Annotated[
         bool, typer.Option(help="Randomize points in the design space")
     ] = True,
-    cleanup: Annotated[bool, typer.Option(help="Run cleanup after each job")] = False,
+    cleanup: Annotated[
+        bool, typer.Option(help="Whether to run the cleanup step")
+    ] = False,
 ):
     # pre-run checks
     check_output()
