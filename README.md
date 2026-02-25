@@ -86,6 +86,17 @@ The Open Parametric Flow Optimizer is an open-source design space exploration an
       1. [Filesystem](#filesystem)
       2. [Logs](#logs)
 7. [Plugins](#plugins)
+   1. [Report](#report)
+   2. [Asset Collection](#asset-collection)
+   3. [Output Compression](#output-compression)
+   4. [Surrogate Modeling](#surrogate-modeling)
+8. [Examples](#examples)
+9. [Acknowledgements](#acknowledgements)
+   1. [Contributors](#contributors)
+   2. [Advisors](#advisors)
+   3. [Disclaimer](#disclaimer)
+10. [Appendix](#appendix)
+11. [Appendix A: Full `results.json` schema definition](#appendix-a-full-resultsjson-schema-definition)
 
 ## Introduction
 
@@ -915,6 +926,8 @@ output/
          binField1/
             0/
                forceBin.dat
+   search-0-job-1/
+      ...
 ```
 
 #### Logs
@@ -968,9 +981,9 @@ OpenPFO is part of the University of Waterloo's engineering capstone project cou
 
 ---
 
-### Appendix
+## Appendix
 
-#### Appendix A: Full `results.json` schema definition
+### Appendix A: Full `results.json` schema definition
 
 ```typescript
 type Parameter = {
