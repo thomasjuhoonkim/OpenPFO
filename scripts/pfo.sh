@@ -2,11 +2,11 @@
 
 #SBATCH --job-name=pfo
 #SBATCH --account=def-jphickey
-#SBATCH --time=160:00:00
+#SBATCH --time=24:00:00
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=32G
+#SBATCH --mem=4G
 #SBATCH --output=OpenPFO.log
 #SBATCH --open-mode=append
 
@@ -14,4 +14,4 @@ module load python 3.11
 module load openfoam/v2312
 module load paraview/6.0.0
 
-pfo run
+pfo checkRun --count=9 --no-random
