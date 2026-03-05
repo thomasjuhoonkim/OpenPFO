@@ -5,54 +5,48 @@ import HighchartsReact from "highcharts-react-official";
 import "highcharts/themes/adaptive";
 import "highcharts/modules/accessibility";
 import "highcharts/modules/exporting";
-import "highcharts/modules/parallel-coordinates";
+import "highcharts/highcharts-more";
 
 import { useMemo } from "react";
 
 import type { Job, Results } from "@/types/results";
+import { getObjectiveRanges } from "@/util/getObjectiveRanges";
 
-export function PointParallelCoordinates({
+export function ObjectivesRadar({
   results,
   jobs,
   title,
+  isNormalized = false,
 }: {
   results: Results;
   jobs: Job[];
   title: string;
+  isNormalized?: boolean;
 }) {
-  const series = jobs.map((job) => ({
-    data: job.point.variables.map((variable) => variable.value),
-    color: job.runOk ? "rgba(255, 206, 47, 0.33)" : "rgba(198, 9, 15, 0.33)",
-    name: `${job.id}${job.runOk ? "" : " (failed)"}`,
-    marker: false,
-  }));
-
-  console.log(
-    results.config.model.parameters.map((parameter) => ({
-      min: parameter.min,
-      max: parameter.max,
-    }))
-  );
+  const series = jobs
+    .filter((job) => job.runOk)
+    .map((job) => ({
+      data: job.objectives.map((objective) => objective.value),
+      color: "rgba(255, 206, 47, 0.01)",
+      type: "line",
+      name: job.id,
+      marker: false,
+    }));
 
   const options: Options = useMemo(
     () => ({
       chart: {
         type: "spline",
-        className: "parallel-coordinates-chart",
-        parallelCoordinates: true,
-        parallelAxes: {
-          lineWidth: 2,
-          labels: {
-            x: 12,
-          },
+        className: "radar-chart",
+        polar: true,
+        parallelCoordinates: !isNormalized,
+      },
+      legend: {
+        enabled: true,
+        navigation: {
+          enabled: true,
         },
-        zooming: {
-          type: "y",
-        },
-        marginTop: 150,
-        marginBottom: 75,
-        marginRight: 25,
-        marginLeft: 0,
+        maxHeight: 100,
       },
       title: {
         text: title,
@@ -60,20 +54,28 @@ export function PointParallelCoordinates({
       subtitle: {
         text: "Source: OpenPFO",
       },
+      pane: {
+        startAngle: 0,
+        endAngle: 360,
+      },
       tooltip: {
         followPointer: true,
       },
       xAxis: {
-        categories: results.config.model.parameters.map(
-          (parameter) => parameter.name
+        categories: results.config.optimizer.objectives.map(
+          (objective) => objective.name
         ),
+        tickmarkPlacement: "on",
       },
-      yAxis: results.config.model.parameters.map((parameter) => ({
-        min: parameter.min,
-        max: parameter.max,
-        startOnTick: false,
-        endOnTick: false,
-      })),
+      yAxis: isNormalized
+        ? {
+            min: 0,
+            max: 1,
+          }
+        : getObjectiveRanges(results).objectiveRanges.map((objective) => ({
+            min: objective.min,
+            max: objective.max,
+          })),
       plotOptions: {
         series: {
           states: {
