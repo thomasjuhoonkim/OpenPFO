@@ -33,7 +33,7 @@ def solve(
     slurm = Slurm(
         job_name=f"{job_id}-simpleFoam",
         account="def-jphickey",
-        time="02:00:00",
+        time="03:30:00",
         nodes=1,
         ntasks_per_node=processors_per_job,
         mem_per_cpu="4G",
