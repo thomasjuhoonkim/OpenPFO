@@ -2,10 +2,10 @@
 
 #SBATCH --job-name=cleanup-job
 #SBATCH --account=def-jphickey
-#SBATCH --time=00:30:00
+#SBATCH --time=00:02:00
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=1
+#SBATCH --cpus-per-task=160
 #SBATCH --mem=1G
 #SBATCH --output=cleanup-job.log
 #SBATCH --open-mode=append
