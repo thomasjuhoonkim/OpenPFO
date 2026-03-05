@@ -3,13 +3,17 @@ import { createFileRoute } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
 import * as z from "zod";
 
-import { ObjectivesParallelCoordinates } from "@/components/ObjectivesParallelCoordinates";
 import { PointParallelCoordinates } from "@/components/PointParallelCoordinates";
-import { StepSankey } from "@/components/StepSankey";
 import { results as schemaResults } from "@/types/results";
+import { TabObjectives } from "../../../components/TabObjectives";
+import { TabSteps } from "../../../components/TabSteps";
+import { TabPointsAndObjectives } from "../../../components/TabPointsAndObjectives";
+import { TabOverview } from "../../../components/TabOverview";
 
 const jobSearchSchema = z.object({
-  tab: z.enum(["points", "objectives", "steps"]).default("points"),
+  tab: z
+    .enum(["overview", "points", "objectives", "points-objectives", "steps"])
+    .default("overview"),
 });
 
 export const Route = createFileRoute("/results/jobs/")({
@@ -28,11 +32,11 @@ function RouteComponent() {
   const { tab } = Route.useSearch();
   const { results } = Route.useLoaderData();
 
-  function onTabChange(value: any) {
+  async function onTabChange(value: any) {
     if (!value) {
       return;
     }
-    navigate({
+    await navigate({
       search: (prev) => ({
         ...prev,
         tab: value,
@@ -46,32 +50,36 @@ function RouteComponent() {
     <Tabs h="100%" onChange={onTabChange} defaultValue={tab}>
       <Flex h="100%" direction="column">
         <Tabs.List>
+          <Tabs.Tab value="overview">Overview</Tabs.Tab>
           <Tabs.Tab value="points">Points</Tabs.Tab>
           <Tabs.Tab value="objectives">Objectives</Tabs.Tab>
+          <Tabs.Tab value="points-objectives">Points & Objectives</Tabs.Tab>
           <Tabs.Tab value="steps">Steps</Tabs.Tab>
         </Tabs.List>
 
-        <Tabs.Panel value="points" h="100%">
+        {tab === "overview" && <TabOverview />}
+
+        {tab === "points" && (
           <PointParallelCoordinates
             results={results}
             jobs={jobs}
             title="Points in the design space for all jobs"
           />
-        </Tabs.Panel>
-        <Tabs.Panel value="objectives" h="100%">
-          <ObjectivesParallelCoordinates
+        )}
+
+        {tab === "objectives" && (
+          <TabObjectives
             results={results}
             jobs={jobs}
             title="Objective values for all jobs"
           />
-        </Tabs.Panel>
-        <Tabs.Panel value="steps" h="100%">
-          <StepSankey
-            results={results}
-            jobs={jobs}
-            title="All jobs by step status throughout job execution"
-          />
-        </Tabs.Panel>
+        )}
+
+        {tab === "steps" && <TabSteps results={results} jobs={jobs} />}
+
+        {tab === "points-objectives" && (
+          <TabPointsAndObjectives results={results} jobs={jobs} />
+        )}
       </Flex>
     </Tabs>
   );

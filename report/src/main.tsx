@@ -1,4 +1,5 @@
 import "./styles.css";
+import "./highcharts.css";
 import "@mantine/core/styles.css";
 
 import { createRouter, RouterProvider } from "@tanstack/react-router";

@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TimelineRouteImport } from './routes/timeline'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ResultsIndexRouteImport } from './routes/results/index'
 import { Route as ResultsSearchesIndexRouteImport } from './routes/results/searches/index'
@@ -20,6 +21,11 @@ import { Route as ResultsJobsJobIdRouteImport } from './routes/results/jobs/$job
 const TimelineRoute = TimelineRouteImport.update({
   id: '/timeline',
   path: '/timeline',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -55,6 +61,7 @@ const ResultsJobsJobIdRoute = ResultsJobsJobIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/timeline': typeof TimelineRoute
   '/results/': typeof ResultsIndexRoute
   '/results/jobs/$jobId': typeof ResultsJobsJobIdRoute
@@ -64,6 +71,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/timeline': typeof TimelineRoute
   '/results': typeof ResultsIndexRoute
   '/results/jobs/$jobId': typeof ResultsJobsJobIdRoute
@@ -74,6 +82,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/timeline': typeof TimelineRoute
   '/results/': typeof ResultsIndexRoute
   '/results/jobs/$jobId': typeof ResultsJobsJobIdRoute
@@ -85,6 +94,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/about'
     | '/timeline'
     | '/results/'
     | '/results/jobs/$jobId'
@@ -94,6 +104,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/about'
     | '/timeline'
     | '/results'
     | '/results/jobs/$jobId'
@@ -103,6 +114,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/about'
     | '/timeline'
     | '/results/'
     | '/results/jobs/$jobId'
@@ -113,6 +125,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
   TimelineRoute: typeof TimelineRoute
   ResultsIndexRoute: typeof ResultsIndexRoute
   ResultsJobsJobIdRoute: typeof ResultsJobsJobIdRoute
@@ -128,6 +141,13 @@ declare module '@tanstack/react-router' {
       path: '/timeline'
       fullPath: '/timeline'
       preLoaderRoute: typeof TimelineRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -177,6 +197,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
   TimelineRoute: TimelineRoute,
   ResultsIndexRoute: ResultsIndexRoute,
   ResultsJobsJobIdRoute: ResultsJobsJobIdRoute,
