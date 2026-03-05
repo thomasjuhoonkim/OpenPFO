@@ -10,7 +10,7 @@
 #SBATCH --output=OpenPFO.log
 #SBATCH --open-mode=append
 
-module load python 3.11.5
+module load python/3.11.5
 module load openfoam/v2312
 module load paraview/6.0.0
 
