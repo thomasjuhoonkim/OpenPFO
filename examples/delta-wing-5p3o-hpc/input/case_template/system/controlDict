@@ -64,11 +64,11 @@ functions
         rhoInf          1.225;
         liftDir         (0 0 1);
         dragDir         (1 0 0);
-        CofR            (0.2275 0 0);
+        CofR            (0.4411 0 0);  // GEOMETRY DEPENDANT - CHANGE ME
         pitchAxis       (0 1 0);
         magUInf         10;
-        lRef            0.91;
-        Aref            4.55;
+        lRef            0.6118;        // GEOMETRY DEPENDANT - CHANGE ME
+        Aref            0.5594;        // GEOMETRY DEPENDANT - CHANGE ME
     }
     
     yPlus
@@ -99,7 +99,6 @@ functions
         CofR        (0.4411 0 0);           // GEOMETRY DEPENDANT - CHANGE ME
         writeFields     yes;
     }
-
     binField1
     {
         type                    binField;
@@ -118,6 +117,12 @@ functions
         }
         writeControl            writeTime;
     }
+
+}
+
+OptimisationSwitches
+{
+    fileHandler collated;
 }
 
 // ************************************************************************* //
