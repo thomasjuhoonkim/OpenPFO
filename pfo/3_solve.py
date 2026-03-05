@@ -33,7 +33,7 @@ def solve(
     slurm = Slurm(
         job_name=f"{job_id}-simpleFoam",
         account="def-jphickey",
-        time="04:00:00",
+        time="05:00:00",
         nodes=1,
         ntasks_per_node=processors_per_job,
         mem_per_cpu="4G",
@@ -50,7 +50,7 @@ def solve(
     # VALIDATION ===============================================================
 
     run_ok = True
-    if not os.path.isdir(f"{job_directory}/40"):
+    if not os.path.isdir(f"{job_directory}/30"):
         run_ok = False
 
     SOLVE_RETURN = SolveReturn(run_ok=run_ok)
