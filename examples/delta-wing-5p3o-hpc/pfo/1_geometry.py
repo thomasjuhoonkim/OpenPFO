@@ -3,6 +3,8 @@ import subprocess
 
 # classes
 from classes.functions import GeometryParameters, GeometryReturn
+from classes.variable import Variable
+from classes.point import Point
 
 
 def geometry(
@@ -20,6 +22,18 @@ def geometry(
     meta = geometry_parameters.meta
 
     """ ======================= YOUR CODE BELOW HERE ======================= """
+    root_chord = meta.get_meta("root-chord")
+    root_chord_variable = Variable(
+        name="Root Chord", id="GFXAORPLFWH:WingGeom:XSec_1:Root_Chord", value=root_chord
+    )
+
+    geometry_variables_excluding_ground_height = [*point.get_variables()]
+    geometry_variables_excluding_ground_height.pop(-1)
+    updated_geometry_variables = [
+        *geometry_variables_excluding_ground_height,
+        root_chord_variable,
+    ]
+    updated_point = Point(variables=updated_geometry_variables)
 
     # ==========================================================================
 
@@ -30,9 +44,10 @@ def geometry(
     VSPSCRIPT_FILEPATH = f"{job_directory}/{job_id}.vspscript"
     INPUT_DES_FILEPATH = f"{job_directory}/{job_id}-input.des"
     OUTPUT_DES_FILEPATH = f"{job_directory}/{job_id}-output.des"
+    POINT = updated_point
 
     # design variables file for openvsp model variable definitions
-    variables = point.get_variables()
+    variables = POINT.get_variables()
     variables_definitions = ""
 
     for variable in variables:
