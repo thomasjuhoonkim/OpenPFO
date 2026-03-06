@@ -25,7 +25,7 @@ def mesh(
     """ ======================= YOUR CODE BELOW HERE ======================= """
 
     COMMANDS = [
-        f"surfaceGenerateBoundingBox -case {job_directory} {job_directory}/{job_id}.stl {job_directory}/combined.stl 50 50 25 25 10 10",
+        f"surfaceGenerateBoundingBox -case {job_directory} {job_directory}/{job_id}.stl {job_directory}/combined.stl 50 50 25 25 0.08 10",
         f"surfaceFeatureEdges {job_directory}/combined.stl {job_directory}/combined.fms -angle 5 -case {job_directory}",
         f"cartesianMesh -case {job_directory}",
     ]
