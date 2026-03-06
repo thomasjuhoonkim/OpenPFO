@@ -44,10 +44,6 @@ def objectives(
     c_l = get_objective_by_id(objectives=objectives, id="cl")
     c_l.set_value(force[-1][4])  # latest time & fourth index (Cl - minimize)
 
-    volume_value = meta.get_meta("volume")
-    volume = get_objective_by_id(objectives=objectives, id="volume")
-    volume.set_value(volume_value)
-
     # ==========================================================================
 
     SHARED = "pvbatch --force-offscreen-rendering --opengl-window-backend OSMesa"
