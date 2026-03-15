@@ -4,14 +4,18 @@ import { zodValidator } from "@tanstack/zod-adapter";
 import { find } from "lodash-es";
 import * as z from "zod";
 
-import { GeometryViewer } from "@/components/GeometryViewer";
-import { ObjectivesParallelCoordinates } from "@/components/ObjectivesParallelCoordinates";
 import { PointParallelCoordinates } from "@/components/PointParallelCoordinates";
 import { StepTimeline } from "@/components/StepTimeline";
 import { results as schemaResults } from "@/types/results";
 
+import { TabGeometry } from "../../../components/TabGeometry";
+import { TabImages } from "../../../components/TabImages";
+import { TabObjectives } from "../../../components/TabObjectives";
+
 const jobSearchSchema = z.object({
-  tab: z.enum(["point", "objectives", "geometry", "steps"]).default("point"),
+  tab: z
+    .enum(["point", "objectives", "steps", "geometry", "images"])
+    .default("point"),
 });
 
 export const Route = createFileRoute("/results/jobs/$jobId")({
@@ -49,43 +53,45 @@ function RouteComponent() {
     });
   }
 
-  const stl = `/${job.id}/${job.id}.stl`;
-
   return (
     <Tabs h="100%" onChange={onTabChange} defaultValue={tab}>
       <Flex h="100%" direction="column">
         <Tabs.List>
           <Tabs.Tab value="point">Point</Tabs.Tab>
           <Tabs.Tab value="objectives">Objectives</Tabs.Tab>
-          <Tabs.Tab value="geometry">Geometry</Tabs.Tab>
           <Tabs.Tab value="steps">Steps</Tabs.Tab>
+          <Tabs.Tab value="geometry">Geometry</Tabs.Tab>
+          <Tabs.Tab value="images">Images</Tabs.Tab>
         </Tabs.List>
 
-        <Tabs.Panel value="point" h="100%">
+        {tab === "point" && (
           <PointParallelCoordinates
             results={results}
             jobs={[job]}
             title={`Points in the design space for ${job.id}`}
           />
-        </Tabs.Panel>
-        <Tabs.Panel value="objectives" h="100%">
-          <ObjectivesParallelCoordinates
+        )}
+
+        {tab === "objectives" && (
+          <TabObjectives
             results={results}
             jobs={[job]}
             title={`Objective values for ${job.id}`}
           />
-        </Tabs.Panel>
-        <Tabs.Panel value="geometry" h="100%">
-          <GeometryViewer url={stl} />
-        </Tabs.Panel>
-        <Tabs.Panel value="steps">
+        )}
+
+        {tab === "steps" && (
           <Center>
             <Flex direction="column" p="xl" gap="lg">
               <Title>Steps</Title>
               <StepTimeline job={job} />
             </Flex>
           </Center>
-        </Tabs.Panel>
+        )}
+
+        {tab === "geometry" && <TabGeometry job={job} />}
+
+        {tab === "images" && <TabImages job={job} />}
       </Flex>
     </Tabs>
   );

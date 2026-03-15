@@ -22,7 +22,7 @@ export function PointParallelCoordinates({
 }) {
   const series = jobs.map((job) => ({
     data: job.point.variables.map((variable) => variable.value),
-    color: job.runOk ? "rgba(255, 206, 47, 0.5)" : "rgba(198, 9, 15, 0.5)",
+    color: job.runOk ? "rgba(255, 206, 47, 0.33)" : "rgba(198, 9, 15, 0.33)",
     name: `${job.id}${job.runOk ? "" : " (failed)"}`,
     marker: false,
   }));
@@ -31,6 +31,7 @@ export function PointParallelCoordinates({
     () => ({
       chart: {
         type: "spline",
+        className: "parallel-coordinates-chart",
         parallelCoordinates: true,
         parallelAxes: {
           lineWidth: 2,
@@ -41,6 +42,10 @@ export function PointParallelCoordinates({
         zooming: {
           type: "y",
         },
+        marginTop: 150,
+        marginBottom: 75,
+        marginRight: 25,
+        marginLeft: 0,
       },
       title: {
         text: title,
@@ -59,7 +64,29 @@ export function PointParallelCoordinates({
       yAxis: results.config.model.parameters.map((parameter) => ({
         min: parameter.min,
         max: parameter.max,
+        startOnTick: false,
+        endOnTick: false,
       })),
+      plotOptions: {
+        series: {
+          states: {
+            inactive: {
+              enabled: false,
+            },
+            hover: {
+              halo: {
+                size: 0,
+              },
+            },
+          },
+          events: {
+            mouseOver() {
+              this.graph?.toFront();
+              this.area?.toFront();
+            },
+          },
+        },
+      },
       series,
     }),
     [results, jobs]

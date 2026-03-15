@@ -1,0 +1,11 @@
+.parallel-coordinates-chart .highcharts-series-hover path {
+  stroke: white;
+  stroke-width: 3px;
+}
+
+.radar-chart .highcharts-series-hover path.highcharts-tracker-line {
+  stroke: white;
+  stroke-width: 3px;
+  fill: white;
+  fill-opacity: 0.33;
+}
