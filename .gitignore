@@ -3,7 +3,7 @@ output/
 PyFoam*
 collect/
 *.tar.gz
-tmp/
+tmp*/
 
 # MacOS
 .DS_Store
