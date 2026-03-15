@@ -1,8 +1,8 @@
 # OpenPFO
 
-Add image...
-
 The Open Parametric Flow Optimizer is an open-source design space exploration and optimization tool for computational fluid dynamics based design optimizations.
+
+![Collage of OpenPFO capabilities](docs/openpfo-collage.png)
 
 ## Table of Contents
 
@@ -940,17 +940,63 @@ OpenPFO comes with plugins to support enhanced optimization and results visualiz
 
 ### Report
 
+![Report viewer](docs/openpfo-collage.png)
+
 The OpenPFO report plugin is a tool to help visualize the progress and/or results of the optimiztaion.
 
-To be filled...
+#### Requirements
+
+The OpenPFO Report Viewer requires `pnpm` and `node`.
+
+```
+// Install node
+brew install node
+
+// Install pnpm
+brew install pnpm
+
+// Navigate to report directory
+cd report
+
+// Install dependencies
+pnpm install
+```
+
+#### Usage
+
+```
+// Navigate to report directory
+cd report
+
+// Open the report viewer
+pnpm dev
+```
+
+Open the report viewer in your local web browser: http://localhost:3000.
 
 ### Asset Collection
 
-To be filled...
+OpenPFO supports asset collection such as images or post processing data.
+
+```
+pfo collectAssets [asset name under the output/ directory]
+```
+
+#### GIF Creation
+
+OpenPFO also supports built-in GIF creation for images
+
+```
+pfo collectAssets [image-filename] --gif
+```
 
 ### Output Compression
 
-To be filled...
+OpenPFO has a parallel output compression script using `pigz`.
+
+```
+source ./scripts/output.sh
+```
 
 ### Surrogate Modeling
 
@@ -958,7 +1004,14 @@ To be filled...
 
 ## Examples
 
-To be filled...
+OpenPFO provides some examples for previously ran optimization cases. You can use these examples to aid your own optimization case setup.
+
+- Delta wing 2-parameter 2-objective optimization
+  - Local optimization
+  - HPC optimization
+- Delta wing 5-parameter 3-objective optimization
+  - Local optimization
+  - HPC optimization
 
 ## Acknowledgements
 
