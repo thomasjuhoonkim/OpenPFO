@@ -1012,6 +1012,7 @@ OpenPFO provides some examples for previously ran optimization cases. You can us
 - Delta wing 5-parameter 3-objective optimization
   - Local optimization
   - HPC optimization
+- DAE 21 Airfoil takeoff simulation with AoA variation
 
 ## Acknowledgements
 

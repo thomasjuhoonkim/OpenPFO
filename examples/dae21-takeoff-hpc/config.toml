@@ -3,9 +3,9 @@
 # processors_per_job (int):  how many processors to allocate for each job (job step parallelization)
 # max_job_workers (int):     how many maximum job workers at any time (job parallelization)
 [compute]
-hpc=false
-processors_per_job=0
-max_job_workers=0
+hpc=true
+processors_per_job=28
+max_job_workers=3
 
 # PARAMETERS
 # name (name):  user-friendly name for the parameter
@@ -14,15 +14,10 @@ max_job_workers=0
 # max (float):  maximum value for the parameter
 [model]
 [[model.parameters]]
-name=""
-id=""
-min=0
-max=0
-[[model.parameters]]
-name=""
-id=""
-min=0
-max=0
+name="AoA"
+id="VQYINKCPHJD:WingGeom:XForm:Y_Rel_Rotation"
+min=-5
+max=15
 
 # OBJECTIVES
 # name:  user-friendly name for the objective
@@ -30,10 +25,10 @@ max=0
 # type:  whether the goal is to minimize or maximize the objective
 [optimizer]
 [[optimizer.objectives]]
-name=""
-id=""
-type=""
+name="Cd"
+id="cd"
+type="minimize"
 [[optimizer.objectives]]
-name=""
-id=""
-type=""
+name="Cl"
+id="cl"
+type="maximize"
