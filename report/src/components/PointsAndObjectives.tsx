@@ -119,12 +119,12 @@ export function PointsAndObjectives({
             },
           },
           events: {
-            mouseOver: function (this: Highcharts.Series) {
+            mouseOver(this: Highcharts.Series) {
               this.graph?.toFront();
               this.area?.toFront();
-              handleSeriesMouseOver(this.name ?? "");
+              handleSeriesMouseOver(this.name);
             },
-            mouseOut: function () {
+            mouseOut() {
               handleSeriesMouseOut();
             },
           },
@@ -176,7 +176,7 @@ export function PointsAndObjectives({
           max: 1,
           labels: {
             formatter(this: Highcharts.AxisLabelsFormatterContextObject) {
-              return Number(this.value) * 100 + "%";
+              return `${Number(this.value) * 100}%`;
             },
           },
         }
@@ -228,12 +228,12 @@ export function PointsAndObjectives({
             },
           },
           events: {
-            mouseOver: function (this: Highcharts.Series) {
+            mouseOver(this: Highcharts.Series) {
               this.graph?.toFront();
               this.area?.toFront();
-              handleSeriesMouseOver(this.name ?? "");
+              handleSeriesMouseOver(this.name);
             },
-            mouseOut: function () {
+            mouseOut() {
               handleSeriesMouseOut();
             },
           },

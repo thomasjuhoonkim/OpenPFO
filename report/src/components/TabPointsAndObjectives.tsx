@@ -1,9 +1,9 @@
-import type { Job, Results } from "@/types/results";
-import { Text, Divider, Flex, Group, Switch } from "@mantine/core";
+import { Divider, Flex, Group, Switch, Text } from "@mantine/core";
 import { useState } from "react";
 
-import { getNormalizedJobs } from "@/util/getNormalizedJobs";
 import { PointsAndObjectives } from "@/components/PointsAndObjectives";
+import type { Job, Results } from "@/types/results";
+import { getNormalizedJobs } from "@/util/getNormalizedJobs";
 
 export function TabPointsAndObjectives({
   results,

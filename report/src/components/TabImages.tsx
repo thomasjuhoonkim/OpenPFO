@@ -1,6 +1,7 @@
-import type { Job } from "@/types/results";
-import { Flex, Tabs, Image, Box, Title } from "@mantine/core";
+import { Box, Flex, Image, Tabs, Title } from "@mantine/core";
 import { useState } from "react";
+
+import type { Job } from "@/types/results";
 
 const validExtensions = ["png", "jpg", "jpeg", "gif", "svg", "webp"];
 

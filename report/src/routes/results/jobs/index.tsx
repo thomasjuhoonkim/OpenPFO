@@ -5,10 +5,11 @@ import * as z from "zod";
 
 import { PointParallelCoordinates } from "@/components/PointParallelCoordinates";
 import { results as schemaResults } from "@/types/results";
+
 import { TabObjectives } from "../../../components/TabObjectives";
-import { TabSteps } from "../../../components/TabSteps";
-import { TabPointsAndObjectives } from "../../../components/TabPointsAndObjectives";
 import { TabOverview } from "../../../components/TabOverview";
+import { TabPointsAndObjectives } from "../../../components/TabPointsAndObjectives";
+import { TabSteps } from "../../../components/TabSteps";
 
 const jobSearchSchema = z.object({
   tab: z

@@ -1,6 +1,7 @@
+import { Flex, Title } from "@mantine/core";
+
 import { GeometryViewer } from "@/components/GeometryViewer";
 import type { Job } from "@/types/results";
-import { Flex, Title } from "@mantine/core";
 
 const validExtensions = ["stl", "obj", "vtk"];
 

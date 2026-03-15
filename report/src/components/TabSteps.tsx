@@ -1,6 +1,7 @@
+import { Flex } from "@mantine/core";
+
 import { StepSankey } from "@/components/StepSankey";
 import type { Job, Results } from "@/types/results";
-import { Flex } from "@mantine/core";
 
 export function TabSteps({ results, jobs }: { results: Results; jobs: Job[] }) {
   return (

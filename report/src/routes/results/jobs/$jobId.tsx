@@ -7,9 +7,10 @@ import * as z from "zod";
 import { PointParallelCoordinates } from "@/components/PointParallelCoordinates";
 import { StepTimeline } from "@/components/StepTimeline";
 import { results as schemaResults } from "@/types/results";
-import { TabObjectives } from "../../../components/TabObjectives";
-import { TabImages } from "../../../components/TabImages";
+
 import { TabGeometry } from "../../../components/TabGeometry";
+import { TabImages } from "../../../components/TabImages";
+import { TabObjectives } from "../../../components/TabObjectives";
 
 const jobSearchSchema = z.object({
   tab: z

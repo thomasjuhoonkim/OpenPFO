@@ -1,10 +1,11 @@
-import { ObjectivesRadar } from "@/components/ObjectivesRadar";
-
-import type { Job, Results } from "@/types/results";
-import { Text, Divider, Flex, Group, Switch } from "@mantine/core";
+import { Divider, Flex, Group, Switch, Text } from "@mantine/core";
 import { useState } from "react";
 
+import { ObjectivesRadar } from "@/components/ObjectivesRadar";
+import type { Job, Results } from "@/types/results";
 import { getNormalizedJobs } from "@/util/getNormalizedJobs";
+
+import { ObjectivesParallelCoordinates } from "./ObjectivesParallelCoordinates";
 
 export function TabObjectives({
   results,
@@ -30,7 +31,13 @@ export function TabObjectives({
         <Divider size="sm" />
       </Flex>
 
-      {isNormalized ? (
+      {results.config.optimizer.objectives.length <= 2 ? (
+        <ObjectivesParallelCoordinates
+          results={results}
+          jobs={jobs}
+          title={title}
+        />
+      ) : isNormalized ? (
         <ObjectivesRadar
           results={results}
           jobs={getNormalizedJobs(results, jobs)}

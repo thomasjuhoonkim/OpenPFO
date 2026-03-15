@@ -89,7 +89,7 @@ export function ObjectivesRadar({
             },
           },
           events: {
-            mouseOver: function () {
+            mouseOver() {
               this.graph?.toFront();
               this.area?.toFront();
             },

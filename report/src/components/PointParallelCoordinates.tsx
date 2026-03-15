@@ -27,13 +27,6 @@ export function PointParallelCoordinates({
     marker: false,
   }));
 
-  console.log(
-    results.config.model.parameters.map((parameter) => ({
-      min: parameter.min,
-      max: parameter.max,
-    }))
-  );
-
   const options: Options = useMemo(
     () => ({
       chart: {
@@ -87,7 +80,7 @@ export function PointParallelCoordinates({
             },
           },
           events: {
-            mouseOver: function () {
+            mouseOver() {
               this.graph?.toFront();
               this.area?.toFront();
             },
