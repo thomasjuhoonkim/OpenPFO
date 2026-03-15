@@ -1,9 +1,16 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { Flex } from "@mantine/core";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
-export const Route = createFileRoute('/')({
+export const Route = createFileRoute("/")({
   component: App,
-})
+});
 
 function App() {
-  return <div>hello</div>
+  return (
+    <Flex direction="column" h="100%">
+      <Link to="/results">Results</Link>
+      <Link to="/timeline">Timeline</Link>
+      <Link to="/about">About</Link>
+    </Flex>
+  );
 }

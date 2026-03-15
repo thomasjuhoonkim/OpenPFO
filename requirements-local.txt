@@ -6,3 +6,4 @@ fluidfoam==0.2.9
 pymoo==0.6.1.5
 numpy==2.3.4
 pyDOE3==1.6.1
+pillow==12.1.1

@@ -33,29 +33,48 @@ export function StepSankey({
     for (let i = 0; i < job.steps.length - 1; i++) {
       const from = job.steps[i];
       const to = job.steps[i + 1];
-      const failedKey = { from: from.id, to: `failed-${from.id}` };
-      const nextKey = { from: from.id, to: to.id };
-      const successKey = { from: to.id, to: "success" };
-      count.set(failedKey, (count.get(failedKey) || 0) + from.runOk ? 0 : 1);
-      count.set(nextKey, (count.get(nextKey) || 0) + from.runOk ? 1 : 0);
-      // if (to.id === "cleanup") {
-      //   count.set(successKey, (count.get(successKey) || 0) + to.runOk ? 1 : 0);
-      // }
+      const failedStepKey = { from: from.id, to: `failed-${from.id}` };
+      const nextStepKey = { from: from.id, to: to.id };
+      const failedCleanupKey = { from: `failed-${from.id}`, to: to.id };
+      count.set(
+        failedStepKey,
+        (count.get(failedStepKey) || 0) + from.runOk ? 0 : 1
+      );
+      count.set(
+        nextStepKey,
+        (count.get(nextStepKey) || 0) + from.runOk ? 1 : 0
+      );
+      if (!job.runOk && to.id === "cleanup") {
+        count.set(
+          failedCleanupKey,
+          (count.get(failedCleanupKey) || 0) + to.runOk ? 1 : 0
+        );
+      }
     }
   });
-  const data = [];
+
+  const data: [string, string, number][] = [];
   count.forEach((value, key) => data.push([key.from, key.to, value]));
-  console.log(data);
+  data.sort((a, b) => a[0].localeCompare(b[0]));
+  data.sort((a, b) => a[1].localeCompare(b[1]));
 
   const series = [
     {
       keys: ["from", "to", "weight"],
 
       nodes: [
-        ...steps.map((step) => ({ id: step, color: "#ffce2f" })),
+        ...steps.map((step, i) => ({
+          id: step,
+          color: "#ffce2f",
+          column: i,
+        })),
         // { id: "failed", color: "red" },
-        ...steps.map((step) => ({ id: `failed-${step}`, color: "red" })),
-        { id: "success", color: "green" },
+        ...steps.map((step, i) => ({
+          id: `failed-${step}`,
+          color: "red",
+          column: i + 1,
+        })),
+        { id: "success", color: "green", column: steps.length },
       ],
 
       data,
@@ -75,6 +94,7 @@ export function StepSankey({
           type: "xy",
         },
         panKey: "shift",
+        margin: 200,
       },
       title: {
         text: title,

@@ -1,6 +1,10 @@
 # system
+import glob
 import os
 import shutil
+
+# imageio
+from PIL import Image
 
 # typer
 import typer
@@ -14,6 +18,14 @@ def collect_assets(
     asset: Annotated[
         str, typer.Argument(help="File name and extension of asset")
     ] = True,
+    gif: Annotated[
+        bool,
+        typer.Option(help="Create a GIF of the assets (only available for images)"),
+    ] = False,
+    duration: Annotated[
+        float,
+        typer.Option(help="Duration of each frame in the GIF (in seconds)"),
+    ] = 250,
 ):
     split = asset.split(".")
     asset_name, asset_ext = split
@@ -36,3 +48,30 @@ def collect_assets(
                 original, f"{COLLECT_ASSETS_DIRECTORY}/{asset_name}/{job}.{asset_ext}"
             )
             print(dest)
+
+    if gif:
+        print("Reading images for GIF generation...")
+
+        if asset_ext not in ["png", "jpg", "jpeg"]:
+            print("GIF creation is only available for images")
+            return
+
+        images = []
+        for collected_asset in sorted(
+            glob.glob(f"{COLLECT_ASSETS_DIRECTORY}/{asset_name}/*.{asset_ext}")
+        ):
+            temp = Image.open(collected_asset)
+            images.append(temp.copy())
+            temp.close()
+            print("Read file:", collected_asset)
+
+        images[0].save(
+            fp=f"{COLLECT_ASSETS_DIRECTORY}/{asset_name}.gif",
+            format="GIF",
+            append_images=images[1:],
+            save_all=True,
+            duration=duration,
+            loop=0,
+        )
+
+        print("Saved GIF to:", f"{COLLECT_ASSETS_DIRECTORY}/{asset_name}.gif")
