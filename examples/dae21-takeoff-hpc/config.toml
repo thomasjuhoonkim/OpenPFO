@@ -1,0 +1,34 @@
+# COMPUTE
+# hpc (bool):                whether the compute environment is local or hpc (disables certain GUI features)
+# processors_per_job (int):  how many processors to allocate for each job (job step parallelization)
+# max_job_workers (int):     how many maximum job workers at any time (job parallelization)
+[compute]
+hpc=true
+processors_per_job=28
+max_job_workers=3
+
+# PARAMETERS
+# name (name):  user-friendly name for the parameter
+# id (str):     identifier for the parameter, cell for FreeCAD, paramater ID for OpenVSP (
+# min (float):  minimum value for the parameter
+# max (float):  maximum value for the parameter
+[model]
+[[model.parameters]]
+name="AoA"
+id="VQYINKCPHJD:WingGeom:XForm:Y_Rel_Rotation"
+min=-5
+max=15
+
+# OBJECTIVES
+# name:  user-friendly name for the objective
+# id:    identifier for the objective, used during objective extraction 
+# type:  whether the goal is to minimize or maximize the objective
+[optimizer]
+[[optimizer.objectives]]
+name="Cd"
+id="cd"
+type="minimize"
+[[optimizer.objectives]]
+name="Cl"
+id="cl"
+type="maximize"
