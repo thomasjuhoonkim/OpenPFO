@@ -1,7 +1,8 @@
-import { Center, Flex, Tabs, Title } from "@mantine/core";
-import { createFileRoute, notFound } from "@tanstack/react-router";
+import { Center, Flex, Group, Tabs, Text, Title } from "@mantine/core";
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
 import { find } from "lodash-es";
+import { ArrowLeftIcon } from "lucide-react";
 import * as z from "zod";
 
 import { PointParallelCoordinates } from "@/components/PointParallelCoordinates";
@@ -57,6 +58,15 @@ function RouteComponent() {
     <Tabs h="100%" onChange={onTabChange} defaultValue={tab}>
       <Flex h="100%" direction="column">
         <Tabs.List>
+          {/* @ts-expect-error */}
+          <Tabs.Tab component={Link} to="/results/jobs" value="back">
+            <Group gap="4" align="center">
+              <ArrowLeftIcon size={16} color="var(--mantine-color-anchor)" />
+              <Text size="sm" color="var(--mantine-color-anchor)">
+                Jobs
+              </Text>
+            </Group>
+          </Tabs.Tab>
           <Tabs.Tab value="point">Point</Tabs.Tab>
           <Tabs.Tab value="objectives">Objectives</Tabs.Tab>
           <Tabs.Tab value="steps">Steps</Tabs.Tab>

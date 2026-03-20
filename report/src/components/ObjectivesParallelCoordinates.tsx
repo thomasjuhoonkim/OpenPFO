@@ -15,17 +15,54 @@ export function ObjectivesParallelCoordinates({
   results,
   jobs,
   title,
+  isNormalized = false,
 }: {
   results: Results;
   jobs: Job[];
   title: string;
+  isNormalized?: boolean;
 }) {
+  const transparency = jobs.length === 1 ? 1 : 0.5;
   const series = jobs.map((job) => ({
     data: job.objectives.map((objective) => objective.value),
-    color: job.runOk ? "rgba(255, 206, 47, 0.5)" : "rgba(198, 9, 15, 0.5)",
+    color: job.runOk
+      ? `rgba(255, 206, 47, ${transparency})`
+      : `rgba(198, 9, 15, ${transparency})`,
     name: job.id,
     marker: false,
   }));
+
+  const objectiveCategories = useMemo(
+    () =>
+      results.config.optimizer.objectives.map((objective) =>
+        isNormalized
+          ? objective.name
+          : `${objective.name} (${
+              objective.type === "minimize"
+                ? "Lower is better"
+                : "High is better"
+            })`
+      ),
+    [results, isNormalized]
+  );
+
+  const yAxis = useMemo(() => {
+    if (isNormalized) {
+      return results.config.optimizer.objectives.map(() => ({
+        min: 0,
+        max: 1,
+        labels: {
+          formatter(this: Highcharts.AxisLabelsFormatterContextObject) {
+            return `${Number(this.value) * 100}%`;
+          },
+        },
+      }));
+    }
+
+    return results.config.optimizer.objectives.map((objective) => ({
+      reversed: objective.type === "minimize",
+    }));
+  }, [results, isNormalized]);
 
   const options: Options = useMemo(
     () => ({
@@ -52,17 +89,12 @@ export function ObjectivesParallelCoordinates({
         followPointer: true,
       },
       xAxis: {
-        categories: results.config.optimizer.objectives.map(
-          (objective) =>
-            `${objective.name} (${objective.type === "minimize" ? "Lower is better" : "High is better"})`
-        ),
+        categories: objectiveCategories,
       },
-      yAxis: results.config.optimizer.objectives.map((objective) => ({
-        reversed: objective.type === "minimize",
-      })),
+      yAxis,
       series,
     }),
-    [results, jobs]
+    [title, objectiveCategories, yAxis, series]
   );
 
   return (

@@ -1,21 +1,21 @@
-import { Flex, Tabs } from "@mantine/core";
-import { createFileRoute, notFound } from "@tanstack/react-router";
+import { Flex, Group, Tabs, Text } from "@mantine/core";
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
 import { find } from "lodash-es";
+import { ArrowLeftIcon } from "lucide-react";
 import * as z from "zod";
 
 import { PointParallelCoordinates } from "@/components/PointParallelCoordinates";
 import { results as schemaResults } from "@/types/results";
 
 import { TabObjectives } from "../../../components/TabObjectives";
-import { TabOverview } from "../../../components/TabOverview";
 import { TabPointsAndObjectives } from "../../../components/TabPointsAndObjectives";
 import { TabSteps } from "../../../components/TabSteps";
 
 const searchSearchSchema = z.object({
   tab: z
-    .enum(["overview", "points", "objectives", "points-objectives", "steps"])
-    .default("overview"),
+    .enum(["points", "objectives", "points-objectives", "steps"])
+    .default("points"),
 });
 
 export const Route = createFileRoute("/results/searches/$searchId")({
@@ -61,14 +61,20 @@ function RouteComponent() {
     <Tabs h="100%" onChange={onTabChange} defaultValue={tab}>
       <Flex h="100%" direction="column">
         <Tabs.List>
-          <Tabs.Tab value="overview">Overview</Tabs.Tab>
+          {/* @ts-expect-error */}
+          <Tabs.Tab component={Link} to="/results/searches" value="back">
+            <Group gap="4" align="center">
+              <ArrowLeftIcon size={16} color="var(--mantine-color-anchor)" />
+              <Text size="sm" color="var(--mantine-color-anchor)">
+                Searches
+              </Text>
+            </Group>
+          </Tabs.Tab>
           <Tabs.Tab value="points">Points</Tabs.Tab>
           <Tabs.Tab value="objectives">Objectives</Tabs.Tab>
           <Tabs.Tab value="points-objectives">Points & Objectives</Tabs.Tab>
           <Tabs.Tab value="steps">Steps</Tabs.Tab>
         </Tabs.List>
-
-        {tab === "overview" && <TabOverview />}
 
         {tab === "points" && (
           <PointParallelCoordinates
@@ -86,7 +92,13 @@ function RouteComponent() {
           />
         )}
 
-        {tab === "steps" && <TabSteps results={results} jobs={jobs} />}
+        {tab === "steps" && (
+          <TabSteps
+            results={results}
+            jobs={jobs}
+            title={`Jobs by step status throughout job execution for ${search.id}`}
+          />
+        )}
 
         {tab === "points-objectives" && (
           <TabPointsAndObjectives results={results} jobs={jobs} />
