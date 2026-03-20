@@ -32,11 +32,22 @@ export function TabObjectives({
       </Flex>
 
       {results.config.optimizer.objectives.length <= 2 ? (
-        <ObjectivesParallelCoordinates
-          results={results}
-          jobs={jobs}
-          title={title}
-        />
+        isNormalized ? (
+          <ObjectivesParallelCoordinates
+            results={results}
+            jobs={getNormalizedJobs(results, jobs)}
+            title={`${title} (Normalized)`}
+            isNormalized
+          />
+        ) : (
+          <Flex direction="column" h="100%">
+            <ObjectivesParallelCoordinates
+              results={results}
+              jobs={jobs}
+              title={title}
+            />
+          </Flex>
+        )
       ) : isNormalized ? (
         <ObjectivesRadar
           results={results}

@@ -37,6 +37,9 @@ export function PointsAndObjectives({
     setHighlightedJobId(null);
   }, []);
 
+  const transparency =
+    jobs.length === 1 ? 0.5 : jobs.length <= 50 ? 0.25 : 0.025;
+
   // ===========================================================================
 
   const parallelJobs = jobs;
@@ -49,8 +52,8 @@ export function PointsAndObjectives({
           highlightedJobId === job.id
             ? "white"
             : job.runOk
-              ? "rgba(255, 206, 47, 0.5)"
-              : "rgba(198, 9, 15, 0.5)",
+              ? `rgba(255, 206, 47, ${transparency})`
+              : `rgba(198, 9, 15, ${transparency})`,
         type: "spline",
         name: job.id,
         marker: false,
@@ -154,7 +157,7 @@ export function PointsAndObjectives({
         color:
           highlightedJobId === job.id
             ? "white"
-            : `rgba(255, 206, 47, ${Math.max(1 / jobs.length, 0.01)})`,
+            : `rgba(255, 206, 47, ${transparency})`,
         type: "line",
         marker: false,
         name: job.id,
@@ -254,6 +257,137 @@ export function PointsAndObjectives({
 
   // ===========================================================================
 
+  const objectiveCount = results.config.optimizer.objectives.length;
+  const useObjectiveParallel = objectiveCount <= 2;
+
+  const objectiveWithHighlight = useMemo(
+    () =>
+      jobs.map((job) => ({
+        data: job.objectives.map((objective) => objective.value),
+        color:
+          highlightedJobId === job.id
+            ? "white"
+            : job.runOk
+              ? `rgba(255, 206, 47, ${transparency})`
+              : `rgba(198, 9, 15, ${transparency})`,
+        type: "spline",
+        marker: false,
+        name: job.id,
+        lineWidth: job.id === highlightedJobId ? 3 : 2,
+      })),
+    [jobs, highlightedJobId]
+  );
+
+  const objectiveCategories = useMemo(() => {
+    return results.config.optimizer.objectives.map(
+      (objective) =>
+        `${objective.name} (${
+          objective.type === "minimize" ? "Lower is better" : "High is better"
+        })`
+    );
+  }, [results]);
+
+  const objectiveRanges = useMemo(
+    () => getObjectiveRanges(results).objectiveRanges,
+    [results]
+  );
+
+  const objectiveYAxis = useMemo(() => {
+    if (isNormalized) {
+      return results.config.optimizer.objectives.map(() => ({
+        min: 0,
+        max: 1,
+        labels: {
+          formatter(this: Highcharts.AxisLabelsFormatterContextObject) {
+            return `${Number(this.value) * 100}%`;
+          },
+        },
+      }));
+    }
+
+    return objectiveRanges.map((objective) => ({
+      min: objective.min,
+      max: objective.max,
+      reversed: objective.type === "minimize",
+    }));
+  }, [objectiveRanges, isNormalized]);
+
+  const objectiveParallelOptions: Options = useMemo(
+    () => ({
+      chart: {
+        animation: false,
+        type: "spline",
+        parallelCoordinates: true,
+        parallelAxes: {
+          lineWidth: 2,
+          labels: {
+            x: 12,
+          },
+        },
+        zooming: {
+          type: "y",
+        },
+        marginTop: 150,
+        marginBottom: 100,
+        marginRight: 25,
+        marginLeft: 0,
+      },
+      title: {
+        text: radarTitle,
+      },
+      subtitle: {
+        text: "Source: OpenPFO",
+      },
+      tooltip: {
+        followPointer: true,
+      },
+      xAxis: {
+        categories: objectiveCategories,
+      },
+      yAxis: objectiveYAxis,
+      plotOptions: {
+        series: {
+          states: {
+            inactive: {
+              enabled: false,
+            },
+            hover: {
+              halo: {
+                size: 0,
+              },
+            },
+          },
+          events: {
+            mouseOver(this: Highcharts.Series) {
+              this.graph?.toFront();
+              this.area?.toFront();
+              handleSeriesMouseOver(this.name);
+            },
+            mouseOut() {
+              handleSeriesMouseOut();
+            },
+          },
+        },
+      },
+      series: objectiveWithHighlight,
+    }),
+    [
+      radarTitle,
+      objectiveCategories,
+      objectiveYAxis,
+      objectiveWithHighlight,
+      handleSeriesMouseOver,
+      handleSeriesMouseOut,
+    ]
+  );
+
+  const objectiveOptions: Options = useMemo(
+    () => (useObjectiveParallel ? objectiveParallelOptions : radarOptions),
+    [useObjectiveParallel, objectiveParallelOptions, radarOptions]
+  );
+
+  // ===========================================================================
+
   return (
     <Flex gap={0} h="100%" w="100%">
       <HighchartsReact
@@ -267,7 +401,7 @@ export function PointsAndObjectives({
       <Divider orientation="vertical" size="sm" />
       <HighchartsReact
         highcharts={Highcharts}
-        options={radarOptions}
+        options={objectiveOptions}
         containerProps={{
           style: { height: "100%", width: "100%" },
           className: "highcharts-dark",
