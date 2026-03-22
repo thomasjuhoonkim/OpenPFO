@@ -127,6 +127,8 @@ def geometry(
     initialConditions_file["velocityField"] = v_vector
     initialConditions_file["velocityOutlet"] = v_vector
 
+    initialConditions_file.writeFile()
+
     GEOMETRY_RETURN = GeometryReturn(visualize_filepath="")
 
     meta.add_meta("freestream_mach", freestream_mach)
