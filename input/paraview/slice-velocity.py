@@ -19,19 +19,19 @@ if __name__ == "__main__":
 
     """ ======================= YOUR CODE BELOW HERE ======================= """
 
-    VIEW_SIZE = [3840, 2160]
+    VIEW_SIZE = [2021, 594]  
 
     renderView = CreateView("RenderView")
     renderView.ViewSize = VIEW_SIZE
 
-    renderView.CameraPosition = [0.75, 2, 0]
-    renderView.CameraFocalPoint = [0.75, 0, 0]
-    renderView.CameraViewUp = [0, 0, 1]
+    renderView.CameraPosition = [-12, 1.35, 23.5]
+    renderView.CameraFocalPoint = [-12, 1.35, 0.0]
+    renderView.CameraViewUp = [0, 1, 0]
 
     slice = Slice(Input=reader)
     slice.SliceType = "Plane"
-    slice.SliceType.Origin = [0, 0, 0]
-    slice.SliceType.Normal = [0, 1, 0]
+    slice.SliceType.Origin = [0, 0, 0] 
+    slice.SliceType.Normal = [0, 0, 1]             
 
     uLUT = GetColorTransferFunction("U")
     HideScalarBarIfNotNeeded(uLUT, renderView)

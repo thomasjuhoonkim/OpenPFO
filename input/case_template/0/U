@@ -18,45 +18,26 @@ FoamFile
 
 dimensions      [0 1 -1 0 0 0 0];
 
-internalField   uniform $flowVelocity;
+internalField   uniform ($velocityInlet 0 0);
 
 boundaryField
 {
-    #includeEtc "caseDicts/setConstraintTypes"
-    minX // inlet
+    inlet
     {
-        type            freestreamVelocity;
-        freestreamValue $internalField;
+        type            fixedValue;
+        value           uniform $velocityField;
     }
-    maxX // outlet
+    outlet
     {
-        type            freestreamVelocity;
-        freestreamValue $internalField;
+        type            inletOutlet;
+        inletValue      uniform $velocityOutlet;
+        value           uniform $velocityOutlet;
     }
-
-    minY // right side
-    {
-        type            slip;
-    }
-    maxY // left side
+    walls
     {
         type            slip;
     }
-    minZ // bottom
-    {
-        type            movingWallVelocity;
-        value           uniform (10 0 0);
-    }
-    maxZ // top
-    {
-        type            slip;
-    }
-    solid
-    {
-        type            noSlip;
-    }
-
+    #include "include/boundaries"
 }
-
 
 // ************************************************************************* //

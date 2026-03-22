@@ -1,5 +1,11 @@
+# system
+import os
+
 # classes
 from classes.functions import SolveParameters, SolveReturn
+
+# simple-slurm
+from simple_slurm import Slurm
 
 
 def solve(
@@ -18,7 +24,36 @@ def solve(
 
     """ ======================= YOUR CODE BELOW HERE ======================= """
 
-    SOLVE_RETURN = SolveReturn()
+    COMMANDS = [
+        f"mpirun -np {processors_per_job} redistributePar -parallel -decompose -overwrite -case {job_directory}",
+        f"mpirun -np {processors_per_job} rhoCentralFoam -parallel -case {job_directory}",
+        f"mpirun -np {processors_per_job} redistributePar -parallel -reconstruct -latestTime -case {job_directory}",
+    ]
+
+    slurm = Slurm(
+        job_name=f"{job_id}-simpleFoam",
+        account="def-jphickey",
+        time="20:00:00",
+        nodes=1,
+        ntasks_per_node=processors_per_job,
+        mem_per_cpu="4G",
+        output=f"{job_directory}/rhoCentralFoam.log",
+        open_mode="append",
+    )
+    slurm.set_wait(True)
+
+    for command in COMMANDS:
+        slurm.add_cmd(command)
+
+    slurm.sbatch()
+
+    # VALIDATION ===============================================================
+
+    run_ok = True
+    if not os.path.isdir(f"{job_directory}/40"):
+        run_ok = False
+
+    SOLVE_RETURN = SolveReturn(run_ok=run_ok)
 
     """ ======================= YOUR CODE ABOVE HERE ======================= """
 

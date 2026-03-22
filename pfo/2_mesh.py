@@ -1,5 +1,11 @@
+# system
+import os
+
 # classes
 from classes.functions import MeshParameters, MeshReturn
+
+# simple-slurm
+from simple_slurm import Slurm
 
 
 def mesh(
@@ -18,7 +24,35 @@ def mesh(
 
     """ ======================= YOUR CODE BELOW HERE ======================= """
 
-    MESH_RETURN = MeshReturn()
+    COMMANDS = [
+        f"blockMesh -case {job_directory}",
+    ]
+
+    slurm = Slurm(
+        job_name=f"{job_id}-blockMesh",
+        account="def-jphickey",
+        time="00:10:00",
+        nodes=1,
+        ntasks_per_node=1,
+        cpus_per_task=processors_per_job,
+        mem="32G",
+        output=f"{job_directory}/blockMesh.log",
+        open_mode="append",
+    )
+    slurm.set_wait(True)
+
+    for command in COMMANDS:
+        slurm.add_cmd(command)
+
+    slurm.sbatch()
+
+    # VALIDATION ===============================================================
+
+    run_ok = True
+    if not os.path.isdir(f"{job_directory}/constant/polyMesh"):
+        run_ok = False
+
+    MESH_RETURN = MeshReturn(run_ok=run_ok)
 
     """ ======================= YOUR CODE ABOVE HERE ======================= """
 

@@ -1,6 +1,12 @@
+# fluidfoam
+import fluidfoam
+
 # classes
 from classes.functions import ObjectivesParameters, ObjectivesReturn
 from classes.objective import Objective
+
+# simple-slurm
+from simple_slurm import Slurm
 
 
 def objectives(
@@ -24,6 +30,73 @@ def objectives(
     meta = objectives_parameters.meta
 
     """ ======================= YOUR CODE BELOW HERE ======================= """
+
+    force = fluidfoam.readforce(
+        path=job_directory,
+        namepatch="forceCoeffs1",
+        time_name="0",
+        name="coefficient",
+    )
+
+    c_d = get_objective_by_id(objectives=objectives, id="cd")
+    c_d.set_value(force[-1][1])  # latest time & second index (Cd - maximize)
+
+    c_l = get_objective_by_id(objectives=objectives, id="cl")
+    c_l.set_value(force[-1][4])  # latest time & fourth index (Cl - minimize)
+
+    freestream_mach_value = meta.get_meta("freestream_mach")
+    # pressure_recovery_value = math
+    pressure_recovery = get_objective_by_id(objectives=objectives, id="pr")
+    pressure_recovery.set_value(pressure_recovery_value)
+
+    # ==========================================================================
+
+    SHARED = "pvbatch --force-offscreen-rendering --opengl-window-backend OSMesa"
+    FOAM_FILEPATH = f"{job_directory}/{job_id}.foam"
+    COMMANDS = [
+        f"{SHARED} input/paraview/geometry.py {FOAM_FILEPATH} {job_directory}",
+        f"{SHARED} input/paraview/mesh.py {FOAM_FILEPATH} {job_directory}",
+        f"{SHARED} input/paraview/slice-velocity.py {FOAM_FILEPATH} {job_directory}",
+        f"{SHARED} input/paraview/slice-pressure.py {FOAM_FILEPATH} {job_directory}",
+        f"{SHARED} input/paraview/slice-mach.py {FOAM_FILEPATH} {job_directory}",
+    ]
+
+    slurm1 = Slurm(
+        job_name=f"{job_id}-paraview",
+        account="def-jphickey",
+        time="00:10:00",
+        nodes=1,
+        ntasks_per_node=1,
+        cpus_per_task=16,
+        mem_per_cpu="4G",
+        output=f"{job_directory}/paraview.log",
+        open_mode="append",
+    )
+    slurm1.set_wait(True)
+
+    for command in COMMANDS:
+        slurm1.add_cmd(command)
+
+    slurm1.sbatch()
+
+    # slice
+    meta.add_meta("pv-slice", "slice.png")
+
+    # geometry
+    meta.add_meta("pv-geometry-diagonal", "geometry-diagonal.png")
+    meta.add_meta("pv-geometry-side", "geometry-side.png")
+
+    # mesh
+    meta.add_meta("pv-mesh", "mesh.png")
+
+    # slice-velocity
+    meta.add_meta("pv-slice-velocity", "slice-velocity.png")
+
+    # slice-pressure
+    meta.add_meta("pv-slice-pressure", "slice-pressure.png")
+
+    # slice-mach
+    meta.add_meta("pv-slice-mach", "slice-mach.png")
 
     OBJECTIVES_RETURN = ObjectivesReturn(objectives=objectives)
 

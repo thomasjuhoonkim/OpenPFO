@@ -20,21 +20,21 @@ if __name__ == "__main__":
 
     """ ======================= YOUR CODE BELOW HERE ======================= """
 
-    VIEW_SIZE = [3840, 2160]
+    VIEW_SIZE = [2021, 594]  
 
     renderView = CreateView("RenderView")
     renderView.ViewSize = VIEW_SIZE
 
-    renderView.CameraPosition = [-0.5, 0.5, 0.25]
-    renderView.CameraFocalPoint = [0.6, 0, 0]
-    renderView.CameraViewUp = [0, 0, 1]
+    renderView.CameraPosition = [-12, 1.35, 23.5]
+    renderView.CameraFocalPoint = [-12, 1.35, 0.0]
+    renderView.CameraViewUp = [0, 1, 0]
 
     renderView.OrientationAxesVisibility = 0
 
     slice = Slice(Input=reader1)
     slice.SliceType = "Plane"
-    slice.SliceType.Origin = [0.5, 0, 0]
-    slice.SliceType.Normal = [1, 0, 0]
+    slice.SliceType.Origin = [0, 0, 0]
+    slice.SliceType.Normal = [0, 0, 1] 
     # slice.Crinkleslice = True
 
     display1 = Show(slice, renderView)

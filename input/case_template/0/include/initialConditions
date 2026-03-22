@@ -6,9 +6,30 @@
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
 
-flowVelocity         (10 0 0);
-pressure             0;
-turbulentKE          0.375;
-turbulentOmega       7.4;
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      initialConditions;
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+T       300;
+Twall     300.0;
+
+pressureInlet  26500;
+pressureField  $pressureInlet;
+
+rhoInlet       0.4;
+
+velocityInlet  1680;
+velocityField  (1680 0 0);
+velocityOutlet   (2000 0 0);
+
+Y_Air      1.4;
+
 
 // ************************************************************************* //
+

@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  v2506                                 |
+|  \\    /   O peration     | Version:  v2512                                 |
 |   \\  /    A nd           | Website:  www.openfoam.com                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -16,74 +16,44 @@ FoamFile
 
 solvers
 {
-    p
+    "(rho|rhoU|rhoE)"
     {
-        solver          GAMG;
-        smoother        GaussSeidel;
-        tolerance       1e-6;
-        relTol          0.01;
-    }
-
-    Phi
-    {
-        $p;
+        solver          diagonal;
     }
 
     U
     {
         solver          smoothSolver;
         smoother        GaussSeidel;
-        tolerance       1e-8;
+        nSweeps         2;
+        tolerance       1e-09;
         relTol          0.01;
-        nSweeps         1;
     }
 
-    k
+    h
     {
-        solver          smoothSolver;
-        smoother        GaussSeidel;
-        tolerance       1e-8;
-        relTol          0.1;
-        nSweeps         1;
-    }
-
-    omega
-    {
-        solver          smoothSolver;
-        smoother        GaussSeidel;
-        tolerance       1e-8;
-        relTol          0.1;
-        nSweeps         1;
+        $U;
+        tolerance       1e-10;
+        relTol          0;
     }
 }
 
-SIMPLE
+//relaxationFactors
+//{
+//    equations
+//    {
+//        U 0.2;
+//        p 0.3;
+//        T 0.5;
+//    }
+//}
+
+PIMPLE
 {
-    nNonOrthogonalCorrectors 1;
-    consistent yes;
+    nOuterCorrectors 1;
+    nCorrectors      2;
+    nNonOrthogonalCorrectors 0;
 }
-
-potentialFlow
-{
-    nNonOrthogonalCorrectors 10;
-}
-
-relaxationFactors
-{
-    equations
-    {
-        p               0.3;
-        U               0.3;
-        k               0.3;
-        omega           0.3;
-    }
-}
-
-cache
-{
-    grad(U);
-}
-
-
 
 // ************************************************************************* //
+
