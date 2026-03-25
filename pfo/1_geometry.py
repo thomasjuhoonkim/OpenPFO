@@ -101,10 +101,15 @@ def geometry(
     outlet_x = points_left[0][0]
     outlet_y = points_left[0][1]
 
+    divisionsX = np.ceil(38.2 * (outlet_x - inlet_x))
+    divisionsY = np.ceil(33.36 * inlet_y)
+
     block_mesh_dict_file["inletX"] = inlet_x
     block_mesh_dict_file["inletY"] = inlet_y
     block_mesh_dict_file["outletX"] = outlet_x
     block_mesh_dict_file["outletY"] = outlet_y
+    block_mesh_dict_file["div_x"] = divisionsX
+    block_mesh_dict_file["div_y"] = divisionsY
     block_mesh_dict_file["edges"][3] = [
         [float(px), float(py), "$inletZ"] for px, py, _ in points_left
     ]
