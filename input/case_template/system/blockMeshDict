@@ -30,10 +30,10 @@ outletY 0.630554673; // CHANGE ME
 outletZ 0.1;
 outletZ_neg -0.1;
 
-inletX2     -25;        // CHANGE ME
+inletX2 -25;        // CHANGE ME
 
-div_x = 550
-div_y = 90
+div_x 550;
+div_y 90;
 
 vertices
 (

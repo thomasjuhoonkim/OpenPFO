@@ -31,7 +31,7 @@ def geometry(
     variables = point.get_variables()
     for variable in variables:
         if variable.get_id() == "theta23_deg":
-            theta23 = variable.get_value()
+            theta23 = np.deg2rad(variable.get_value())
         if variable.get_id() == "M2":
             M2 = variable.get_value()
 
@@ -91,6 +91,14 @@ def geometry(
         points_left.append((px, py, offset_z))
         points_right.append((px, py, -offset_z))
 
+    with open(f"{job_directory}/left_spline.csv", "w") as f:
+        for p in points_left:
+            f.write(f"{p[0]},{p[1]},{p[2]}\n")
+
+    with open(f"{job_directory}/right_spline.csv", "w") as f:
+        for p in points_right:
+            f.write(f"{p[0]},{p[1]},{p[2]}\n")
+
     # ==========================================================================
 
     block_mesh_dict_filepath = f"{job_directory}/system/blockMeshDict"
@@ -101,9 +109,10 @@ def geometry(
     outlet_x = points_left[0][0]
     outlet_y = points_left[0][1]
 
-    divisionsX = np.ceil(38.2 * (outlet_x - inlet_x))
-    divisionsY = np.ceil(33.36 * inlet_y)
+    divisionsX = int(np.ceil(38.2 * (outlet_x - inlet_x)))
+    divisionsY = int(np.ceil(33.36 * inlet_y))
 
+    block_mesh_dict_file["inletX2"] = inlet_x - 10
     block_mesh_dict_file["inletX"] = inlet_x
     block_mesh_dict_file["inletY"] = inlet_y
     block_mesh_dict_file["outletX"] = outlet_x
@@ -111,10 +120,10 @@ def geometry(
     block_mesh_dict_file["div_x"] = divisionsX
     block_mesh_dict_file["div_y"] = divisionsY
     block_mesh_dict_file["edges"][3] = [
-        [float(px), float(py), "$inletZ"] for px, py, _ in points_left
+        [px, py, "$inletZ"] for px, py, _ in points_left
     ]
     block_mesh_dict_file["edges"][7] = [
-        [float(px), float(py), "$inletZ_neg"] for px, py, _ in points_right
+        [px, py, "$inletZ_neg"] for px, py, _ in points_right
     ]
     block_mesh_dict_file.writeFile()
 

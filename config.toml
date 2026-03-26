@@ -4,8 +4,8 @@
 # max_job_workers (int):     how many maximum job workers at any time (job parallelization)
 [compute]
 hpc=true
-processors_per_job=8
-max_job_workers=1
+processors_per_job=1
+max_job_workers=8
 
 # PARAMETERS
 # name (name):  user-friendly name for the parameter
@@ -16,13 +16,13 @@ max_job_workers=1
 [[model.parameters]]
 name="shock_angle"
 id="theta23_deg"
-min=60
-max=80
+min=65
+max=75
 [[model.parameters]]
 name="inlet_mach"
 id="M2"
 min=2
-max=5
+max=3
 
 # OBJECTIVES
 # name:  user-friendly name for the objective

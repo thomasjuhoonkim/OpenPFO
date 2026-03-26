@@ -39,7 +39,7 @@ def prepare(prepare_parameters: PrepareParameters):
     # ==========================================================================
 
     # meta
-    meta.add_meta("case", job_id)  # whats going on here?
+    meta.add_meta("case", job_id)
 
     PREPARE_RETURN = PrepareReturn()
 
