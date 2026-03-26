@@ -50,7 +50,7 @@ def solve(
     # VALIDATION ===============================================================
 
     run_ok = True
-    if not os.path.isdir(f"{job_directory}/40"):
+    if not os.path.isdir(f"{job_directory}/0.5"):
         run_ok = False
 
     SOLVE_RETURN = SolveReturn(run_ok=run_ok)
