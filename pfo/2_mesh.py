@@ -4,8 +4,8 @@ import os
 # classes
 from classes.functions import MeshParameters, MeshReturn
 
-# simple-slurm
-from simple_slurm import Slurm
+# PyFoam
+from PyFoam.Execution.BasicRunner import BasicRunner
 
 
 def mesh(
@@ -28,23 +28,12 @@ def mesh(
         f"blockMesh -case {job_directory}",
     ]
 
-    slurm = Slurm(
-        job_name=f"{job_id}-blockMesh",
-        account="def-jphickey",
-        time="00:01:00",
-        nodes=1,
-        ntasks_per_node=1,
-        cpus_per_task=processors_per_job,
-        mem="32G",
-        output=f"{job_directory}/blockMesh.log",
-        open_mode="append",
-    )
-    slurm.set_wait(True)
-
     for command in COMMANDS:
-        slurm.add_cmd(command)
-
-    slurm.sbatch()
+        runner = BasicRunner(argv=command.split(" "))
+        runner.start()
+        if not runner.runOK():
+            logger.error(f"{command} failed")
+            raise Exception(f"{command} failed")
 
     # VALIDATION ===============================================================
 

@@ -5,8 +5,8 @@ import fluidfoam
 from classes.functions import ObjectivesParameters, ObjectivesReturn
 from classes.objective import Objective
 
-# simple-slurm
-from simple_slurm import Slurm
+# util
+from util.run_parallel_commands import run_parallel_commands
 
 
 def objectives(
@@ -38,8 +38,7 @@ def objectives(
         name="surfaceFieldValue",
     )
 
-    P_o = get_objective_by_id(objectives=objectives, id="areaAverage")
-    P_o.set_value(force[-1][1])  # latest time & second index (Cd - maximize)
+    P_o = force[-1][1]  # latest time & second index
 
     freestream_mach_value = meta.get_meta("freestream_mach")
     pressure_recovery_value = P_o / (
@@ -50,7 +49,7 @@ def objectives(
 
     # ==========================================================================
 
-    SHARED = "pvbatch --force-offscreen-rendering --opengl-window-backend OSMesa"
+    SHARED = "/Applications/ParaView-6.0.1.app/Contents/bin/pvbatch"
     FOAM_FILEPATH = f"{job_directory}/{job_id}.foam"
     COMMANDS = [
         f"{SHARED} input/paraview/geometry.py {FOAM_FILEPATH} {job_directory}",
@@ -60,23 +59,7 @@ def objectives(
         f"{SHARED} input/paraview/slice-mach.py {FOAM_FILEPATH} {job_directory}",
     ]
 
-    slurm1 = Slurm(
-        job_name=f"{job_id}-paraview",
-        account="def-jphickey",
-        time="00:10:00",
-        nodes=1,
-        ntasks_per_node=1,
-        cpus_per_task=16,
-        mem_per_cpu="4G",
-        output=f"{job_directory}/paraview.log",
-        open_mode="append",
-    )
-    slurm1.set_wait(True)
-
-    for command in COMMANDS:
-        slurm1.add_cmd(command)
-
-    slurm1.sbatch()
+    run_parallel_commands(commands=COMMANDS, max_workers=processors_per_job)
 
     # slice
     meta.add_meta("pv-slice", "slice.png")

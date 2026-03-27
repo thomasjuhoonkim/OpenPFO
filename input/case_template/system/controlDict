@@ -112,10 +112,5 @@ functions
     }
 }
 
-OptimisationSwitches
-{
-    fileHandler collated;
-}
-
 // ************************************************************************* //
 

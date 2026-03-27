@@ -1,6 +1,3 @@
-# math
-import math
-
 # classes
 from classes.functions import PrepareParameters, PrepareReturn
 
