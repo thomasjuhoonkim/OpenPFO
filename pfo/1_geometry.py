@@ -61,7 +61,7 @@ def geometry(
         )
 
     # inlet height
-    offset_y = 1.0
+    offset_y = 0.0
     # thickness
     offset_z = 0.1
 
