@@ -4,7 +4,7 @@
 # max_job_workers (int):     how many maximum job workers at any time (job parallelization)
 [compute]
 hpc=true
-processors_per_job=1
+processors_per_job=64
 max_job_workers=8
 
 # PARAMETERS

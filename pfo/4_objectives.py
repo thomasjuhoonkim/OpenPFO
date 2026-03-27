@@ -42,7 +42,9 @@ def objectives(
     P_o.set_value(force[-1][1])  # latest time & second index (Cd - maximize)
 
     freestream_mach_value = meta.get_meta("freestream_mach")
-    pressure_recovery_value = P_o / (26500*(1+(0.2*(freestream_mach_value**2))**3.5))
+    pressure_recovery_value = P_o / (
+        26500 * (1 + (0.2 * (freestream_mach_value**2)) ** 3.5)
+    )
     pressure_recovery = get_objective_by_id(objectives=objectives, id="pr")
     pressure_recovery.set_value(pressure_recovery_value)
 

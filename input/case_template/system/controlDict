@@ -112,5 +112,10 @@ functions
     }
 }
 
+OptimisationSwitches
+{
+    fileHandler collated;
+}
+
 // ************************************************************************* //
 
