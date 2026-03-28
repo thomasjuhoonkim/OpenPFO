@@ -19,19 +19,19 @@ if __name__ == "__main__":
 
     """ ======================= YOUR CODE BELOW HERE ======================= """
 
-    VIEW_SIZE = [2021, 594]  
+    VIEW_SIZE = [4000, 1200]
 
     renderView = CreateView("RenderView")
     renderView.ViewSize = VIEW_SIZE
 
-    renderView.CameraPosition = [-12, 1.35, 23.5]
-    renderView.CameraFocalPoint = [-12, 1.35, 0.0]
+    renderView.CameraPosition = [-9, 1, 11]
+    renderView.CameraFocalPoint = [-9, 1, 0.0]
     renderView.CameraViewUp = [0, 1, 0]
 
     slice = Slice(Input=reader)
     slice.SliceType = "Plane"
-    slice.SliceType.Origin = [0, 0, 0]           
-    slice.SliceType.Normal = [0, 0, 1]           
+    slice.SliceType.Origin = [0, 0, 0]
+    slice.SliceType.Normal = [0, 0, 1]
     # slice.Crinkleslice = True
 
     pLUT = GetColorTransferFunction("p")

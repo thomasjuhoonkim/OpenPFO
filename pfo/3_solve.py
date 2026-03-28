@@ -4,8 +4,8 @@ import os
 # classes
 from classes.functions import SolveParameters, SolveReturn
 
-# PyFoam
-from PyFoam.Execution.BasicRunner import BasicRunner
+# simple-slurm
+from simple_slurm import Slurm
 
 
 def solve(
@@ -30,12 +30,22 @@ def solve(
         f"mpirun -np {processors_per_job} redistributePar -parallel -reconstruct -latestTime -case {job_directory}",
     ]
 
+    slurm = Slurm(
+        job_name=f"{job_id}-rhoCentralFoam",
+        account="def-jphickey",
+        time="02:00:00",
+        nodes=1,
+        ntasks_per_node=processors_per_job,
+        mem_per_cpu="1G",
+        output=f"{job_directory}/simpleFoam.log",
+        open_mode="append",
+    )
+    slurm.set_wait(True)
+
     for command in COMMANDS:
-        runner = BasicRunner(argv=command.split(" "))
-        runner.start()
-        if not runner.runOK():
-            logger.exception(f"{command} failed")
-            raise Exception(f"{command} failed")
+        slurm.add_cmd(command)
+
+    slurm.sbatch()
 
     # VALIDATION ===============================================================
 

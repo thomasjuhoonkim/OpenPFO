@@ -5,8 +5,8 @@ import fluidfoam
 from classes.functions import ObjectivesParameters, ObjectivesReturn
 from classes.objective import Objective
 
-# util
-from util.run_parallel_commands import run_parallel_commands
+# simple-slurm
+from simple_slurm import Slurm
 
 
 def objectives(
@@ -49,17 +49,32 @@ def objectives(
 
     # ==========================================================================
 
-    SHARED = "/Applications/ParaView-6.0.1.app/Contents/bin/pvbatch"
+    SHARED = "pvbatch --force-offscreen-rendering --opengl-window-backend OSMesa"
     FOAM_FILEPATH = f"{job_directory}/{job_id}.foam"
     COMMANDS = [
-        f"{SHARED} input/paraview/geometry.py {FOAM_FILEPATH} {job_directory}",
         f"{SHARED} input/paraview/mesh.py {FOAM_FILEPATH} {job_directory}",
         f"{SHARED} input/paraview/slice-velocity.py {FOAM_FILEPATH} {job_directory}",
         f"{SHARED} input/paraview/slice-pressure.py {FOAM_FILEPATH} {job_directory}",
         f"{SHARED} input/paraview/slice-mach.py {FOAM_FILEPATH} {job_directory}",
     ]
 
-    run_parallel_commands(commands=COMMANDS, max_workers=processors_per_job)
+    slurm1 = Slurm(
+        job_name=f"{job_id}-paraview",
+        account="def-jphickey",
+        time="00:10:00",
+        nodes=1,
+        ntasks_per_node=1,
+        cpus_per_task=8,
+        mem="8G",
+        output=f"{job_directory}/paraview.log",
+        open_mode="append",
+    )
+    slurm1.set_wait(True)
+
+    for command in COMMANDS:
+        slurm1.add_cmd(command)
+
+    slurm1.sbatch()
 
     # slice
     meta.add_meta("pv-slice", "slice.png")
