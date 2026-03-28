@@ -136,7 +136,7 @@ def geometry(
     initialConditions_file = ParsedParameterFile(initialConditions_filepath)
 
     # modify values
-    initialConditions_file["velocityInlet"] = a
+    initialConditions_file["velocityInlet"] = inlet_speed
     v_vector = f"({inlet_speed} 0 0)"
     initialConditions_file["velocityField"] = v_vector
     initialConditions_file["velocityOutlet"] = v_vector
