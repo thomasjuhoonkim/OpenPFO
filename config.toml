@@ -5,7 +5,7 @@
 [compute]
 hpc=true
 processors_per_job=8
-max_job_workers=20
+max_job_workers=50
 
 # PARAMETERS
 # name (name):  user-friendly name for the parameter

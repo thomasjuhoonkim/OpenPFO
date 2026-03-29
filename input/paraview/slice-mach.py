@@ -24,7 +24,7 @@ if __name__ == "__main__":
     renderView = CreateView("RenderView")
     renderView.ViewSize = VIEW_SIZE
 
-    renderView.CameraPosition = [-9, 1, 11]
+    renderView.CameraPosition = [-9, 1, 12]
     renderView.CameraFocalPoint = [-9, 1, 0.0]
     renderView.CameraViewUp = [0, 1, 0]
 
