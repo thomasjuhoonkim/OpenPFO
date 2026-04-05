@@ -376,6 +376,10 @@ Checks and warns the presence of the `output` directory.
 > [!NOTE]
 > This check function is ran before any workflows begin to ensure a user does not accidentally overwrite their existing outputs.
 
+#### `pfo checkInput`
+
+Checks and warns the absence of the `input` directory. Creates one if it does not exist.
+
 #### `pfo run`
 
 Runs the optimizer using the optimization algorithm defined in `A_optimizer.py`, the configuration defined in `config.toml` and all user-defined job step functions defined in `pfo/`.
