@@ -5,6 +5,7 @@ from typing_extensions import Annotated
 # commands
 from commands.check_output import check_output
 from commands.check_config import check_config
+from commands.check_input import check_input
 
 # classes
 from classes.problem import OpenPFOProblem
@@ -33,6 +34,7 @@ def run(
     ] = False,
 ):
     # pre-run checks
+    check_input()
     if not resume:
         check_output()
     check_config()

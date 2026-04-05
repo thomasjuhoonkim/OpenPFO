@@ -8,6 +8,7 @@ import typer
 # commands
 from commands.check_output import check_output
 from commands.check_config import check_config
+from commands.check_input import check_input
 
 # classes
 from classes.progress import Progress
@@ -32,6 +33,7 @@ def check_solver(
     ] = False,
 ):
     # pre-run checks
+    check_input()
     check_output()
     check_config()
 
