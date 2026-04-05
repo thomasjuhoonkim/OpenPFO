@@ -1,5 +1,11 @@
+# system
+import os
+
 # classes
 from classes.functions import MeshParameters, MeshReturn
+
+# PyFoam
+from PyFoam.Execution.BasicRunner import BasicRunner
 
 
 def mesh(
@@ -18,7 +24,24 @@ def mesh(
 
     """ ======================= YOUR CODE BELOW HERE ======================= """
 
-    MESH_RETURN = MeshReturn()
+    COMMANDS = [
+        f"blockMesh -case {job_directory}",
+    ]
+
+    for command in COMMANDS:
+        runner = BasicRunner(argv=command.split(" "))
+        runner.start()
+        if not runner.runOK():
+            logger.error(f"{command} failed")
+            raise Exception(f"{command} failed")
+
+    # VALIDATION ===============================================================
+
+    run_ok = True
+    if not os.path.isdir(f"{job_directory}/constant/polyMesh"):
+        run_ok = False
+
+    MESH_RETURN = MeshReturn(run_ok=run_ok)
 
     """ ======================= YOUR CODE ABOVE HERE ======================= """
 

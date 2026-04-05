@@ -13,6 +13,15 @@ def optimizer(problem: Any):
 
     """ ======================= YOUR CODE BELOW HERE ======================= """
 
+    algorithm = NSGA2(pop_size=50)
+    algorithm.setup(
+        problem=problem,
+        termination=("n_gen", 50),
+        seed=1,
+        verbose=True,
+        save_history=True,
+    )
+
     """ ======================= YOUR CODE ABOVE HERE ======================= """
 
     return algorithm

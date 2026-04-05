@@ -3,9 +3,9 @@
 # processors_per_job (int):  how many processors to allocate for each job (job step parallelization)
 # max_job_workers (int):     how many maximum job workers at any time (job parallelization)
 [compute]
-hpc=false
-processors_per_job=0
-max_job_workers=0
+hpc=true
+processors_per_job=8
+max_job_workers=50
 
 # PARAMETERS
 # name (name):  user-friendly name for the parameter
@@ -14,15 +14,15 @@ max_job_workers=0
 # max (float):  maximum value for the parameter
 [model]
 [[model.parameters]]
-name=""
-id=""
-min=0
-max=0
+name="shock_angle"
+id="theta23_deg"
+min=65
+max=75
 [[model.parameters]]
-name=""
-id=""
-min=0
-max=0
+name="inlet_mach"
+id="M2"
+min=2
+max=3
 
 # OBJECTIVES
 # name:  user-friendly name for the objective
@@ -30,10 +30,6 @@ max=0
 # type:  whether the goal is to minimize or maximize the objective
 [optimizer]
 [[optimizer.objectives]]
-name=""
-id=""
-type=""
-[[optimizer.objectives]]
-name=""
-id=""
-type=""
+name="Pressure Recovery"
+id="pr"
+type="maximize"
