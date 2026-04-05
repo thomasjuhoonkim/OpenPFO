@@ -14,6 +14,7 @@ from commands.check_solver import check_solver
 from commands.check_output import check_output
 from commands.check_config import check_config
 from commands.check_meshes import check_meshes
+from commands.check_input import check_input
 from commands.check_run import check_run
 
 # commands - execution
@@ -45,6 +46,7 @@ app.command(name="checkCleanup")(check_cleanup)
 app.command(name="checkRun")(check_run)
 app.command(name="checkResults")(check_results)
 app.command(name="checkOutput")(check_output)
+app.command(name="checkInput")(check_input)
 
 # execution
 app.command(name="run")(run)

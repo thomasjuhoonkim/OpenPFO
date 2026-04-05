@@ -62,7 +62,7 @@ export class Timeline extends Component<TimelineProps, TimelineState> {
         schedulerContentHeight: "100%",
         schedulerWidth: "100%",
         besidesWidth: 0,
-        defaultExpanded: false,
+        defaultExpanded: true,
         nonWorkingTimeHeadBgColor: "transparent",
         nonWorkingTimeBodyBgColor: "transparent",
         resourceName: "Workflow Item",

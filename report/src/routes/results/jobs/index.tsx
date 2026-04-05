@@ -1,6 +1,7 @@
-import { Flex, Tabs } from "@mantine/core";
-import { createFileRoute } from "@tanstack/react-router";
+import { Flex, Group, Tabs, Text } from "@mantine/core";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
+import { ArrowLeftIcon } from "lucide-react";
 import * as z from "zod";
 
 import { PointParallelCoordinates } from "@/components/PointParallelCoordinates";
@@ -51,6 +52,15 @@ function RouteComponent() {
     <Tabs h="100%" onChange={onTabChange} defaultValue={tab}>
       <Flex h="100%" direction="column">
         <Tabs.List>
+          {/* @ts-expect-error */}
+          <Tabs.Tab component={Link} to="/results" value="back">
+            <Group gap="4" align="center">
+              <ArrowLeftIcon size={16} color="var(--mantine-color-anchor)" />
+              <Text size="sm" color="var(--mantine-color-anchor)">
+                Results
+              </Text>
+            </Group>
+          </Tabs.Tab>
           <Tabs.Tab value="overview">Overview</Tabs.Tab>
           <Tabs.Tab value="points">Points</Tabs.Tab>
           <Tabs.Tab value="objectives">Objectives</Tabs.Tab>
@@ -58,7 +68,7 @@ function RouteComponent() {
           <Tabs.Tab value="steps">Steps</Tabs.Tab>
         </Tabs.List>
 
-        {tab === "overview" && <TabOverview />}
+        {tab === "overview" && <TabOverview results={results} />}
 
         {tab === "points" && (
           <PointParallelCoordinates
@@ -76,7 +86,13 @@ function RouteComponent() {
           />
         )}
 
-        {tab === "steps" && <TabSteps results={results} jobs={jobs} />}
+        {tab === "steps" && (
+          <TabSteps
+            results={results}
+            jobs={jobs}
+            title="All jobs by step status throughout job execution"
+          />
+        )}
 
         {tab === "points-objectives" && (
           <TabPointsAndObjectives results={results} jobs={jobs} />

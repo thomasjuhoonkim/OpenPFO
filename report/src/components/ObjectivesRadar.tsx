@@ -23,12 +23,15 @@ export function ObjectivesRadar({
   title: string;
   isNormalized?: boolean;
 }) {
+  const transparency =
+    jobs.length === 1 ? 0.5 : jobs.length <= 50 ? 0.25 : 0.025;
+  const type = jobs.length === 1 ? "area" : "line";
   const series = jobs
     .filter((job) => job.runOk)
     .map((job) => ({
       data: job.objectives.map((objective) => objective.value),
-      color: "rgba(255, 206, 47, 0.01)",
-      type: "line",
+      color: `rgba(255, 206, 47, ${transparency})`,
+      type,
       name: job.id,
       marker: false,
     }));

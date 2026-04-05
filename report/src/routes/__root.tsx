@@ -68,10 +68,11 @@ function Layout({ children }: PropsWithChildren) {
             <Anchor
               className={styles.logo}
               component={Link}
-              to="/about"
+              to="https://github.com/thomasjuhoonkim/OpenPFO"
+              target="_blank"
               size="lg"
             >
-              About
+              GitHub
             </Anchor>
           </Group>
 
