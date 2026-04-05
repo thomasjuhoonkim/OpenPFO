@@ -223,7 +223,10 @@ Either download OpenVSP from the [official website](https://openvsp.org/download
 
 #### FreeCAD (Optional)
 
-To be filled...
+Either download FreeCAD from the [official website](https://www.freecad.org/downloads.php) or [build it from source](https://github.com/freecad/freecad)
+
+> [!NOTE]
+> Make sure any graphics modules have been flagged off for use in an HPC environment.
 
 ### Install
 
@@ -234,8 +237,6 @@ pip install -e .
 ```
 
 ## Usage
-
-To be filled...
 
 ### Overview
 
@@ -1002,9 +1003,9 @@ OpenPFO has a parallel output compression script using `pigz`.
 source ./scripts/output.sh
 ```
 
-### Surrogate Modeling
+### Surrogate Modeling (Coming Soon)
 
-To be filled...
+OpenPFO will support surrogate modeling through the `PyDOE3` library. This feature is expected to be released in v1.1.
 
 ## Examples
 
@@ -1035,7 +1036,7 @@ This project was made possible through the Faculty of Engineering at the Univers
 
 ### Disclaimer
 
-OpenPFO is part of the University of Waterloo's engineering capstone project courses. Future maintenence of this repository is subject to contributor availability. Contributors are welcome, please reach out to project owners regarding contributing.
+OpenPFO is part of the University of Waterloo's engineering capstone project courses. Future maintenence of this repository is subject to contributor availability. Contributors are welcome, please refer to [CONTRIBUTING.md](https://github.com/thomasjuhoonkim/OpenPFO/blob/main/CONTRIBUTING.md).
 
 ---
 
