@@ -12,9 +12,11 @@ authors:
     equal-contrib: true
     affiliation: 1
   - name: Emma-Lee Keeping
+    orcid:
     equal-contrib: true
     affiliation: 1
   - name: Kate Armstrong
+    orcid: 0009-0000-2710-2873
     equal-contrib: true
     affiliation: 1
 affiliations:
@@ -27,37 +29,31 @@ bibliography: paper.bib
 
 # Summary
 
-Engineering design relies more and more on Computational Fluid Dynamics (CFD) as a means of validating and improving designs. This process involves four major steps: geometry generation, meshing, solving, and post-processing. Conducting design optimization using CFD requires repetition of most or all of these steps.
+The engineering design process increasingly relies on Computational Fluid Dynamics (CFD) as a means of validating and improving designs. The CFD process involves four major steps: geometry generation, meshing, solving, and post-processing. Conducting design optimization using CFD requires complete repetition of most or all of these steps for every design iteration.
 
-OpenPFO (Open Parametric Flow Optimizer) is an python workflow that integrates these four steps, with the pymoo optimization library [@pymoo]. The workflow can integrate any combination of open source software for each step such as FreeCAD [@FreeCAD], OpenVSP [@mcdonald2015interactive], OpenFOAM [@weller1998tensorial], and Paraview [@AhrensGL05]. The final product is one which is capable of accepting parameter ranges, optimization objectives, a parameterized geometry model, and a simulation case, iterating through the design space to provide optimized results.
+OpenPFO (Open Parametric Flow Optimizer) is a python workflow that integrates these four steps automating repetetive work as well as integrating design optimization, with the pymoo optimization library [@pymoo]. The workflow can integrate any combination of open source software for each step with preexisting integration with FreeCAD [@FreeCAD], OpenVSP [@mcdonald2015interactive], OpenFOAM [@weller1998tensorial], and Paraview [@AhrensGL05]. OpenPFO is a tool that is capable of accepting parameter ranges, optimization objectives, a parameterized geometry model, and a simulation case, and then iterating through the design space to identify optimized results.
 
 # Statement of need
 
-OpenPFO is a Python workflow to conduct CFD based design space exploration and optimization. The workflow interconnects the four main steps of CFD analysis: geometry generation, meshing, solving, and post processing, with an optimization algorithm. The purpose of the workflow is to streamline and automate the CFD-informed design optimization process.
+OpenPFO is a Python workflow created to conduct CFD based design space exploration and optimization. The workflow interconnects the four main steps of CFD analysis: geometry generation, meshing, solving, and post processing in a loop with an optimization algorithm. The purpose of the workflow is to streamline and automate the CFD-informed design optimization process.
 
-This workflow replaces a heavily manual process where a design engineer has to manually iterate through the CFD process for many different design variations: creating the geometry, meshing the geometry, running the solver, and post-processing results, for each variation. This approach can be very time consuming and is a major barrier to CFD-based design optimization. OpenPFO streamlines this process by eliminating the repetitve steps and guesswork in the typical process, allowing engineers to focus on exploring and optimizing a wider design space.
+This workflow replaces an inefficient process where a design engineer has to manually iterate through the CFD process for many different design variations: creating the geometry, meshing the geometry, running the solver, and post-processing results for each geometry variation. This approach can be very time consuming and is a major barrier to CFD informed design optimization. OpenPFO streamlines this process by eliminating the repetitve steps and guesswork in the typical process, allowing engineers to focus on exploring and optimizing a wider design space.
 
 # State of the field
 
-There are a few tools which complete the goal of OpenPFO: SIEMENS HEEDS, Luminary Cloud, and nTop.
+The software that currently complete the goal of OpenPFO include: SIEMENS HEEDS, Luminary Cloud, and nTop.
 
-While each of these tools accomplish some or all of the goals of OpenPFO, each have at least one of two notable challenges, cost, and extensibility. OpenPFO, through its integration with open source resources, is free to use, which overcomes the cost barrier of existing tools. OpenPFO is also extensible, supporting integration with any external tool that comes with a programmatic interface. Specialized software such as OpenVSP or OpenFOAM have been implemented
+While each of these tools accomplish some or all of the goals of OpenPFO, each have at least one of two notable challenges, cost, and extensibility. OpenPFO, through its integration with open source resources, is free to use, which overcomes the cost barrier of existing tools. OpenPFO is also extensible, supporting integration with any external tool that comes with a programmatic interface. Specialized software such as OpenVSP or OpenFOAM have been implemented in the creation of OpenPFO.
 
 # Software design
-
-![Overview of OpenPFO software design\label{fig:openpfo-overview}](../docs/problem-and-algorithm.png)
 
 OpenPFO is an opinionated workflow designed for CFD-based design space exploration and optimization. Four main abstractions are provided: (1) Jobs, (2) Searches, (3) Problem, (4) Algorithm.
 
 Each "Job" represents one combination of parameters, otherwise known as a geometry variation. Jobs implement 6 different user-defined functions called steps: `1_prepare`, `2_geometry`, `3_mesh`, `4_solve`, `5_objectives`, `cleanup`. Each step allows the user to programmatically define their automated steps, performing computations, interfacing with external tools, or submitting batch jobs to a scheduler.
 
-![Early termination of job after a failure\label{fig:error-handling}](../docs/error-handling.png)
+![Illustration of a job including inputs, outputs, and job step functions{fig:job-structure}](../docs/job.png)
 
-Jobs handle exceptions for the user, preventing errors from interupting the workflow. Users may define programmatic step validation, allowing the job to be terminated early should there be validation errors.
-
-![Restarting an existing job during progress recovery\label{fig:progress-recovery}](../docs/progress-recovery.png)
-
-Each user-defined function has explicit comments indicating where a user's programmatic logic should be placed.
+Each user-defined function has explicit comments indicating where a user's programmatic logic should be placed. An example of this is the geometry function:
 
 ```python
 # classes
@@ -86,16 +82,25 @@ def geometry(
 
     return GEOMETRY_RETURN
 ```
+Jobs handle exceptions for the user, preventing errors from interupting the workflow. Users may define programmatic step validation, allowing the job to be terminated early should there be validation errors. 
+
+![Early termination of job after a failure\label{fig:error-handling}](../docs/error-handling.png)
+
+![Restarting an existing job during progress recovery\label{fig:progress-recovery}](../docs/progress-recovery.png)
 
 Each "Search" constructs and executes jobs for a set of design points. "Searches" can execute jobs sequentially or in parallel. Often times in HPC environments, parallel job execution is desired due to the abundance of compute capacity. Parallel jobs are facilitates by a thread pool executor which can be configured to run with a desired number of parallel job workers.
 
+![Illustration of a search structure including numerous jobs\label{fig:search}](../docs/search.png)
+
 The "Problem" is a custom class inherited from pymoo's Problem class, importing the parameter definitions provided in the OpenPFO configuration. The "Algorithm" is a user-defined function `A_algorithm` which allows the user to define the pymoo algorithm and termination criteria.
+
+![Overview of OpenPFO software design\label{fig:openpfo-overview}](../docs/problem-and-algorithm.png)
 
 OpenPFO was designed as an editable workflow, and is installed and executed in editable mode rather than a distributable package. This was an intentional choice that was made to ensure users could understand and get started with OpenPFO as fast as possible. Editable mode also allows users to make quick changes to their user-defined functions without rebuilding to execute commands through the command-line interface.
 
-![Collage of report viewer capabilities\label{fig:report-viewer}](../docs/openpfo-collage.png)
-
 Typically, numerical values are not enough for the outputs to have any significant value. Therefore, a built-in web application called the report-viewer is also provided to visualize results and aid the user to accurately interpret optimization data produced by OpenPFO.
+
+![Collage of report viewer capabilities\label{fig:report-viewer}](../docs/openpfo-collage.png)
 
 # Research impact statement
 
