@@ -104,7 +104,7 @@ Typically, numerical values are not enough for the outputs to have any significa
 
 # Research impact statement
 
-OpenPFO has been deveoped with the intention of improving the flow of the engineering design process. Through its development, it has been made clear that it has immense potential for research impact. While it was validated with a simple delta wing aircraft design, a secondary case of hypersonic busemann intake optimization has been introduced. The application to this type of problem, enforces its research impact potential as it provides an opportunity to research previously unconsidered optimization of regimented intake designs with the ability to focus on key issues such as intake cross flow which can significantly decrease combustor performance.
+OpenPFO has been developed with the intention of improving the flow of the engineering design process. Through its development, it has been made clear that it has immense potential for research impact. While it was validated with a simple delta wing aircraft design, a secondary case of hypersonic busemann intake optimization has been introduced. The extension of the OpenPFO workflow to this new type of problem reveals the research impact potential of the solution. It provides an opportunity to research previously unconsidered optimization of regimented intake designs, and the ability to focus on key relevant issues such as the cross flow of an intake that impacts combustor performance.
 
 # AI usage disclosure
 
