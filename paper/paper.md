@@ -29,21 +29,24 @@ bibliography: paper.bib
 
 # Summary
 
-The engineering design process increasingly relies on Computational Fluid Dynamics (CFD) as a means of validating and improving designs. The CFD process involves four major steps: geometry generation, meshing, solving, and post-processing. Conducting design optimization using CFD requires complete repetition of most or all of these steps for every design iteration.
+The engineering design process increasingly relies on Computational Fluid Dynamics (CFD) thanks to the growing availability of affordable computational power and a multitude of discipline specific software. Concuting CFD in preliminary design has the optential for reducing prototying costs. The CFD process involves four major steps: geometry generation, meshing, solving, and post-processing. Conducting design optimization using CFD requires complete repetition of most or all of these steps for every design iteration.
 
 OpenPFO (Open Parametric Flow Optimizer) is a python workflow that integrates these four steps automating repetetive work as well as integrating design optimization, with the pymoo optimization library [@pymoo]. The workflow can integrate any combination of open source software for each step with preexisting integration with FreeCAD [@FreeCAD], OpenVSP [@mcdonald2015interactive], OpenFOAM [@weller1998tensorial], and Paraview [@AhrensGL05]. OpenPFO is a tool that is capable of accepting parameter ranges, optimization objectives, a parameterized geometry model, and a simulation case, and then iterating through the design space to identify optimized results.
 
 # Statement of need
 
-OpenPFO is a Python workflow created to conduct CFD based design space exploration and optimization. The workflow interconnects the four main steps of CFD analysis: geometry generation, meshing, solving, and post processing in a loop with an optimization algorithm. The purpose of the workflow is to streamline and automate the CFD-informed design optimization process.
+OpenPFO has been created to conduct CFD based design space exploration and optimization by interconnecting the four main steps of CFD analysis: geometry generation, meshing, solving, and post processing in a loop with an optimization algorithm. The purpose of the workflow is to streamline and automate the CFD-informed design optimization process.
 
-This workflow replaces an inefficient process where a design engineer has to manually iterate through the CFD process for many different design variations: creating the geometry, meshing the geometry, running the solver, and post-processing results for each geometry variation. This approach can be very time consuming and is a major barrier to CFD informed design optimization. OpenPFO streamlines this process by eliminating the repetitve steps and guesswork in the typical process, allowing engineers to focus on exploring and optimizing a wider design space.
+This workflow replaces an inefficient process where a design engineer has to manually iterate through the CFD process for many different design variations: creating the geometry, meshing the geometry, running the solver, and post-processing results for each geometry variation. This approach can be very time consuming and is a major barrier to CFD informed design optimization. OpenPFO streamlines this process by eliminating repetitve steps and guesswork in the typical process, allowing engineers to focus on wider design space exploration and optimizations.
 
 # State of the field
 
-The software that currently complete the goal of OpenPFO include: SIEMENS HEEDS, Luminary Cloud, and nTop.
+Current solutions that integrate the steps of the CFD process include software owned by leading simulation industry companies such as Siemens HEEDs and ANSYS’s CAESES, as well as independent solutions compatible with multiple CFD software such as Luminary Cloud or Shaper.
 
-While each of these tools accomplish some or all of the goals of OpenPFO, each have at least one of two notable challenges, cost, and extensibility. OpenPFO, through its integration with open source resources, is free to use, which overcomes the cost barrier of existing tools. OpenPFO is also extensible, supporting integration with any external tool that comes with a programmatic interface. Specialized software such as OpenVSP or OpenFOAM have been implemented in the creation of OpenPFO.
+There are multiple issues with these existing solutions, primarily their closed source nature and cost of subscriptions. They also typically have required solvers and meshing software that only allow for limited simulation control and can have a lengthy setup process or poor integration across modules that makes automation difficult [@CAESES],[@HEEDS]. In addition, startups or academic projects that work with government restricted design data may be unable to use existing solutions for data security or regulatory concerns. Any project handling US-origin ITAR-classified data must seek permission before exporting this data to another country, making many industry standard software unsuitable for use [@GOC].
+
+As an open-source tool that has been developed with problem extensibility in mind, OpenPFO provides a solution to these issues while also allowing scalability on local, cluster, and cloud computing systems. 
+
 
 # Software design
 
@@ -104,7 +107,10 @@ Typically, numerical values are not enough for the outputs to have any significa
 
 # Research impact statement
 
-OpenPFO has been developed with the intention of improving the flow of the engineering design process. Through its development, it has been made clear that it has immense potential for research impact. While it was validated with a simple delta wing aircraft design, a secondary case of hypersonic busemann intake optimization has been introduced. The extension of the OpenPFO workflow to this new type of problem reveals the research impact potential of the solution. It provides an opportunity to research previously unconsidered optimization of regimented intake designs, and the ability to focus on key relevant issues such as the cross flow of an intake that impacts combustor performance.
+OpenPFO has been developed with the intention of improving the flow of the engineering design process, allowing CFD based design optimization to be conducted with ease when used by researchers, industry professionals, and student design teams. OpenPFO has been developed using a simplified delta wing aerosurface simulation, chosen for its applicability to the WatArrow student design team at the University of Waterloo. This delta wing simulation case, when optimized with OpenPFO demonstrated the workflow's applicability to design optimization by accelerating the design process for the design team. This adds crediibiliity to its usefullness in industry where design issues may be addressed in a similar manner. 
+
+Along with the delta wing case, a secondary case focused on hypersonic Busemann intake optimization has been generated. The extension of the OpenPFO workflow to this new type of problem reveals the versatility of the software and it's potential impact in the research community. It provides an opportunity to research complicated topics, and the ability to focus on key relevant issues in engineering design and research by automating the four steps of CFD simulation into one. 
+
 
 # AI usage disclosure
 
@@ -112,6 +118,10 @@ No generative AI tools were used in the development of this software, the writin
 
 # Acknowledgements
 
-We would like to acknowledge the support and guidance provided by our advisors, Dr. Jean-Pierre Hickey (University of Waterloo's MPI Lab) and Dr. Jimmy-John Hoste (Destinus Aerospace). The development and validation of OpenPFO was conducted with technical and user input from the University of Waterloo's WatArrow Student Design Team, and the usage of the University of Waterloo's Nibi Supercomputer though the MPI Lab.
+We would like to acknowledge the support and guidance provided by our advisors, Dr. Jean-Pierre Hickey (University of Waterloo's MPI Lab) and Dr. Jimmy-John Hoste (Destinus Aerospace). 
+
+The development and validation of OpenPFO was conducted with technical and user input from the University of Waterloo's WatArrow Student Design Team. 
+
+This research was enabled in part by support provided by SHARCNET (https://www.sharcnet.ca/my) and the Digital Research Alliance of Canada (alliance​can​.ca)
 
 # References
