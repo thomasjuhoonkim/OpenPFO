@@ -52,7 +52,7 @@ OpenPFO is an opinionated workflow designed for CFD-based design space explorati
 
 Each "Job" represents one combination of parameters, otherwise known as a geometry variation. Jobs implement 6 different user-defined functions called steps: `1_prepare`, `2_geometry`, `3_mesh`, `4_solve`, `5_objectives`, `cleanup`. Each step allows the user to programmatically define their automated steps, performing computations, interfacing with external tools, or submitting batch jobs to a scheduler.
 
-![Illustration of a job including inputs, outputs, and job step functions{fig:job-structure}](paper_figs/job.png)
+![Illustration of a job including inputs, outputs, and job step functions\label{fig:job-structure}](paper_figs/job.png)
 
 Each user-defined function has explicit comments indicating where a user's programmatic logic should be placed. An example of this is the geometry function:
 
