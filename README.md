@@ -1,5 +1,9 @@
 # OpenPFO
 
+[![status](https://joss.theoj.org/papers/30de6f77ad5ad79238eb9035e1ef6dcb/status.svg)](https://joss.theoj.org/papers/30de6f77ad5ad79238eb9035e1ef6dcb)
+[![Tests (Local)](https://github.com/thomasjuhoonkim/OpenPFO/actions/workflows/tests.yaml/badge.svg?branch=main)](https://github.com/thomasjuhoonkim/OpenPFO/actions/workflows/tests.yaml)
+[![Tests (HPC)](https://github.com/thomasjuhoonkim/OpenPFO/actions/workflows/tests.yaml/badge.svg?branch=main)](https://github.com/thomasjuhoonkim/OpenPFO/actions/workflows/tests.yaml)
+
 The Open Parametric Flow Optimizer is an open-source design space exploration and optimization tool for computational fluid dynamics based design optimizations.
 
 ![Collage of OpenPFO capabilities](docs/openpfo-collage.png)

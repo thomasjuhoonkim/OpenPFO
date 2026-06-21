@@ -6,3 +6,4 @@ pymoo==0.6.1.5
 numpy==2.3.3
 simple-slurm==0.3.6
 pyDOE3==1.6.1
+pytest==9.1.1
