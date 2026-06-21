@@ -35,12 +35,11 @@ class Parameter:
 
     @classmethod
     def from_dict(cls, parameter: dict):
-        parameter_object = Parameter(
+        parameter_object = cls(
             name=parameter["name"],
             id=parameter["id"],
             min=parameter["min"],
             max=parameter["max"],
-            value=parameter["value"],
         )
         if parameter["value"] is not None:
             parameter_object.set_value(value=parameter["value"])

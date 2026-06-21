@@ -1,5 +1,9 @@
 # OpenPFO
 
+[![status](https://joss.theoj.org/papers/30de6f77ad5ad79238eb9035e1ef6dcb/status.svg)](https://joss.theoj.org/papers/30de6f77ad5ad79238eb9035e1ef6dcb)
+[![Tests (Local)](https://github.com/thomasjuhoonkim/OpenPFO/actions/workflows/tests.yaml/badge.svg?branch=main)](https://github.com/thomasjuhoonkim/OpenPFO/actions/workflows/tests.yaml)
+[![Tests (HPC)](https://github.com/thomasjuhoonkim/OpenPFO/actions/workflows/tests.yaml/badge.svg?branch=main)](https://github.com/thomasjuhoonkim/OpenPFO/actions/workflows/tests.yaml)
+
 The Open Parametric Flow Optimizer is an open-source design space exploration and optimization tool for computational fluid dynamics based design optimizations.
 
 ![Collage of OpenPFO capabilities](docs/openpfo-collage.png)
@@ -95,6 +99,8 @@ The Open Parametric Flow Optimizer is an open-source design space exploration an
    1. [Contributors](#contributors)
    2. [Advisors](#advisors)
    3. [Disclaimer](#disclaimer)
+      1. [Contributions](#contributions)
+      2. [AI Usage](#ai-usage)
 10. [Appendix](#appendix)
 11. [Appendix A: Full `results.json` schema definition](#appendix-a-full-resultsjson-schema-definition)
 
@@ -1019,6 +1025,10 @@ OpenPFO provides some examples for previously ran optimization cases. You can us
   - HPC optimization
 - DAE 21 Airfoil takeoff simulation with AoA variation
 
+## Testing
+
+Unit testing is done using the `pytest` testing module.
+
 ## Acknowledgements
 
 This project was made possible through the Faculty of Engineering at the University of Waterloo.
@@ -1036,7 +1046,13 @@ This project was made possible through the Faculty of Engineering at the Univers
 
 ### Disclaimer
 
+#### Contributions
+
 OpenPFO is part of the University of Waterloo's engineering capstone project courses. Future maintenence of this repository is subject to contributor availability. Contributors are welcome, please refer to [CONTRIBUTING.md](https://github.com/thomasjuhoonkim/OpenPFO/blob/main/CONTRIBUTING.md).
+
+#### AI Usage
+
+No generative AI tools were used in the the writing of this manuscript, or the preparation of supporting materials. AI was used to generate the unit test suite alone with testing pipelines.
 
 ---
 

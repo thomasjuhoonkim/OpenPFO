@@ -32,8 +32,8 @@ max=0
 [[optimizer.objectives]]
 name=""
 id=""
-type=""
+type="maximize"
 [[optimizer.objectives]]
 name=""
 id=""
-type=""
+type="minimize"

@@ -43,8 +43,7 @@ Current solutions that integrate the four steps of the CFD process include softw
 
 There are multiple issues with these existing solutions, primarily their closed source nature and cost of subscriptions which can be undesirable for organizations with limited budgets such as student teams, researchers, or early stage startups. They also typically require proprietary solvers and meshing software that limit simulation control, involve lengthy setup processes, or have poor integration across modules that make automation difficult [@CAESES],[@HEEDS],[@TCAE]. In addition, startups or academic projects that work with government restricted design data may be unable to use existing solutions for data security or regulatory concerns. Any project handling US-origin ITAR-classified data must seek permission before exporting this data to another country, making many industry standard software unsuitable for use [@GOC].
 
-As an open-source tool that has been developed with problem extensibility in mind, OpenPFO provides a solution to automating the CFD process in a free, open access manner, while also allowing scalability on local, cluster, and cloud computing systems. 
-
+As an open-source tool that has been developed with problem extensibility in mind, OpenPFO provides a solution to automating the CFD process in a free, open access manner, while also allowing scalability on local, cluster, and cloud computing systems.
 
 # Software design
 
@@ -83,7 +82,8 @@ def geometry(
 
     return GEOMETRY_RETURN
 ```
-Jobs handle exceptions for the user, preventing errors from interrupting the workflow. Users may define programmatic step validation, allowing the job to be terminated early should there be validation errors. 
+
+Jobs handle exceptions for the user, preventing errors from interrupting the workflow. Users may define programmatic step validation, allowing the job to be terminated early should there be validation errors.
 
 ![Early termination of job after a failure\label{fig:error-handling}](paper_figs/error-handling.png)
 
@@ -105,20 +105,19 @@ Typically, the numerical outputs of OpenPFO alone are insufficient to effectivel
 
 # Research impact statement
 
-OpenPFO has been developed with the intention of improving the flow of the engineering design process. This is achieved by enabling CFD based design optimization to be conducted with ease when used by researchers, industry professionals, and student design teams. OpenPFO has been developed using a simplified delta wing aerosurface simulation, chosen for its applicability to the WatArrow student design team at the University of Waterloo. This delta wing simulation case, when optimized with OpenPFO demonstrated the workflow's effectiveness when used for design optimization by accelerating the design process for the team. This adds credibility to its usefulness in industry where design issues may be addressed in a similar manner. 
+OpenPFO has been developed with the intention of improving the flow of the engineering design process. This is achieved by enabling CFD based design optimization to be conducted with ease when used by researchers, industry professionals, and student design teams. OpenPFO has been developed using a simplified delta wing aerosurface simulation, chosen for its applicability to the WatArrow student design team at the University of Waterloo. This delta wing simulation case, when optimized with OpenPFO demonstrated the workflow's effectiveness when used for design optimization by accelerating the design process for the team. This adds credibility to its usefulness in industry where design issues may be addressed in a similar manner.
 
 Along with the delta wing case, a secondary example case of a hypersonic Busemann intake optimization was developed and used to validate the workflow extensibility. The extension of the OpenPFO workflow to this new type of problem reveals the versatility of the software and its potential impact on the research community. It provides an opportunity to research complicated topics, and the ability to focus on key relevant issues in engineering design and research by automating the four steps of CFD simulation into one for any design problem featuring fluid interactions currently able to be addressed using open source tools.
 
-
 # AI usage disclosure
 
-No generative AI tools were used in the development of this software, the writing of this manuscript, or the preparation of supporting materials.
+No generative AI tools were used in the the writing of this manuscript, or the preparation of supporting materials. AI was used to generate the unit test suite alone with testing pipelines.
 
 # Acknowledgements
 
-We would like to acknowledge the support and guidance provided by our advisors, Dr. Jean-Pierre Hickey (University of Waterloo's MPI Lab) and Dr. Jimmy-John Hoste (Destinus Aerospace). 
+We would like to acknowledge the support and guidance provided by our advisors, Dr. Jean-Pierre Hickey (University of Waterloo's MPI Lab) and Dr. Jimmy-John Hoste (Destinus Aerospace).
 
-The development and validation of OpenPFO was conducted with technical and user input from the University of Waterloo's WatArrow Student Design Team. 
+The development and validation of OpenPFO was conducted with technical and user input from the University of Waterloo's WatArrow Student Design Team.
 
 This research was enabled in part by support provided by SHARCNET (https://www.sharcnet.ca/my) and the Digital Research Alliance of Canada (alliance​can​.ca)
 

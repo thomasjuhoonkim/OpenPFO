@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "OpenPFO"
-version = "1.0.0"
+version = "1.1.0"
 description = "Open Parametric Flow Optimizer"
 authors = [
   { name = "Thomas Kim", email = "thomas.kim@uwaterloo.ca" },
@@ -19,7 +19,10 @@ dynamic = ["dependencies"]
 pfo = "commands.cli:app"
 
 [tool.setuptools.dynamic]
-dependencies = { file = ["requirements.txt"] }
+dependencies = { file = ["requirements-local.txt"] }
 
 [tool.setuptools.packages.find]
 where = ["pfo"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

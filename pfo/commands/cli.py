@@ -17,6 +17,9 @@ from commands.check_meshes import check_meshes
 from commands.check_input import check_input
 from commands.check_run import check_run
 
+# important - check config to import execution commands
+check_config()
+
 # commands - execution
 from commands.run import run
 
@@ -63,7 +66,7 @@ app.command(name="hello")(hello)
 
 @app.command()
 def version():
-    typer.echo("OpenPFO v1.0.0")
+    typer.echo("OpenPFO v1.1.0")
 
 
 if __name__ == "__main__":
