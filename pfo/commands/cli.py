@@ -66,7 +66,7 @@ app.command(name="hello")(hello)
 
 @app.command()
 def version():
-    typer.echo("OpenPFO v1.1.0")
+    typer.echo("OpenPFO v1.1.1")
 
 
 if __name__ == "__main__":
