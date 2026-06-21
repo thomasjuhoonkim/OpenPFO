@@ -19,7 +19,7 @@ dynamic = ["dependencies"]
 pfo = "commands.cli:app"
 
 [tool.setuptools.dynamic]
-dependencies = { file = ["requirements.txt"] }
+dependencies = { file = ["requirements-local.txt"] }
 
 [tool.setuptools.packages.find]
 where = ["pfo"]

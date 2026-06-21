@@ -45,6 +45,10 @@ def validate_objective(objective: dict):
             logger.error(f'"{field}" in objective is not {expected_type}')
             sys.exit(1)
 
+    if objective["type"] not in ("minimize", "maximize"):
+        logger.error(f'"type" in objective must be "minimize" or "maximize", got "{objective["type"]}"')
+        sys.exit(1)
+
     logger.info("Objective is valid")
 
     return None
@@ -243,6 +247,9 @@ def validate_config(config: dict):
             if not isinstance(objective[field], type):
                 logger.error(f'"{field}" in [[optimizer.objectives]] is not {type}')
                 sys.exit(1)
+        if objective["type"] not in ("minimize", "maximize"):
+            logger.error(f'"type" in [[optimizer.objectives]] must be "minimize" or "maximize", got "{objective["type"]}"')
+            sys.exit(1)
 
     logger.info("Config is valid")
 

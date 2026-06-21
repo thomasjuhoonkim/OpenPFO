@@ -154,6 +154,13 @@ class TestValidateConfigLocal:
         with pytest.raises(SystemExit):
             validate_config(c)
 
+    @pytest.mark.parametrize("invalid_type", ["min", "max", "Minimize", "MAXIMIZE", ""])
+    def test_objective_invalid_type_is_rejected(self, invalid_type):
+        c = copy.deepcopy(VALID_CONFIG_LOCAL)
+        c["optimizer"]["objectives"][0]["type"] = invalid_type
+        with pytest.raises(SystemExit):
+            validate_config(c)
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # validate_config — hpc=True (HPC)
@@ -182,6 +189,13 @@ class TestValidateConfigHPC:
     def test_hpc_integer_one_is_rejected(self):
         c = copy.deepcopy(VALID_CONFIG_HPC)
         c["compute"]["hpc"] = 1
+        with pytest.raises(SystemExit):
+            validate_config(c)
+
+    @pytest.mark.parametrize("invalid_type", ["min", "max", "Minimize", "MAXIMIZE", ""])
+    def test_objective_invalid_type_is_rejected(self, invalid_type):
+        c = copy.deepcopy(VALID_CONFIG_HPC)
+        c["optimizer"]["objectives"][0]["type"] = invalid_type
         with pytest.raises(SystemExit):
             validate_config(c)
 
@@ -233,6 +247,15 @@ class TestValidateObjective:
     def test_value_string_is_rejected(self):
         with pytest.raises(SystemExit):
             validate_objective(_set(VALID_OBJECTIVE, "value", "0.03"))
+
+    @pytest.mark.parametrize("valid_type", ["minimize", "maximize"])
+    def test_valid_types_are_accepted(self, valid_type):
+        assert validate_objective(_set(VALID_OBJECTIVE, "type", valid_type)) is None
+
+    @pytest.mark.parametrize("invalid_type", ["min", "max", "Minimize", "MAXIMIZE", ""])
+    def test_invalid_type_strings_are_rejected(self, invalid_type):
+        with pytest.raises(SystemExit):
+            validate_objective(_set(VALID_OBJECTIVE, "type", invalid_type))
 
 
 # ─────────────────────────────────────────────────────────────────────────────
